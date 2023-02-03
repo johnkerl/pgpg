@@ -9,3 +9,19 @@ Goals:
 * Make good use of classes -- e.g. `lexer.match()` rather than global `match()`.
 * Be lucid above all else. Lexing/parsing is ubiquitous in the modern world, and forms a large part of our world. Yet sadly such tools are arcane and confusing. PGPG is transparent, inclusive, and explains itself openly.
 
+Languages:
+
+* Implementation initially in Go
+  * Maybe Python and/or Rust later
+  * Aim for non-clever abstraction and concept reuse
+  * Try to use language-independent data structures when possible
+* Generator target initially Go
+  * Maybe Python and/or Rust later
+  * Try to use language-independent data structures when possible
+
+Applications:
+
+* Self-education and experimentation
+* Promotion of parser-generation knowledge
+* I would like to ultimately use this in [Miller](https://github.com/johnkerl/miller)
+* I'd love to get some code of ad-hoc code-sed/code-grep/etc functionality going for, say, Go, Python, JS, etc. wherein program text would be treated as a stream where the "sedding" and "grepping" would be done at the abstract-syntax-tree level
