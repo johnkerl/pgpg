@@ -22,6 +22,12 @@
 * Grammars
   * AME:  `+` and `*` of numbers with equal precedence
   * AMNE: `+` and `*` of numbers with unequal precedence
-  * SENG: very basic English subject/verb/object, with optional adjective/adverb/etc, with explicit terminal wordlists (no morphological type inference)
+  * SENG: very basic English subject/verb/object, with optional adjective/adverb/etc, with explicit terminal wordlists (no morphological type inference); imperatives?
+  * SIMP: some simple imperative command language?
   * VPEMDAS: variable assignments; evaluations
   * CSV/DKVP -- including double-quote behaviors
+  * Miller DSL
+
+* Where (which `README.md` etc) to note this is all UTF-8
+* Have a root Makefile
+* What things to move from internal to external (everything?)
