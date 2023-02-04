@@ -19,3 +19,9 @@
     * Precomputed grammar + string -> AST + pass/fail
     * Linked-in grammar + string -> AST + pass/fail
   * Iterate on PGs per se
+* Grammars
+  * AME:  `+` and `*` of numbers with equal precedence
+  * AMNE: `+` and `*` of numbers with unequal precedence
+  * SENG: very basic English subject/verb/object, with optional adjective/adverb/etc, with explicit terminal wordlists (no morphological type inference)
+  * VPEMDAS: variable assignments; evaluations
+  * CSV/DKVP -- including double-quote behaviors
