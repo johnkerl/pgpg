@@ -1,6 +1,8 @@
 package lexers
 
 import (
+	"fmt"
+
 	"github.com/johnkerl/pgpg/pkg/tokens"
 	"unicode"
 	"unicode/utf8"
@@ -93,4 +95,17 @@ func (lexer *WordLexer) readRune() rune {
 	r, runeWidth := lexer.peekRune()
 	lexer.tokenLocation.LocateRune(r, runeWidth)
 	return r
+}
+
+func (lexed *WordLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
+	switch tokenType {
+	case tokens.TokenTypeEOF:
+		return "EOF", nil
+	case tokens.TokenTypeError:
+		return "error", nil
+	case WordLexerTypeWord:
+		return "word", nil
+	default:
+		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
+	}
 }

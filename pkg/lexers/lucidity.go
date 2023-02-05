@@ -10,12 +10,17 @@ func Run(lexer AbstractLexer) error {
 		if token.IsEOF() {
 			break
 		}
+		desc, err := lexer.DecodeType(token.Type)
+		if err != nil {
+			return err
+		}
 		// TODO: token.String()
 		fmt.Printf(
-			"Line %d column %d type %d token <<%s>>\n",
+			"Line %d column %d type %s (%d) token <<%s>>\n",
 			token.Location.LineNumber,
 			token.Location.ColumnNumber,
-			token.Type, // TODO: somewhere in the API, retain a mapping between code and human-friendly type names
+			desc,
+			token.Type,
 			string(token.Lexeme),
 		)
 		if token.IsError() {

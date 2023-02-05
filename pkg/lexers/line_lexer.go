@@ -1,6 +1,8 @@
 package lexers
 
 import (
+	"fmt"
+
 	"github.com/johnkerl/pgpg/pkg/tokens"
 	"unicode/utf8"
 )
@@ -54,4 +56,17 @@ func (lexer *LineLexer) Scan() (token *tokens.Token) {
 	)
 
 	return retval
+}
+
+func (lexed *LineLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
+	switch tokenType {
+	case tokens.TokenTypeEOF:
+		return "EOF", nil
+	case tokens.TokenTypeError:
+		return "error", nil
+	case LineLexerTypeLine:
+		return "line", nil
+	default:
+		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
+	}
 }
