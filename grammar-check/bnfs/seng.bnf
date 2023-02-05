@@ -4,7 +4,8 @@
 Root
     : NounPhrase TransitiveVerbPhrase NounPhrase
     | NounPhrase IntransitiveVerbPhrase
-    | ImperativeVerbPhrase NounPhrase
+    | TransitiveImperativeVerbPhrase NounPhrase
+    | IntransitiveImperativeVerbPhrase
 ;
 
 NounPhrase
@@ -27,15 +28,21 @@ IntransitiveVerbPhrase
     | Adverb IntransitiveVerbPhrase
 ;
 
-ImperativeVerbPhrase
-    : ImperativeVerb
-    | Adverb ImperativeVerbPhrase
+TransitiveImperativeVerbPhrase
+    : TransitiveImperativeVerb
+    | Adverb TransitiveImperativeVerbPhrase
 ;
 
-Noun             : "dog"     | "cat"    | "mouse"  | "food" | "book" ;
-Adjective        : "red"     | "green"  | "brown"  ;
-Article          : "the"     | "a"      ;
-TransitiveVerb   : "goes"    | "puts"   | "eats"   ;
-IntransitiveVerb : "walks"   | "runs"   | "sleeps" ;
-ImperativeVerb   : "go"      | "put"    | "read"   | "eat"  ;
-Adverb           : "quickly" | "slowly" ;
+IntransitiveImperativeVerbPhrase
+    : IntransitiveImperativeVerb
+    | Adverb IntransitiveImperativeVerbPhrase
+;
+
+Noun                       : "dog"     | "cat"    | "mouse"  | "fox"    | "food"  | "book" ;
+Adjective                  : "red"     | "green"  | "brown"  | "quick"  | "lazy";
+Article                    : "the"     | "a"      ;
+TransitiveVerb             : "goes"    | "puts"   | "eats"   ;
+IntransitiveVerb           : "walks"   | "runs"   | "sleeps" | "jumps";
+TransitiveImperativeVerb   : "put"     | "read"   | "eat"    ;
+IntransitiveImperativeVerb : "go"      | "jump";
+Adverb                     : "quickly" | "slowly" ;

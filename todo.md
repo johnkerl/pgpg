@@ -11,7 +11,8 @@
     * [x] Word lexer: delimit by whitespace
     * [x] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
     * [x] AM for AME and AMNE
-    * [ ] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
+    * [x] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
+      * Prepositional phrases?
     * [ ] VIC
     * [ ] Scale-test everything for perf early on -- especially channel-switching
     * Mods needed:

@@ -122,7 +122,7 @@ func (lexer *AMLexer) readRune() rune {
 	return r
 }
 
-func (lexed *AMLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
+func (lexer *AMLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
 	switch tokenType {
 	case tokens.TokenTypeEOF:
 		return "EOF", nil

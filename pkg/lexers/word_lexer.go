@@ -94,7 +94,7 @@ func (lexer *WordLexer) readRune() rune {
 	return r
 }
 
-func (lexed *WordLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
+func (lexer *WordLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
 	switch tokenType {
 	case tokens.TokenTypeEOF:
 		return "EOF", nil

@@ -44,7 +44,7 @@ func (lexer *RuneLexer) Scan() (token *tokens.Token) {
 	return retval
 }
 
-func (lexed *RuneLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
+func (lexer *RuneLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
 	switch tokenType {
 	case tokens.TokenTypeEOF:
 		return "EOF", nil

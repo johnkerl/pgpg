@@ -43,7 +43,7 @@ func (lexer *CannedTextLexer) Scan() (token *tokens.Token) {
 	return retval
 }
 
-func (lexed *CannedTextLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
+func (lexer *CannedTextLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
 	switch tokenType {
 	case tokens.TokenTypeEOF:
 		return "EOF", nil

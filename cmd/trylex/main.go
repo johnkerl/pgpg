@@ -18,6 +18,7 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"rune":   lexerInfoT{lexers.NewRuneLexer, "Each UTF-8 character is its own token."},
 	"line":   lexerInfoT{lexers.NewLineLexer, "Each line of text is its own token. Carriage returns are not delivered."},
 	"word":   lexerInfoT{lexers.NewWordLexer, "Each run of non-whitespace text is its own token. Whitespace is not delivered."},
+	"seng":   lexerInfoT{lexers.NewSENGLexer, "SENG lexicon."},
 	"am":     lexerInfoT{lexers.NewAMLexer, "Integers with + and *."},
 }
 
