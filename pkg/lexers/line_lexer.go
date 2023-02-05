@@ -26,10 +26,9 @@ func NewLineLexer(inputText string) AbstractLexer {
 	}
 }
 
-func (lexer *LineLexer) Scan() (token *tokens.Token, err error) {
+func (lexer *LineLexer) Scan() (token *tokens.Token) {
 	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-		// TODO: define and return EOF token
-		return nil, nil
+		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 
 	startLocation := *lexer.tokenLocation
@@ -54,5 +53,5 @@ func (lexer *LineLexer) Scan() (token *tokens.Token, err error) {
 		&startLocation,
 	)
 
-	return retval, nil
+	return retval
 }

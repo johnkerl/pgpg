@@ -26,9 +26,9 @@ func NewCannedTextLexer(text string) AbstractLexer {
 	}
 }
 
-func (lexer *CannedTextLexer) Scan() (token *tokens.Token, err error) {
+func (lexer *CannedTextLexer) Scan() (token *tokens.Token) {
 	if lexer.position >= len(lexer.outputs) {
-		return nil, nil
+		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 	retval := tokens.NewToken(
 		[]rune(lexer.outputs[lexer.position]),
@@ -37,5 +37,5 @@ func (lexer *CannedTextLexer) Scan() (token *tokens.Token, err error) {
 	)
 	lexer.position++
 	lexer.tokenLocation.ColumnNumber++
-	return retval, nil
+	return retval
 }

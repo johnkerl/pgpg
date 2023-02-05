@@ -24,10 +24,9 @@ func NewRuneLexer(inputText string) AbstractLexer {
 	}
 }
 
-func (lexer *RuneLexer) Scan() (token *tokens.Token, err error) {
+func (lexer *RuneLexer) Scan() (token *tokens.Token) {
 	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-		// TODO: define and return EOF token
-		return nil, nil
+		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 
 	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
@@ -46,5 +45,5 @@ func (lexer *RuneLexer) Scan() (token *tokens.Token, err error) {
 		lexer.tokenLocation.ColumnNumber++
 	}
 
-	return retval, nil
+	return retval
 }

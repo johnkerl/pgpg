@@ -10,28 +10,24 @@ import (
 func TestCannedTextLexer1(t *testing.T) {
 	lexer := NewCannedTextLexer("")
 
-	token, err := lexer.Scan()
-	assert.Nil(t, token)
-	assert.Nil(t, err)
+	token := lexer.Scan()
+	assert.NotNil(t, token)
+	assert.True(t, token.IsEOF())
 }
 
 // ----------------------------------------------------------------
 func TestCannedTextLexer2(t *testing.T) {
 	lexer := NewCannedTextLexer("a b c")
 
-	token, err := lexer.Scan()
+	token := lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), "a")
-	assert.Nil(t, err)
 
-	token, err = lexer.Scan()
+	token = lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), "b")
-	assert.Nil(t, err)
 
-	token, err = lexer.Scan()
+	token = lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), "c")
-	assert.Nil(t, err)
 
-	token, err = lexer.Scan()
-	assert.Nil(t, token)
-	assert.Nil(t, err)
+	token = lexer.Scan()
+	assert.True(t, token.IsEOF())
 }

@@ -21,3 +21,27 @@ func NewToken(lexeme []rune, tokenType TokenType, location *TokenLocation) *Toke
 		Location: *location, // does a copy
 	}
 }
+
+func NewEOFToken(location *TokenLocation) *Token {
+	return &Token{
+		Lexeme:   nil,
+		Type:     TokenTypeEOF,
+		Location: *location, // does a copy
+	}
+}
+
+func NewErrorToken(errorText string, location *TokenLocation) *Token {
+	return &Token{
+		Lexeme:   []rune(errorText),
+		Type:     TokenTypeError,
+		Location: *location, // does a copy
+	}
+}
+
+func (token *Token) IsEOF() bool {
+	return token.Type == TokenTypeEOF
+}
+
+func (token *Token) IsError() bool {
+	return token.Type == TokenTypeError
+}

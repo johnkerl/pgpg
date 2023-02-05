@@ -5,6 +5,7 @@ import (
 )
 
 type AbstractLexer interface {
-	// On EOF, this should return (nil, nil)
-	Scan() (token *tokens.Token, err error)
+	// On EOF, the token-type will be EOF.
+	// On error, the token-type will be Error, with Lexeme slot having the errortext.
+	Scan() (token *tokens.Token)
 }

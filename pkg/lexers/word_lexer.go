@@ -30,10 +30,9 @@ func NewWordLexer(inputText string) AbstractLexer {
 	}
 }
 
-func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
+func (lexer *WordLexer) Scan() (token *tokens.Token) {
 	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-		// TODO: define and return EOF token
-		return nil, nil
+		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 
 	// There are only two states: within a token or not (and OK the third state which is EOF). And
@@ -44,7 +43,7 @@ func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
 	lexer.ignoreNextRunesIf(unicode.IsSpace)
 	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 		// TODO: define and return EOF token
-		return nil, nil
+		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 
 	startLocation := *lexer.tokenLocation
@@ -60,7 +59,7 @@ func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
 
 	retval := tokens.NewToken(runes, WordLexerTypeWord, &startLocation)
 
-	return retval, nil
+	return retval
 }
 
 func (lexer *WordLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
