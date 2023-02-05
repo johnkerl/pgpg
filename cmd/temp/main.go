@@ -7,7 +7,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/johnkerl/pgpg/internal/pkg/temp"
+	"github.com/johnkerl/pgpg/pkg/temp"
 )
 
 func main() {

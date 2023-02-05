@@ -3,11 +3,11 @@ package lex
 import (
 	"errors"
 
-	"github.com/johnkerl/pgpg/internal/pkg/types"
-	"github.com/johnkerl/pgpg/internal/pkg/util"
+	"github.com/johnkerl/pgpg/pkg/types"
+	"github.com/johnkerl/pgpg/pkg/util"
 )
 
-// ----------------------------------------------------------------
+// CannedTextLexer is primarily for unit-test purposes
 type CannedTextLexer struct {
 	outputs  []string
 	position int
