@@ -1,7 +1,3 @@
-/*
-go build github.com/johnkerl/pgpg/cmd/tmp
-*/
-
 package main
 
 import (

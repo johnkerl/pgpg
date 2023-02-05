@@ -15,7 +15,7 @@ type AST struct {
 
 // ----------------------------------------------------------------
 type ASTNode struct {
-	Token    *tokens.Token // Nil for tokenless/structural nodes
+	Token *tokens.Token // Nil for tokenless/structural nodes
 	// TODO
 	// Type     TNodeType
 	Children []*ASTNode

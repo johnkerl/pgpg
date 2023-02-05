@@ -26,7 +26,7 @@ func NewASTNodeNestable(itok interface{}) *ASTNode {
 		tok = itok.(*tokens.Token)
 	}
 	return &ASTNode{
-		Token: tok,
+		Token:    tok,
 		Children: nil,
 	}
 }

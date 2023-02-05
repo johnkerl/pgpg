@@ -16,18 +16,18 @@ type CannedTextLexer struct {
 func NewCannedTextLexer(text string) *CannedTextLexer {
 	outputs := util.SplitString(text, " ")
 	return &CannedTextLexer{
-		outputs:  outputs,
-		position: 0,
+		outputs:       outputs,
+		position:      0,
 		tokenLocation: tokens.NewTokenLocation(1, 1),
 	}
 }
 
-func (lxr *CannedTextLexer) Scan() (token *tokens.Token, err error) {
-	if lxr.position >= len(lxr.outputs) {
+func (lexer *CannedTextLexer) Scan() (token *tokens.Token, err error) {
+	if lexer.position >= len(lexer.outputs) {
 		return nil, nil
 	}
-	retval := tokens.NewToken(lxr.outputs[lxr.position], lxr.tokenLocation)
-	lxr.position++
-	lxr.tokenLocation.ColumnNumber++
+	retval := tokens.NewToken([]rune(lexer.outputs[lexer.position]), lexer.tokenLocation)
+	lexer.position++
+	lexer.tokenLocation.ColumnNumber++
 	return retval, nil
 }

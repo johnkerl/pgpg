@@ -4,9 +4,19 @@
   * [x] Make sure there's file/line/column info
   * [ ] CLIs for:
     * [ ] Run a given lexer on given input text and dump out the sequence of tokens
+  * Hand-written lexer impls for simple grammars
+    * [x] Canned lexer from a fixed list of strings
+    * [x] Rune lexer: every rune is its own token
+    * [ ] Line lexer: every line is its own token
+    * [ ] Word lexer: delimit by whitespace
+      * Includes SENG
+    * [ ] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
+    * [ ] Scale-test everything for perf early on -- especially channel-switching
+    * [ ] AME
+    * [ ] AMNE
+    * [ ] VPEMDAS
   * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
     * [ ] Note `Token` struct will have two strings -- payload, and payload+whitespace
-  * [ ] Hand-written lexer impls for simple grammars
   * [ ] Config-driven autogen
   * [ ] Make sure grammar -> lexer build can be done offline or online (the latter without need for process restart)
 * AST

@@ -2,7 +2,7 @@ package tokens
 
 // Token tracks a single lexeme as well as where it was found within the source text.
 type Token struct {
-	Lexeme string
+	Lexeme []rune
 	// TODO: type-inference -- need to figure out the API
 
 	// TODO: we want internal types like TokenTypeError and TokenTypeEOF, but also
@@ -13,7 +13,7 @@ type Token struct {
 	Location TokenLocation
 }
 
-func NewToken(lexeme string, location *TokenLocation) *Token {
+func NewToken(lexeme []rune, location *TokenLocation) *Token {
 	return &Token{
 		Lexeme:   lexeme,
 		Location: *location, // does a copy

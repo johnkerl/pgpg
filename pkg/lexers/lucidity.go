@@ -13,7 +13,7 @@ func Run(lxr AbstractLexer) error {
 		if token == nil {
 			break // EOF
 		}
-		fmt.Printf("TOKEN: %s\n", token.Lexeme) // TODO: token.String()
+		fmt.Printf("TOKEN: %s\n", string(token.Lexeme)) // TODO: token.String()
 	}
 	return nil
 }
