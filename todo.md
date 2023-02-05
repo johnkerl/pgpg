@@ -10,8 +10,7 @@
     * [x] Line lexer: every line is its own token
     * [x] Word lexer: delimit by whitespace
     * [x] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
-    * [ ] AME
-    * [ ] AMNE
+    * [x] AM for AME and AMNE
     * [ ] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
     * [ ] VIC
     * [ ] Scale-test everything for perf early on -- especially channel-switching

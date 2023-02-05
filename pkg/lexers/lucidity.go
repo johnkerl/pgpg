@@ -13,7 +13,7 @@ func Run(lexer AbstractLexer) error {
 		}
 		// TODO: token.String()
 		fmt.Printf(
-			"Line %d column %d type %s (%d) token <<%s>>\n",
+			"Line %4d column %4d type %-10s (%2d) token <<%s>>\n",
 			token.Location.LineNumber,
 			token.Location.ColumnNumber,
 			desc,

@@ -81,8 +81,6 @@ func (lexer *WordLexer) ignoreNextRunesIf(predicate runePredicateFunc) {
 	}
 }
 
-// TODO: maybe move peekRune, readRune, acceptRune to abstract?
-
 // peekRune gets the next rune from the input without updating location information.
 func (lexer *WordLexer) peekRune() (rune, int) {
 	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
