@@ -8,18 +8,22 @@ import (
 	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
-// ----------------------------------------------------------------
+// NewAST constructs a new root for the abstract syntax tree.
+// The argument-typing is interface{} as a holdover from my experience with GOCC; this may change.
 func NewAST(iroot interface{}) *AST {
 	return &AST{
 		RootNode: iroot.(*ASTNode),
 	}
 }
 
-// ----------------------------------------------------------------
+// NewASTNode constructs a new node for the abstract syntax tree.
+// The argument-typing is interface{}, rather than tokens.Token, as a holdover from my experience
+// with GOCC; this will probably change.
 func NewASTNode(itok interface{}) *ASTNode {
 	return NewASTNodeNestable(itok)
 }
 
+// Holdover from my experience with GOCC; will almost certainly change.
 func NewASTNodeNestable(itok interface{}) *ASTNode {
 	var tok *tokens.Token = nil
 	if itok != nil {
@@ -32,6 +36,7 @@ func NewASTNodeNestable(itok interface{}) *ASTNode {
 }
 
 // Signature: Token Node Node Type
+// Holdover from my experience with GOCC; will almost certainly change.
 func NewASTNodeBinaryNestable(itok, childA, childB interface{}) *ASTNode {
 	parent := NewASTNodeNestable(itok)
 	convertToBinary(parent, childA, childB)
@@ -39,12 +44,14 @@ func NewASTNodeBinaryNestable(itok, childA, childB interface{}) *ASTNode {
 }
 
 // Signature: Token Node Node Type
+// Holdover from my experience with GOCC; will almost certainly change.
 func NewASTNodeBinary(
 	itok, childA, childB interface{},
 ) (*ASTNode, error) {
 	return NewASTNodeBinaryNestable(itok, childA, childB), nil
 }
 
+// Holdover from my experience with GOCC; will almost certainly change.
 func convertToBinary(iparent interface{}, childA, childB interface{}) {
 	parent := iparent.(*ASTNode)
 	children := make([]*ASTNode, 2)

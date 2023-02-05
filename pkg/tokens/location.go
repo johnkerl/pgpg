@@ -1,7 +1,10 @@
 package tokens
 
+// TokenLocation contains information for lexer state, namely the ByteOffset, as well
+// as user-facing information in the form of LineNumber and ColumnNumber.
+// A string FileName is not included -- I feel like this is too bulky to keep this for every single
+// token from a given input file. The filename information should be tracked up a level.
 type TokenLocation struct {
-	// FileName string -- too bulky to keep this for every single token -- store that up a level -- ?
 	LineNumber   int
 	ColumnNumber int
 	ByteOffset   int
@@ -26,6 +29,7 @@ func NewTokenLocation(lineNumber int, columnNumber int) *TokenLocation {
 }
 
 // LocateRune updates line/column number information for an accepted rune.
+// This is something all lexers need to do, so it's exposed here for re-use.
 func (loc *TokenLocation) LocateRune(r rune, runeWidth int) {
 	if r == '\n' {
 		loc.LineNumber++
