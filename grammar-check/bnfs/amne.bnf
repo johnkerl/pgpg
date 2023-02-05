@@ -3,19 +3,19 @@ _decdig : '0'-'9' ;
 !comment : '#'  {.} '\n' ;
 
 int_literal : _decdig { _decdig };
+plus: '+';
+times: '*';
 
 Root
   : AddTerm
 ;
 
 AddTerm
-  : AddTerm "+" MulTerm
+  : AddTerm plus MulTerm
   | MulTerm
 ;
 
 MulTerm
-  : MulTerm "*" IntLiteral
-  | IntLiteral
+  : MulTerm times int_literal
+  | int_literal
 ;
-
-IntLiteral : int_literal;
