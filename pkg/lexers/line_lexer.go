@@ -7,6 +7,10 @@ import (
 
 const lineLexerInitialCapacity = 1024
 
+const (
+	LineLexerTypeLine = 1
+)
+
 // LineLexer is primarily for unit-test purposes. Every line is its own token.
 type LineLexer struct {
 	inputText     string
@@ -44,7 +48,11 @@ func (lexer *LineLexer) Scan() (token *tokens.Token, err error) {
 		}
 	}
 
-	retval := tokens.NewToken(runes, &startLocation)
+	retval := tokens.NewToken(
+		runes,
+		LineLexerTypeLine,
+		&startLocation,
+	)
 
 	return retval, nil
 }

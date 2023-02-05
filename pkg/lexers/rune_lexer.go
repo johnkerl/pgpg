@@ -5,6 +5,10 @@ import (
 	"unicode/utf8"
 )
 
+const (
+	RuneLexerRuneType = 1
+)
+
 // RuneLexer is primarily for unit-test purposes. Every rune is its own token.
 type RuneLexer struct {
 	inputText     string
@@ -29,7 +33,11 @@ func (lexer *RuneLexer) Scan() (token *tokens.Token, err error) {
 	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
 	lexer.tokenLocation.ByteOffset += runeWidth
 
-	retval := tokens.NewToken([]rune{r}, lexer.tokenLocation)
+	retval := tokens.NewToken(
+		[]rune{r},
+		RuneLexerRuneType,
+		lexer.tokenLocation,
+	)
 
 	if r == '\n' {
 		lexer.tokenLocation.LineNumber++

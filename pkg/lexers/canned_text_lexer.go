@@ -5,6 +5,10 @@ import (
 	"github.com/johnkerl/pgpg/pkg/util"
 )
 
+const (
+	CannedTextLexerTypeWord = 1
+)
+
 // CannedTextLexer is primarily for unit-test purposes
 type CannedTextLexer struct {
 	outputs  []string
@@ -26,7 +30,11 @@ func (lexer *CannedTextLexer) Scan() (token *tokens.Token, err error) {
 	if lexer.position >= len(lexer.outputs) {
 		return nil, nil
 	}
-	retval := tokens.NewToken([]rune(lexer.outputs[lexer.position]), lexer.tokenLocation)
+	retval := tokens.NewToken(
+		[]rune(lexer.outputs[lexer.position]),
+		CannedTextLexerTypeWord,
+		lexer.tokenLocation,
+	)
 	lexer.position++
 	lexer.tokenLocation.ColumnNumber++
 	return retval, nil

@@ -8,6 +8,10 @@ import (
 
 const wordLexerInitialCapacity = 1024
 
+const (
+	WordLexerTypeWord = 1
+)
+
 // WordLexer is for unit-test purposes, as well as perhaps a layer underneath the lexer for the SENG
 // reference grammar. Every word is its own token, where "word" is defined as whitespace-delimited.
 // Given this, "Hello, world!" would split to "Hello," and "world!" -- there is no special handling
@@ -54,7 +58,7 @@ func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
 		runes = append(runes, r)
 	}
 
-	retval := tokens.NewToken(runes, &startLocation)
+	retval := tokens.NewToken(runes, WordLexerTypeWord, &startLocation)
 
 	return retval, nil
 }
