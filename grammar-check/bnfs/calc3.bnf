@@ -1,0 +1,109 @@
+// ================================================================
+// LEXICAL ELEMENTS
+// ================================================================
+
+_decdig : '0'-'9' ;
+!whitespace : ' ' | '\t' | '\n' | '\r' ;
+!comment : '#'  {.} '\n' ;
+
+// ----------------------------------------------------------------
+// INT/FLOAT/BOOLEAN LITERALS
+// ----------------------------------------------------------------
+
+// Notes on int literals:
+// * Leading minus sign is handled via the unary-minus operator, not here.
+int_literal
+  : _decdig { _decdig }
+;
+
+// ================================================================
+// SYNTAX ELEMENTS
+// ================================================================
+
+// Import the AST/ASTNode types and functions
+<< import "github.com/johnkerl/miller/internal/pkg/dsl" >>
+
+// ================================================================
+// TOP-LEVEL PRODUCTION RULE FOR THE MILLER DSL
+
+// ----------------------------------------------------------------
+Root
+  : Rvalue
+   << dsl.NewAST($0) >>
+;
+
+Rvalue : PrecedenceChainStart ;
+
+PrecedenceChainStart : AddSubTerm ;
+
+AddSubTerm
+  : AddSubTerm "+"  MulDivTerm << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | AddSubTerm "-"  MulDivTerm << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | MulDivTerm
+;
+
+MulDivTerm
+  : MulDivTerm "*"   UnaryOpTerm << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | MulDivTerm "/"   UnaryOpTerm << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | MulDivTerm "%"   UnaryOpTerm << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | UnaryOpTerm
+;
+
+UnaryOpTerm
+  : "+"  UnaryOpTerm << dsl.NewASTNodeUnary($0, $1, dsl.NodeTypeOperator) >>
+  | "-"  UnaryOpTerm << dsl.NewASTNodeUnary($0, $1, dsl.NodeTypeOperator) >>
+  | PowTerm
+;
+
+PowTerm
+  : PrecedenceChainEnd "**" PowTerm
+    << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+
+  // In the Miller-DSL grammar, the leading -/+ isn't part of the int/float token -- it's treated as
+  // a unary operator. (Making it part of the token leads to LR1 conflicts, and is also inelegant.)
+  // However, this means things like '2 ** -3' result in mashup of two operators next to one
+  // another. For '2 + -3' and '2 * -3', this happens fine down the precedence chain since
+  // AddSubTerm and MulDivTerm are above UnaryOpTerm. Since PowTerm is below UnaryOpTerm, though,
+  // we need to be explicit about '2 ** -3' in a way that we do not need to for '2 * -3'.  Also, we
+  // can't use 'PrecedenceChainEnd "**" UnaryOpTerm', as this also results in LR1 conflicts.
+
+  | PrecedenceChainEnd "**" "-" PowTerm << dsl.NewASTNodeBinary( $1, $0,
+  dsl.NewASTNodeUnaryNestable( $2, $3, dsl.NodeTypeOperator,), dsl.NodeTypeOperator,)
+    >>
+
+  | PrecedenceChainEnd "**" "+" PowTerm
+    <<
+      dsl.NewASTNodeBinary(
+        $1,
+        $0,
+        dsl.NewASTNodeUnaryNestable(
+          $2,
+          $3,
+          dsl.NodeTypeOperator,
+        ),
+        dsl.NodeTypeOperator,
+      )
+    >>
+
+  | PrecedenceChainEnd
+;
+
+// Please Excuse My Dear Aunt Sally! :) We've gotten to the 'P' so we're done
+// with the operator-precedence chain. :)
+
+PrecedenceChainEnd
+  : "(" Rvalue ")"
+  << dsl.Nestable($1) >>
+;
+
+PrecedenceChainEnd : RHSValue ;
+
+// ================================================================
+// END RVALUE OPERATOR-PRECEDENCE CHAIN
+// ================================================================
+
+// ----------------------------------------------------------------
+RHSValue
+  : int_literal
+    << dsl.NewASTNode($0, dsl.NodeTypeIntLiteral) >>
+;

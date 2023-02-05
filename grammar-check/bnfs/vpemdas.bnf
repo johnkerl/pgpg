@@ -1,0 +1,190 @@
+// ================================================================
+// LEXICAL ELEMENTS
+// ================================================================
+
+// ----------------------------------------------------------------
+// CHARACTER CLASSES
+// ----------------------------------------------------------------
+
+_letter : 'a'-'z' | 'A'-'Z' | '\u00a0'-'\u00ff' | '\u0100'-'\U0010ffff';
+_decdig : '0'-'9' ;
+_leading_idchar : _letter | '_' ;
+_idchar : _letter | _decdig | '_' ;
+!whitespace : ' ' | '\t' | '\n' | '\r' ;
+!comment : '#'  {.} '\n' ;
+
+// ----------------------------------------------------------------
+// INT/FLOAT/BOOLEAN LITERALS
+// ----------------------------------------------------------------
+
+// Notes on int literals:
+// * Leading minus sign is handled via the unary-minus operator, not here.
+int_literal
+  : _decdig { _decdig }
+;
+
+// ----------------------------------------------------------------
+// VARIABLES
+
+non_sigil_name : _leading_idchar { _idchar } ;
+
+// ================================================================
+// SYNTAX ELEMENTS
+// ================================================================
+
+// Import the AST/ASTNode types and functions
+// << import "github.com/johnkerl/miller/internal/pkg/dsl" >>
+
+// ================================================================
+// TOP-LEVEL PRODUCTION RULE FOR THE MILLER DSL
+
+// ----------------------------------------------------------------
+Root
+  : StatementBlock
+   //<< dsl.NewAST($0) >>
+;
+
+// ----------------------------------------------------------------
+// A StatementBlock is a sequence of statements: either the stuff in between
+// (but not including) the curly braces in things like 'if (NR > 2) { $x = 1;
+// $y = 2 }', or, top-level Miller DSL statements like '$x = 1; $y = 2'.
+
+StatementBlock
+
+  // Empty statement. This allows for 'mlr put ""', as well as repeated semicolons.
+  : empty
+    //<< dsl.NewASTNodeZary(nil, dsl.NodeTypeStatementBlock) >>
+
+  | NonEmptyStatementBlock
+    //<< dsl.Wrap($0) >>
+;
+
+// ----------------------------------------------------------------
+// NonEmptyStatementBlock is split out from StatementBlock to avoid LR-1
+// conflicts in parsing things like 'begin {...} x=1; y=2; end{...}' wherein we
+// want to avoid forcing people to type a semicolon after the first closing
+// brace.
+
+NonEmptyStatementBlock
+
+  // Things not ending in a curly brace, like assignments -- and also do-while.
+  : BracelessStatement
+    //<< dsl.NewASTNodeUnary(nil, $0, dsl.NodeTypeStatementBlock) >>
+
+  // So statements can start with a semicolon
+  | ";" StatementBlock
+    //<< dsl.Wrap($1) >>
+
+  // Normal case for sequential statements like '$x=1; $y=2'
+  | BracelessStatement ";" StatementBlock
+    //<<dsl.PrependChild($2, $0) >>
+;
+
+// ================================================================
+// ASSIGNMENT STATEMENTS
+
+BracelessStatement
+  : Assignment
+;
+
+Assignment
+  : Lvalue "=" Rvalue
+    //<< dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeAssignment) >>
+;
+
+Lvalue
+  : LocalVariable
+    //<< dsl.AppendChild($1, $0) >>
+;
+
+// ----------------------------------------------------------------
+LocalVariable
+  : non_sigil_name
+    //<< dsl.NewASTNode($0, dsl.NodeTypeLocalVariable) >>
+;
+
+// ================================================================
+// BEGIN RVALUE OPERATOR-PRECEDENCE CHAIN
+// ================================================================
+
+Rvalue : PrecedenceChainStart ;
+
+PrecedenceChainStart : AddSubTerm ;
+
+AddSubTerm
+  : AddSubTerm "+"  MulDivTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | AddSubTerm "-"  MulDivTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | MulDivTerm
+;
+
+MulDivTerm
+  : MulDivTerm "*"   UnaryOpTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | MulDivTerm "/"   UnaryOpTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | MulDivTerm "%"   UnaryOpTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  | UnaryOpTerm
+;
+
+UnaryOpTerm
+  : "+"  UnaryOpTerm // << dsl.NewASTNodeUnary($0, $1, dsl.NodeTypeOperator) >>
+  | "-"  UnaryOpTerm // << dsl.NewASTNodeUnary($0, $1, dsl.NodeTypeOperator) >>
+  | PowTerm
+;
+
+PowTerm
+  : PrecedenceChainEnd "**" PowTerm
+    // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+
+  // In the Miller-DSL grammar, the leading -/+ isn't part of the int/float token -- it's treated as
+  // a unary operator. (Making it part of the token leads to LR1 conflicts, and is also inelegant.)
+  // However, this means things like '2 ** -3' result in mashup of two operators next to one
+  // another. For '2 + -3' and '2 * -3', this happens fine down the precedence chain since
+  // AddSubTerm and MulDivTerm are above UnaryOpTerm. Since PowTerm is below UnaryOpTerm, though,
+  // we need to be explicit about '2 ** -3' in a way that we do not need to for '2 * -3'.  Also, we
+  // can't use 'PrecedenceChainEnd "**" UnaryOpTerm', as this also results in LR1 conflicts.
+
+  | PrecedenceChainEnd "**" "-" PowTerm
+  // << dsl.NewASTNodeBinary( $1, $0,
+  // dsl.NewASTNodeUnaryNestable( $2, $3, dsl.NodeTypeOperator,), dsl.NodeTypeOperator,)
+  //   >>
+
+  | PrecedenceChainEnd "**" "+" PowTerm
+//    <<
+//      dsl.NewASTNodeBinary(
+//        $1,
+//        $0,
+//        dsl.NewASTNodeUnaryNestable(
+//          $2,
+//          $3,
+//          dsl.NodeTypeOperator,
+//        ),
+//        dsl.NodeTypeOperator,
+//      )
+//    >>
+
+  | PrecedenceChainEnd
+;
+
+// Please Excuse My Dear Aunt Sally! :) We've gotten to the 'P' so we're done
+// with the operator-precedence chain. :)
+
+PrecedenceChainEnd
+  : "(" Rvalue ")"
+  // << dsl.Nestable($1) >>
+;
+
+PrecedenceChainEnd : RHSValue ;
+
+// ================================================================
+// END RVALUE OPERATOR-PRECEDENCE CHAIN
+// ================================================================
+
+// ----------------------------------------------------------------
+RHSValue
+  : LocalVariable
+  | IntLiteral
+;
+
+IntLiteral
+  : int_literal
+    // << dsl.NewASTNode($0, dsl.NodeTypeIntLiteral) >>
+;

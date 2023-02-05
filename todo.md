@@ -1,4 +1,6 @@
 * [x] Markdown defs of simple grammars
+  * [ ] Use AST to do parse-trees
+  * [ ] Move this to `cmd`? How else to import AST from `pgpg` lib?
 * [ ] Lexer
   * [x] Abstract/interface class and datatypes
   * [x] Make sure there's file/line/column info

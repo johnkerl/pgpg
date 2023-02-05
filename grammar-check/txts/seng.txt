@@ -1,0 +1,6 @@
+# SHOULD PASS
+dog eats food
+the brown dog eats the food
+read the green book
+# SHOULD FAIL
+brown the dog eats the food

@@ -1,0 +1,41 @@
+!whitespace : ' ' | '\t' | '\n' | '\r' ;
+!comment : '#'  {.} '\n' ;
+
+Root
+    : NounPhrase TransitiveVerbPhrase NounPhrase
+    | NounPhrase IntransitiveVerbPhrase
+    | ImperativeVerbPhrase NounPhrase
+;
+
+NounPhrase
+    : NounPhraseWithoutArticle
+    | Article NounPhraseWithoutArticle
+;
+
+NounPhraseWithoutArticle
+    : Noun
+    | Adjective NounPhraseWithoutArticle
+;
+
+TransitiveVerbPhrase
+    : TransitiveVerb
+    | Adverb TransitiveVerbPhrase
+;
+
+IntransitiveVerbPhrase
+    : IntransitiveVerb
+    | Adverb IntransitiveVerbPhrase
+;
+
+ImperativeVerbPhrase
+    : ImperativeVerb
+    | Adverb ImperativeVerbPhrase
+;
+
+Noun             : "dog"     | "cat"    | "mouse"  | "food" | "book" ;
+Adjective        : "red"     | "green"  | "brown"  ;
+Article          : "the"     | "a"      ;
+TransitiveVerb   : "goes"    | "puts"   | "eats"   ;
+IntransitiveVerb : "walks"   | "runs"   | "sleeps" ;
+ImperativeVerb   : "go"      | "put"    | "read"   | "eat"  ;
+Adverb           : "quickly" | "slowly" ;

@@ -1,0 +1,21 @@
+_decdig : '0'-'9' ;
+!whitespace : ' ' | '\t' | '\n' | '\r' ;
+!comment : '#'  {.} '\n' ;
+
+int_literal : _decdig { _decdig };
+
+Root
+  : AddTerm
+;
+
+AddTerm
+  : AddTerm "+" MulTerm
+  | MulTerm
+;
+
+MulTerm
+  : MulTerm "*" IntLiteral
+  | IntLiteral
+;
+
+IntLiteral : int_literal;
