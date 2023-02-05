@@ -2,8 +2,8 @@
 * Lexer
   * [x] Abstract/interface class and datatypes
   * [x] Make sure there's file/line/column info
-  * [ ] CLIs for:
-    * [ ] Run a given lexer on given input text and dump out the sequence of tokens
+  * [x] CLIs for:
+    * [x] Run a given lexer on given input text and dump out the sequence of tokens
   * Hand-written lexer impls for simple grammars
     * [x] Canned lexer from a fixed list of strings
     * [x] Rune lexer: every rune is its own token
@@ -17,15 +17,15 @@
     * [ ] VPEMDAS
     * Mods needed:
       * [ ] Standardize to match/accept/backUp/etc standard names as much as possible
-      * [ ] Explicit EOF and error tokens
+      * [x] Explicit EOF and error tokens
       * [ ] Userspace type-codes -- how to handle
         * Some from the inside going out, e.g. hand-written context
         * Some from the outside coming in, e.g. PG context
   * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
-    * [ ] Note `Token` struct will have two strings -- payload, and payload+whitespace ...
+    * [ ] Note that either `Token` struct will have two strings -- payload, and payload+whitespace ...
     * [ ] ... or, there should be a "produce ignore-tokens" bool flag
   * [ ] Config-driven autogen
-  * [ ] Make sure grammar -> lexer build can be done offline or online (the latter without need for process restart)
+  * [ ] Make sure grammar -> lexer build can be done either offline or online (the latter without need for process restart)
 * AST
   * [ ] Adapt from Miller
   * [ ] Unit-test in isolation

@@ -4,51 +4,19 @@
 
 This is add and multiply of integers, with equal precedence.
 
-```
-# Lex
-whitespace: ignored
-number: "[0-9]+"
-
-# Parse
-Term
-    : Number
-    | Number "+" Term
-    | Number "*" Term
-;
-Number: number
-```
+Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf)
 
 ## AMNE
 
 This is add and multiply of integers, with unequal precedence.
 
-```
-# Lex
-whitespace: ignored
-number: "[0-9]+"
+Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf)
 
-# Parse
-Term
-    : MulTerm
-    | Number "+" MulTerm
-;
-MulTerm
-    : Number
-    | Number "*" MulTerm
-;
-Number: number
-```
+## VIC
 
-## VPEMDAS
+Variables-and-integers calculator.
 
-TO DO: type up the grammar.
-
-Examples:
-```
-x = 1 + 2 * 3 # Assign
-x # Evaluate
-y = x + 2 * y
-```
+Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf)
 
 ## SENG
 
@@ -58,24 +26,24 @@ Simple English statements:
 * articles, adjectives, adverbs
 * explicit terminal wordlists -- no morphological type-inference e.g. ends with `-ly` meaning it must be an adverb
 
-TO DO: type up the grammar
+Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf)
 
 Examples:
 
 ```
-Dog eats food.
-The dog eats the food.
-The brown dog tastes the very new food.
-Take the old book.
-# _Maybe_ conjunctions at higher and lower levels: _
-Take the old book and read it.
-Take the green and grey book.
+dog eats food
+the dog eats the food
+the brown dog tastes the very new food
+take the old book
+# _maybe_ conjunctions at higher and lower levels: _
+take the old book and read it.
+take the green and grey book.
 ```
 
 ## CSV/DKVP
 
-Comma-separated and DKVP files (Miller).
+[Comma-separated-value](https://miller.readthedocs.io/en/latest/file-formats/#csvtsvasvusvetc) and [DKVP](https://miller.readthedocs.io/en/latest/file-formats/#dkvp-key-value-pairs) files (Miller).
 
 ## Miller DSL
 
-This is an ultimate goal.
+This is an ultimate goal. Grammar: [https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf](https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf).
