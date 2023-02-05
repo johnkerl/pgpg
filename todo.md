@@ -7,16 +7,23 @@
   * Hand-written lexer impls for simple grammars
     * [x] Canned lexer from a fixed list of strings
     * [x] Rune lexer: every rune is its own token
-    * [ ] Line lexer: every line is its own token
+    * [x] Line lexer: every line is its own token
     * [ ] Word lexer: delimit by whitespace
-      * Includes SENG
-    * [ ] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
+    * [x] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
     * [ ] Scale-test everything for perf early on -- especially channel-switching
+    * [ ] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
     * [ ] AME
     * [ ] AMNE
     * [ ] VPEMDAS
+    * Mods needed:
+      * [ ] Standardize to match/accept/backUp/etc standard names as much as possible
+      * [ ] Explicit EOF and error tokens
+      * [ ] Userspace type-codes -- how to handle
+        * Some from the inside going out, e.g. hand-written context
+        * Some from the outside coming in, e.g. PG context
   * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
-    * [ ] Note `Token` struct will have two strings -- payload, and payload+whitespace
+    * [ ] Note `Token` struct will have two strings -- payload, and payload+whitespace ...
+    * [ ] ... or, there should be a "produce ignore-tokens" bool flag
   * [ ] Config-driven autogen
   * [ ] Make sure grammar -> lexer build can be done offline or online (the latter without need for process restart)
 * AST
