@@ -1,9 +1,9 @@
-package lex
+package lexers
 
 import (
 	"errors"
 
-	"github.com/johnkerl/pgpg/pkg/types"
+	"github.com/johnkerl/pgpg/pkg/tokens"
 	"github.com/johnkerl/pgpg/pkg/util"
 )
 
@@ -12,7 +12,7 @@ type CannedTextLexer struct {
 	outputs  []string
 	position int
 
-	tokenLocation *types.TokenLocation
+	tokenLocation *tokens.TokenLocation
 }
 
 func NewCannedTextLexer(text string) *CannedTextLexer {
@@ -20,15 +20,15 @@ func NewCannedTextLexer(text string) *CannedTextLexer {
 	return &CannedTextLexer{
 		outputs:  outputs,
 		position: 0,
-		tokenLocation: types.NewTokenLocation(1, 1),
+		tokenLocation: tokens.NewTokenLocation(1, 1),
 	}
 }
 
-func (lxr *CannedTextLexer) Scan() (token *types.Token, err error) {
+func (lxr *CannedTextLexer) Scan() (token *tokens.Token, err error) {
 	if lxr.position >= len(lxr.outputs) {
 		return nil, errors.New("input exhausted")
 	}
-	retval := types.NewToken(lxr.outputs[lxr.position], lxr.tokenLocation)
+	retval := tokens.NewToken(lxr.outputs[lxr.position], lxr.tokenLocation)
 	lxr.position++
 	lxr.tokenLocation.ColumnNumber++
 	return retval, nil

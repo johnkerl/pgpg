@@ -2,6 +2,8 @@
 * [ ] Lexer
   * [x] Abstract/interface class and datatypes
   * [x] Make sure there's file/line/column info
+  * [ ] CLIs for:
+    * [ ] Run a given lexer on given input text and dump out the sequence of tokens
   * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
     * [ ] Note `Token` struct will have two strings -- payload, and payload+whitespace
   * [ ] Hand-written lexer impls for simple grammars
@@ -23,3 +25,6 @@
 
 * [ ] Where (which `README.md` etc) to note this is all UTF-8
 * [ ] Credits
+  * The Dragon book
+  * goccmack/gocc
+  * https://go.dev/talks/2011/lex.slide#19

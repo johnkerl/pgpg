@@ -2,7 +2,7 @@
 // Print routines for AST and ASTNode
 // ================================================================
 
-package ast
+package asts
 
 import (
 	"fmt"

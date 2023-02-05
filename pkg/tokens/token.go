@@ -1,4 +1,4 @@
-package types
+package tokens
 
 // Token tracks a single lexeme as well as where it was found within the source text.
 type Token struct {

@@ -1,4 +1,4 @@
-package lex
+package lexers
 
 import (
 	"testing"

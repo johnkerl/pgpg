@@ -2,10 +2,10 @@
 // AST-build methods
 // ================================================================
 
-package ast
+package asts
 
 import (
-	"github.com/johnkerl/pgpg/pkg/types"
+	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
 // ----------------------------------------------------------------
@@ -21,9 +21,9 @@ func NewASTNode(itok interface{}) *ASTNode {
 }
 
 func NewASTNodeNestable(itok interface{}) *ASTNode {
-	var tok *types.Token = nil
+	var tok *tokens.Token = nil
 	if itok != nil {
-		tok = itok.(*types.Token)
+		tok = itok.(*tokens.Token)
 	}
 	return &ASTNode{
 		Token: tok,

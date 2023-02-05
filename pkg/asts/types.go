@@ -2,10 +2,10 @@
 // AST and ASTNode data structures
 // ================================================================
 
-package ast
+package asts
 
 import (
-	"github.com/johnkerl/pgpg/pkg/types"
+	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
 // ----------------------------------------------------------------
@@ -15,7 +15,7 @@ type AST struct {
 
 // ----------------------------------------------------------------
 type ASTNode struct {
-	Token    *types.Token // Nil for tokenless/structural nodes
+	Token    *tokens.Token // Nil for tokenless/structural nodes
 	// TODO
 	// Type     TNodeType
 	Children []*ASTNode
