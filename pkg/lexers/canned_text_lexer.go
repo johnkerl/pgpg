@@ -13,7 +13,7 @@ type CannedTextLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewCannedTextLexer(text string) *CannedTextLexer {
+func NewCannedTextLexer(text string) AbstractLexer {
 	outputs := util.SplitString(text, " ")
 	return &CannedTextLexer{
 		outputs:       outputs,

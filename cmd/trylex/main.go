@@ -7,11 +7,46 @@ import (
 	"github.com/johnkerl/pgpg/pkg/lexers"
 )
 
+type lexerMaker func(string) lexers.AbstractLexer
+type lexerInfoT struct {
+	maker lexerMaker
+	help  string
+}
+
+var lexerMakerTable = map[string]lexerInfoT{
+	"canned": lexerInfoT{lexers.NewCannedTextLexer, "Does string-split on the input at startup."},
+	"rune":   lexerInfoT{lexers.NewRuneLexer, "Each UTF-8 character is its own token."},
+	"line":   lexerInfoT{lexers.NewLineLexer, "Each line of text is its own token. Carriage returns are not delivered."},
+	//"line": lexers.NewLineLexer,
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} {one or more strings to lex ...}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Lexer names:\n")
+	for name, maker := range lexerMakerTable {
+		fmt.Fprintf(os.Stderr, "  %-10s %s\n", name, maker.help)
+	}
+	os.Exit(1)
+}
+
 func main() {
-	lexer := lexers.NewCannedTextLexer("the quick brown fox jumped over the lazy dogs")
-	err := lexers.Run(lexer)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	if len(os.Args) < 3 {
+		usage()
+	}
+	lexerName := os.Args[1]
+
+	lexerInfo, ok := lexerMakerTable[lexerName]
+	if !ok {
+		usage()
+	}
+	lexerMaker := lexerInfo.maker
+
+	for _, arg := range os.Args[2:] {
+		lexer := lexerMaker(arg)
+		err := lexers.Run(lexer)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 }

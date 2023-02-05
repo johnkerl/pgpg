@@ -13,7 +13,7 @@ type RuneLexer struct {
 	tokenLocation   *tokens.TokenLocation
 }
 
-func NewRuneLexer(inputText string) *RuneLexer {
+func NewRuneLexer(inputText string) AbstractLexer {
 	return &RuneLexer{
 		inputText:       inputText,
 		inputLength:     len(inputText),

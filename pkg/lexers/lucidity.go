@@ -13,7 +13,12 @@ func Run(lxr AbstractLexer) error {
 		if token == nil {
 			break // EOF
 		}
-		fmt.Printf("TOKEN: %s\n", string(token.Lexeme)) // TODO: token.String()
+		fmt.Printf(
+			"Line %d column %d token %s\n",
+			token.Location.LineNumber,
+			token.Location.ColumnNumber,
+			string(token.Lexeme),
+		) // TODO: token.String()
 	}
 	return nil
 }
