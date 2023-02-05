@@ -4,6 +4,12 @@ package tokens
 type Token struct {
 	Lexeme string
 	// TODO: type-inference -- need to figure out the API
+
+	// TODO: we want internal types like TokenTypeError and TokenTypeEOF, but also
+	// external types like whatever the caller has from their grammar.
+
+	// Maybe have the internal types have codes -1 and -2, say, and user-defined types
+	// all be non-negative -- ?
 	Location TokenLocation
 }
 

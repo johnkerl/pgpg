@@ -1,7 +1,8 @@
 # This must remain the first target in this file, which is what 'make' with no
 # arguments will run.
 build:
-	go build github.com/johnkerl/pgpg/cmd/temp
+	go build github.com/johnkerl/pgpg/cmd/tryast
+	go build github.com/johnkerl/pgpg/cmd/trylex
 
 check:
 	go test github.com/johnkerl/pgpg/...

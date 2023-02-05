@@ -1,8 +1,6 @@
 package lexers
 
 import (
-	"errors"
-
 	"github.com/johnkerl/pgpg/pkg/tokens"
 	"github.com/johnkerl/pgpg/pkg/util"
 )
@@ -26,7 +24,7 @@ func NewCannedTextLexer(text string) *CannedTextLexer {
 
 func (lxr *CannedTextLexer) Scan() (token *tokens.Token, err error) {
 	if lxr.position >= len(lxr.outputs) {
-		return nil, errors.New("input exhausted")
+		return nil, nil
 	}
 	retval := tokens.NewToken(lxr.outputs[lxr.position], lxr.tokenLocation)
 	lxr.position++

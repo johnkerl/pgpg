@@ -1,5 +1,5 @@
 * [x] Markdown defs of simple grammars
-* [ ] Lexer
+* Lexer
   * [x] Abstract/interface class and datatypes
   * [x] Make sure there's file/line/column info
   * [ ] CLIs for:
@@ -9,10 +9,10 @@
   * [ ] Hand-written lexer impls for simple grammars
   * [ ] Config-driven autogen
   * [ ] Make sure grammar -> lexer build can be done offline or online (the latter without need for process restart)
-* [ ] AST
+* AST
   * [ ] Adapt from Miller
   * [ ] Unit-test in isolation
-* [ ] Parser
+* Parser
   * [ ] Abstract/interface class
   * [ ] Hand-written recursive-descent impls for simple grammars
   * [ ] Connect to AST populate
@@ -27,4 +27,4 @@
 * [ ] Credits
   * The Dragon book
   * goccmack/gocc
-  * https://go.dev/talks/2011/lex.slide#19
+  * https://go.dev/talks/2011/lex.slide#1

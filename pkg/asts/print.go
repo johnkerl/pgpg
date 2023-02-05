@@ -56,7 +56,7 @@ func (node *ASTNode) printAux(depth int) {
 	tok := node.Token
 	// TODO fmt.Print("* " + node.Type)
 	if tok != nil {
-		fmt.Printf(" \"%s\"", string(tok.Lexeme))
+		fmt.Printf("\"%s\"", string(tok.Lexeme))
 	}
 	fmt.Println()
 

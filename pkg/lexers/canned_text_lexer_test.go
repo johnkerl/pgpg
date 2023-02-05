@@ -12,7 +12,7 @@ func TestCannedTextLexer1(t *testing.T) {
 
 	token, err := lexer.Scan()
 	assert.Nil(t, token)
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 }
 
 // ----------------------------------------------------------------
@@ -33,5 +33,5 @@ func TestCannedTextLexer2(t *testing.T) {
 
 	token, err = lexer.Scan()
 	assert.Nil(t, token)
-	assert.NotNil(t, err)
+	assert.Nil(t, err)
 }
