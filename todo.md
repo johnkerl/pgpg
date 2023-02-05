@@ -10,11 +10,11 @@
     * [x] Line lexer: every line is its own token
     * [x] Word lexer: delimit by whitespace
     * [x] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
-    * [ ] Scale-test everything for perf early on -- especially channel-switching
-    * [ ] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
     * [ ] AME
     * [ ] AMNE
-    * [ ] VPEMDAS
+    * [ ] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
+    * [ ] VIC
+    * [ ] Scale-test everything for perf early on -- especially channel-switching
     * Mods needed:
       * [ ] Standardize to match/accept/backUp/etc standard names as much as possible
       * [x] Explicit EOF and error tokens
@@ -46,8 +46,6 @@
   * goccmack/gocc
   * https://go.dev/talks/2011/lex.slide#1
 
-* Top:
-  * VPEMDAS -> VAIC
-  * Types
-  * EOF/ERROR types
-  * AME
+* Needs CI!
+  * For current Go
+  * For TBD Python

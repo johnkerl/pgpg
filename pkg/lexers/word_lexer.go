@@ -28,7 +28,7 @@ func NewWordLexer(inputText string) AbstractLexer {
 	return &WordLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
-		tokenLocation: tokens.NewDefaultTokenLocation(),
+		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
@@ -44,7 +44,6 @@ func (lexer *WordLexer) Scan() (token *tokens.Token) {
 	// TODO: some trace-mode to optionally narrate this
 	lexer.ignoreNextRunesIf(unicode.IsSpace)
 	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-		// TODO: define and return EOF token
 		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 
@@ -66,7 +65,7 @@ func (lexer *WordLexer) Scan() (token *tokens.Token) {
 
 func (lexer *WordLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
 	// TODO explicit EOF handling
-	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
+	r, runeWidth := lexer.peekRune()
 
 	if predicate(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)

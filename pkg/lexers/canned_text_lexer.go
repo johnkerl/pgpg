@@ -11,7 +11,8 @@ const (
 	CannedTextLexerTypeWord = 1
 )
 
-// CannedTextLexer is primarily for unit-test purposes
+// CannedTextLexer is primarily for unit-test purposes.
+// Unlike in WordLexer, here multiple spaces aren't the same as one space.
 type CannedTextLexer struct {
 	outputs  []string
 	position int
@@ -24,7 +25,7 @@ func NewCannedTextLexer(text string) AbstractLexer {
 	return &CannedTextLexer{
 		outputs:       outputs,
 		position:      0,
-		tokenLocation: tokens.NewDefaultTokenLocation(),
+		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 

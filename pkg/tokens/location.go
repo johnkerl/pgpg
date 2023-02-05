@@ -10,8 +10,8 @@ type TokenLocation struct {
 	ByteOffset   int
 }
 
-// NewDefaultTokenLocation is the normal use-case for a lexer starting at the beginning of input text.
-func NewDefaultTokenLocation() *TokenLocation {
+// NewTokenLocation is the normal use-case for a lexer starting at the beginning of input text.
+func NewTokenLocation() *TokenLocation {
 	return &TokenLocation{
 		LineNumber:   1,
 		ColumnNumber: 1,
@@ -19,8 +19,8 @@ func NewDefaultTokenLocation() *TokenLocation {
 	}
 }
 
-// NewTokenLocation is intended for unit-test scenarios.
-func NewTokenLocation(lineNumber int, columnNumber int) *TokenLocation {
+// NewNonDefaultTokenLocation is intended for unit-test scenarios.
+func NewNonDefaultTokenLocation(lineNumber int, columnNumber int) *TokenLocation {
 	return &TokenLocation{
 		LineNumber:   lineNumber,
 		ColumnNumber: columnNumber,

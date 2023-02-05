@@ -33,8 +33,8 @@ func parseOne(input string) {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s immed 'expression ...'\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s file  {one or more file names}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s expr 'expression ...'\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s file {one or more file names}\n", os.Args[0])
 	os.Exit(1)
 }
 
@@ -42,7 +42,7 @@ func main() {
 	if len(os.Args) < 2 {
 		usage()
 	}
-	if os.Args[1] == "immed" {
+	if os.Args[1] == "expr" {
 		text := strings.Join(os.Args[2:], " ")
 		parseOne(text)
 	} else if os.Args[1] == "file" {

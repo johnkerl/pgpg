@@ -4,19 +4,19 @@
 
 This is add and multiply of integers, with equal precedence.
 
-Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf)
+GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf)
 
 ## AMNE
 
 This is add and multiply of integers, with unequal precedence.
 
-Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf)
+GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf)
 
 ## VIC
 
 Variables-and-integers calculator.
 
-Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf)
+GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf)
 
 ## SENG
 
@@ -26,7 +26,7 @@ Simple English statements:
 * articles, adjectives, adverbs
 * explicit terminal wordlists -- no morphological type-inference e.g. ends with `-ly` meaning it must be an adverb
 
-Grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf)
+GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf)
 
 Examples:
 
@@ -46,4 +46,4 @@ take the green and grey book.
 
 ## Miller DSL
 
-This is an ultimate goal. Grammar: [https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf](https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf).
+This is an ultimate goal. GOCC grammar: [https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf](https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf).

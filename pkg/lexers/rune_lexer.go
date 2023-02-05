@@ -22,7 +22,7 @@ func NewRuneLexer(inputText string) AbstractLexer {
 	return &RuneLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
-		tokenLocation: tokens.NewDefaultTokenLocation(),
+		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
@@ -32,7 +32,6 @@ func (lexer *RuneLexer) Scan() (token *tokens.Token) {
 	}
 
 	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
-	lexer.tokenLocation.ByteOffset += runeWidth
 
 	retval := tokens.NewToken(
 		[]rune{r},
@@ -40,12 +39,7 @@ func (lexer *RuneLexer) Scan() (token *tokens.Token) {
 		lexer.tokenLocation,
 	)
 
-	if r == '\n' {
-		lexer.tokenLocation.LineNumber++
-		lexer.tokenLocation.ColumnNumber = 1
-	} else {
-		lexer.tokenLocation.ColumnNumber++
-	}
+	lexer.tokenLocation.LocateRune(r, runeWidth)
 
 	return retval
 }

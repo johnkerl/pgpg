@@ -7,9 +7,6 @@ import (
 func Run(lexer AbstractLexer) error {
 	for {
 		token := lexer.Scan()
-		if token.IsEOF() {
-			break
-		}
 		desc, err := lexer.DecodeType(token.Type)
 		if err != nil {
 			return err
@@ -23,7 +20,7 @@ func Run(lexer AbstractLexer) error {
 			token.Type,
 			string(token.Lexeme),
 		)
-		if token.IsError() {
+		if token.IsEOF() || token.IsError() {
 			break
 		}
 	}
