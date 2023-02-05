@@ -45,3 +45,9 @@
   * The Dragon book
   * goccmack/gocc
   * https://go.dev/talks/2011/lex.slide#1
+
+* Top:
+  * VPEMDAS -> VAIC
+  * Types
+  * EOF/ERROR types
+  * AME
