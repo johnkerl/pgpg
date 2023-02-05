@@ -13,23 +13,21 @@ const wordLexerInitialCapacity = 1024
 // Given this, "Hello, world!" would split to "Hello," and "world!" -- there is no special handling
 // for punctuation in this lexer.
 type WordLexer struct {
-	inputText       string
-	inputLength     int
-	currentPosition int
-	tokenLocation   *tokens.TokenLocation
+	inputText     string
+	inputLength   int
+	tokenLocation *tokens.TokenLocation
 }
 
 func NewWordLexer(inputText string) AbstractLexer {
 	return &WordLexer{
-		inputText:       inputText,
-		inputLength:     len(inputText),
-		currentPosition: 0,
-		tokenLocation:   tokens.NewTokenLocation(1, 1),
+		inputText:     inputText,
+		inputLength:   len(inputText),
+		tokenLocation: tokens.NewDefaultTokenLocation(),
 	}
 }
 
 func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
-	if lexer.currentPosition >= lexer.inputLength {
+	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 		// TODO: define and return EOF token
 		return nil, nil
 	}
@@ -40,7 +38,7 @@ func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
 
 	// TODO: some trace-mode to optionally narrate this
 	lexer.ignoreNextRunesIf(unicode.IsSpace)
-	if lexer.currentPosition >= lexer.inputLength {
+	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 		// TODO: define and return EOF token
 		return nil, nil
 	}
@@ -48,7 +46,7 @@ func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
 	startLocation := *lexer.tokenLocation
 	runes := make([]rune, 0, wordLexerInitialCapacity)
 
-	for lexer.currentPosition < lexer.inputLength {
+	for lexer.tokenLocation.ByteOffset < lexer.inputLength {
 		r := lexer.readRune()
 		if unicode.IsSpace(r) {
 			break
@@ -63,10 +61,10 @@ func (lexer *WordLexer) Scan() (token *tokens.Token, err error) {
 
 func (lexer *WordLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
 	// TODO explicit EOF handling
-	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.currentPosition:])
+	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
 
 	if predicate(r) {
-		lexer.locateRune(r, runeWidth)
+		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return true
 	} else {
 		return false
@@ -83,24 +81,13 @@ func (lexer *WordLexer) ignoreNextRunesIf(predicate runePredicateFunc) {
 
 // peekRune gets the next rune from the input without updating location information.
 func (lexer *WordLexer) peekRune() (rune, int) {
-	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.currentPosition:])
+	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
 	return r, runeWidth
 }
 
 // readRune gets the next rune from the input and updates location information.
 func (lexer *WordLexer) readRune() rune {
 	r, runeWidth := lexer.peekRune()
-	lexer.locateRune(r, runeWidth)
+	lexer.tokenLocation.LocateRune(r, runeWidth)
 	return r
-}
-
-// locateRune updates line/column number information for an accepted rune.
-func (lexer *WordLexer) locateRune(r rune, runeWidth int) {
-	if r == '\n' {
-		lexer.tokenLocation.LineNumber++
-		lexer.tokenLocation.ColumnNumber = 1
-	} else {
-		lexer.tokenLocation.ColumnNumber++
-	}
-	lexer.currentPosition += runeWidth
 }

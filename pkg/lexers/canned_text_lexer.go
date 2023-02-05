@@ -18,7 +18,7 @@ func NewCannedTextLexer(text string) AbstractLexer {
 	return &CannedTextLexer{
 		outputs:       outputs,
 		position:      0,
-		tokenLocation: tokens.NewTokenLocation(1, 1),
+		tokenLocation: tokens.NewDefaultTokenLocation(),
 	}
 }
 

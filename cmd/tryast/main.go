@@ -7,7 +7,7 @@ import (
 
 func main() {
 	node := asts.NewASTNodeBinaryNestable(
-		tokens.NewToken([]rune("+"), tokens.NewTokenLocation(1, 1)),
+		tokens.NewToken([]rune("+"), tokens.NewTokenLocation(1, 2)),
 		asts.NewASTNode(tokens.NewToken([]rune("a"), tokens.NewTokenLocation(1, 1))),
 		asts.NewASTNode(tokens.NewToken([]rune("b"), tokens.NewTokenLocation(1, 3))),
 	)

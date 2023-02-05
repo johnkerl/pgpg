@@ -7,29 +7,27 @@ import (
 
 // RuneLexer is primarily for unit-test purposes. Every rune is its own token.
 type RuneLexer struct {
-	inputText       string
-	inputLength     int
-	currentPosition int
-	tokenLocation   *tokens.TokenLocation
+	inputText     string
+	inputLength   int
+	tokenLocation *tokens.TokenLocation
 }
 
 func NewRuneLexer(inputText string) AbstractLexer {
 	return &RuneLexer{
-		inputText:       inputText,
-		inputLength:     len(inputText),
-		currentPosition: 0,
-		tokenLocation:   tokens.NewTokenLocation(1, 1),
+		inputText:     inputText,
+		inputLength:   len(inputText),
+		tokenLocation: tokens.NewDefaultTokenLocation(),
 	}
 }
 
 func (lexer *RuneLexer) Scan() (token *tokens.Token, err error) {
-	if lexer.currentPosition >= lexer.inputLength {
+	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 		// TODO: define and return EOF token
 		return nil, nil
 	}
 
-	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.currentPosition:])
-	lexer.currentPosition += runeWidth
+	r, runeWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset:])
+	lexer.tokenLocation.ByteOffset += runeWidth
 
 	retval := tokens.NewToken([]rune{r}, lexer.tokenLocation)
 
