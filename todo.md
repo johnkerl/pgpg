@@ -1,6 +1,4 @@
 * [x] Markdown defs of simple grammars
-  * [ ] Use AST to do parse-trees
-  * [ ] Move this to `cmd`? How else to import AST from `pgpg` lib?
 * [ ] Lexer
   * [x] Abstract/interface class and datatypes
   * [x] Make sure there's file/line/column info
@@ -11,6 +9,7 @@
   * [ ] Make sure grammar -> lexer build can be done offline or online (the latter without need for process restart)
 * [ ] AST
   * [ ] Adapt from Miller
+  * [ ] Unit-test in isolation
 * [ ] Parser
   * [ ] Abstract/interface class
   * [ ] Hand-written recursive-descent impls for simple grammars
@@ -23,5 +22,4 @@
   * [ ] Iterate on PGs per se
 
 * [ ] Where (which `README.md` etc) to note this is all UTF-8
-* [ ] What things to move from internal to external (everything?)
 * [ ] Credits
