@@ -8,7 +8,7 @@
     * [x] Canned lexer from a fixed list of strings
     * [x] Rune lexer: every rune is its own token
     * [x] Line lexer: every line is its own token
-    * [ ] Word lexer: delimit by whitespace
+    * [x] Word lexer: delimit by whitespace
     * [x] Make an argv1-switching lex-runner w/ from-text or from-file for various lexers
     * [ ] Scale-test everything for perf early on -- especially channel-switching
     * [ ] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?

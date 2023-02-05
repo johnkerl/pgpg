@@ -17,12 +17,14 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"canned": lexerInfoT{lexers.NewCannedTextLexer, "Does string-split on the input at startup."},
 	"rune":   lexerInfoT{lexers.NewRuneLexer, "Each UTF-8 character is its own token."},
 	"line":   lexerInfoT{lexers.NewLineLexer, "Each line of text is its own token. Carriage returns are not delivered."},
-	//"line": lexers.NewLineLexer,
+	"word":   lexerInfoT{lexers.NewWordLexer, "Each run of non-whitespace text is its own token. Whitespace is not delivered."},
 }
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} {one or more strings to lex ...}\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "Lexer names:\n")
+	// TODO: this prints in random hashmap order :(
+	// Use sort-keys to determinize.
 	for name, maker := range lexerMakerTable {
 		fmt.Fprintf(os.Stderr, "  %-10s %s\n", name, maker.help)
 	}

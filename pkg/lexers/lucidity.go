@@ -14,7 +14,7 @@ func Run(lxr AbstractLexer) error {
 			break // EOF
 		}
 		fmt.Printf(
-			"Line %d column %d token %s\n",
+			"Line %d column %d token <<%s>>\n",
 			token.Location.LineNumber,
 			token.Location.ColumnNumber,
 			string(token.Lexeme),
