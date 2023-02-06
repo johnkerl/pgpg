@@ -21,21 +21,29 @@ NounPhraseWithoutArticle
 TransitiveVerbPhrase
     : TransitiveVerb
     | Adverb TransitiveVerbPhrase
+    // Shift-reduce conflicts, alas :)
+    // | Adverb TransitiveVerbPhrase Preposition NounPhrase
+    // | TransitiveVerbPhrase Preposition NounPhrase
 ;
 
 IntransitiveVerbPhrase
     : IntransitiveVerb
     | Adverb IntransitiveVerbPhrase
+    | IntransitiveVerb Preposition NounPhrase
 ;
 
 TransitiveImperativeVerbPhrase
     : TransitiveImperativeVerb
     | Adverb TransitiveImperativeVerbPhrase
+    // Shift-reduce conflicts, alas :)
+    // | Adverb TransitiveImperativeVerbPhrase Preposition NounPhrase
+    // | TransitiveImperativeVerbPhrase Preposition NounPhrase
 ;
 
 IntransitiveImperativeVerbPhrase
     : IntransitiveImperativeVerb
     | Adverb IntransitiveImperativeVerbPhrase
+    | IntransitiveImperativeVerb Preposition NounPhrase
 ;
 
 Noun                       : "dog"     | "cat"    | "mouse"  | "fox"    | "food"  | "book" ;
@@ -46,3 +54,4 @@ IntransitiveVerb           : "walks"   | "runs"   | "sleeps" | "jumps";
 TransitiveImperativeVerb   : "put"     | "read"   | "eat"    ;
 IntransitiveImperativeVerb : "go"      | "jump";
 Adverb                     : "quickly" | "slowly" ;
+Preposition                : "under"   | "over" ;

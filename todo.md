@@ -23,7 +23,7 @@
         * Some from the outside coming in, e.g. PG context
   * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
     * [ ] Note that either `Token` struct will have two strings -- payload, and payload+whitespace ...
-    * [ ] ... or, there should be a "produce ignore-tokens" bool flag
+    * [ ] ... or, there should be a "produce ignore-tokens" option
   * [ ] Config-driven autogen
   * [ ] Make sure grammar -> lexer build can be done either offline or online (the latter without need for process restart)
 * AST

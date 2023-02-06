@@ -2,5 +2,7 @@
 dog eats food
 the brown dog eats the food
 read the green book
+the quick brown fox jumps over the lazy dog
+jump over the lazy dog
 # SHOULD FAIL
 brown the dog eats the food

@@ -15,6 +15,7 @@ const (
 	SENGLexerTypeTransitiveImperativeVerb   = 6
 	SENGLexerTypeIntransitiveImperativeVerb = 7
 	SENGLexerTypeAdverb                     = 8
+	SENGLexerTypePreposition                = 9
 )
 
 var sengLexicon = map[string]tokens.TokenType{
@@ -29,6 +30,7 @@ var sengLexicon = map[string]tokens.TokenType{
 	"green": SENGLexerTypeAdjective,
 	"brown": SENGLexerTypeAdjective,
 	"quick": SENGLexerTypeAdjective,
+	"lazy":  SENGLexerTypeAdjective,
 
 	"the": SENGLexerTypeArticle,
 	"a":   SENGLexerTypeArticle,
@@ -52,6 +54,9 @@ var sengLexicon = map[string]tokens.TokenType{
 
 	"quickly": SENGLexerTypeAdverb,
 	"slowly":  SENGLexerTypeAdverb,
+
+	"under": SENGLexerTypePreposition,
+	"over":  SENGLexerTypePreposition,
 }
 
 // SENGLexer is for the SENG grammar. It delegated to the WordLexer, but then augments this
@@ -109,6 +114,8 @@ func (lexer *SENGLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
 		return "intransitive imperative verb", nil
 	case SENGLexerTypeAdverb:
 		return "adverb", nil
+	case SENGLexerTypePreposition:
+		return "preposition", nil
 
 	default:
 		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
