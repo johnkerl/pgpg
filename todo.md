@@ -27,11 +27,12 @@
   * [ ] Config-driven autogen
   * [ ] Make sure grammar -> lexer build can be done either offline or online (the latter without need for process restart)
 * AST
-  * [ ] Adapt from Miller
-  * [ ] Unit-test in isolation
+  * [x] Adapt from Miller
+  * [x] Unit-test in isolation
 * Parser
   * [ ] Abstract/interface class
   * [ ] Hand-written recursive-descent impls for simple grammars
+  * [ ] Hand-written recursive-ascent impls for simple grammars
   * [ ] Connect to AST populate
   * [ ] CLIs for:
     * [ ] Online grammar + string -> AST + pass/fail

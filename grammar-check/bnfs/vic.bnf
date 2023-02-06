@@ -33,10 +33,10 @@ non_sigil_name : _leading_idchar { _idchar } ;
 // ================================================================
 
 // Import the AST/ASTNode types and functions
-// << import "github.com/johnkerl/miller/internal/pkg/dsl" >>
+// << import "github.com/johnkerl/pgpg/pkg/ast" >>
 
 // ================================================================
-// TOP-LEVEL PRODUCTION RULE FOR THE MILLER DSL
+// TOP-LEVEL PRODUCTION RULE
 
 // ----------------------------------------------------------------
 Root
@@ -45,10 +45,6 @@ Root
 ;
 
 // ----------------------------------------------------------------
-// A StatementBlock is a sequence of statements: either the stuff in between
-// (but not including) the curly braces in things like 'if (NR > 2) { $x = 1;
-// $y = 2 }', or, top-level Miller DSL statements like '$x = 1; $y = 2'.
-
 StatementBlock
 
   // Empty statement. This allows for 'mlr put ""', as well as repeated semicolons.
@@ -134,7 +130,7 @@ PowTerm
   : PrecedenceChainEnd "**" PowTerm
     // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
 
-  // In the Miller-DSL grammar, the leading -/+ isn't part of the int/float token -- it's treated as
+  // The leading -/+ isn't part of the int/float token -- it's treated as
   // a unary operator. (Making it part of the token leads to LR1 conflicts, and is also inelegant.)
   // However, this means things like '2 ** -3' result in mashup of two operators next to one
   // another. For '2 + -3' and '2 * -3', this happens fine down the precedence chain since
