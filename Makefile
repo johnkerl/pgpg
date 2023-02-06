@@ -3,6 +3,7 @@
 build:
 	go build github.com/johnkerl/pgpg/cmd/tryast
 	go build github.com/johnkerl/pgpg/cmd/trylex
+	go build github.com/johnkerl/pgpg/cmd/tryparse
 
 check:
 	go test github.com/johnkerl/pgpg/...

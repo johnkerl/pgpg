@@ -35,6 +35,22 @@ func NewASTNodeNestable(itok interface{}) *ASTNode {
 	}
 }
 
+// Signature: Token
+// Holdover from my experience with GOCC; will almost certainly change.
+func NewASTNodeZaryNestable(itok interface{}) *ASTNode {
+	parent := NewASTNodeNestable(itok)
+	convertToZary(parent)
+	return parent
+}
+
+// Signature: Token
+// Holdover from my experience with GOCC; will almost certainly change.
+func NewASTNodeZary(
+	itok interface{},
+) (*ASTNode, error) {
+	return NewASTNodeZaryNestable(itok), nil
+}
+
 // Signature: Token Node Node Type
 // Holdover from my experience with GOCC; will almost certainly change.
 func NewASTNodeBinaryNestable(itok, childA, childB interface{}) *ASTNode {
@@ -49,6 +65,13 @@ func NewASTNodeBinary(
 	itok, childA, childB interface{},
 ) (*ASTNode, error) {
 	return NewASTNodeBinaryNestable(itok, childA, childB), nil
+}
+
+// Holdover from my experience with GOCC; will almost certainly change.
+func convertToZary(iparent interface{}) {
+	parent := iparent.(*ASTNode)
+	children := make([]*ASTNode, 0)
+	parent.Children = children
 }
 
 // Holdover from my experience with GOCC; will almost certainly change.
