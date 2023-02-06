@@ -82,3 +82,7 @@ func convertToBinary(iparent interface{}, childA, childB interface{}) {
 	children[1] = childB.(*ASTNode)
 	parent.Children = children
 }
+
+func (node *ASTNode) AddChild(child *ASTNode) {
+	node.Children = append(node.Children, child)
+}
