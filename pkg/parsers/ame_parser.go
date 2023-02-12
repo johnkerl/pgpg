@@ -70,8 +70,8 @@ func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
 		return nil, errors.New(string(parser.currentToken.Lexeme))
 	}
 
-	// The entire expression is a single number
 	if parser.currentToken.IsEOF() {
+		// The entire expression is a single number
 		node := asts.NewASTNodeZaryNestable(previousToken) // TODO: type
 		if err != nil {
 			return nil, err

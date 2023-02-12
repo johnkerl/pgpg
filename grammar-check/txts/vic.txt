@@ -1,2 +1,7 @@
+# SHOULD PASS
 x = 1
 x = 1 + 2
+1 + 2
+x
+# SHOULD FAIL
++ x x

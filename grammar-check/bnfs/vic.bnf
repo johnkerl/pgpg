@@ -26,109 +26,71 @@ int_literal
 // ----------------------------------------------------------------
 // VARIABLES
 
-non_sigil_name : _leading_idchar { _idchar } ;
+variable_name : _leading_idchar { _idchar } ;
 
 // ================================================================
 // SYNTAX ELEMENTS
 // ================================================================
 
-// Import the AST/ASTNode types and functions
-// << import "github.com/johnkerl/pgpg/pkg/ast" >>
-
-// ================================================================
-// TOP-LEVEL PRODUCTION RULE
-
 // ----------------------------------------------------------------
 Root
   : StatementBlock
-   //<< dsl.NewAST($0) >>
 ;
 
 // ----------------------------------------------------------------
 StatementBlock
 
-  // Empty statement. This allows for 'mlr put ""', as well as repeated semicolons.
-  : empty
-    //<< dsl.NewASTNodeZary(nil, dsl.NodeTypeStatementBlock) >>
-
-  | NonEmptyStatementBlock
-    //<< dsl.Wrap($0) >>
-;
-
-// ----------------------------------------------------------------
-// NonEmptyStatementBlock is split out from StatementBlock to avoid LR-1
-// conflicts in parsing things like 'begin {...} x=1; y=2; end{...}' wherein we
-// want to avoid forcing people to type a semicolon after the first closing
-// brace.
-
-NonEmptyStatementBlock
-
-  // Things not ending in a curly brace, like assignments -- and also do-while.
-  : BracelessStatement
-    //<< dsl.NewASTNodeUnary(nil, $0, dsl.NodeTypeStatementBlock) >>
+  : Statement
 
   // So statements can start with a semicolon
   | ";" StatementBlock
-    //<< dsl.Wrap($1) >>
 
   // Normal case for sequential statements like '$x=1; $y=2'
-  | BracelessStatement ";" StatementBlock
-    //<<dsl.PrependChild($2, $0) >>
+  | Statement ";" StatementBlock
 ;
 
-// ================================================================
-// ASSIGNMENT STATEMENTS
-
-BracelessStatement
+Statement
   : Assignment
+  | Evaluation
 ;
 
 Assignment
-  : Lvalue "=" Rvalue
-    //<< dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeAssignment) >>
+  : variable_name "=" Rvalue
 ;
 
-Lvalue
-  : LocalVariable
-    //<< dsl.AppendChild($1, $0) >>
+Evaluation
+  : Rvalue
 ;
 
 // ----------------------------------------------------------------
-LocalVariable
-  : non_sigil_name
-    //<< dsl.NewASTNode($0, dsl.NodeTypeLocalVariable) >>
-;
-
-// ================================================================
 // BEGIN RVALUE OPERATOR-PRECEDENCE CHAIN
-// ================================================================
+// ----------------------------------------------------------------
 
 Rvalue : PrecedenceChainStart ;
 
 PrecedenceChainStart : AddSubTerm ;
 
 AddSubTerm
-  : AddSubTerm "+"  MulDivTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
-  | AddSubTerm "-"  MulDivTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  : AddSubTerm "+" MulDivTerm
+  | AddSubTerm "-" MulDivTerm
   | MulDivTerm
 ;
 
 MulDivTerm
-  : MulDivTerm "*"   UnaryOpTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
-  | MulDivTerm "/"   UnaryOpTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
-  | MulDivTerm "%"   UnaryOpTerm // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
+  : MulDivTerm "*" UnaryOpTerm
+  | MulDivTerm "/" UnaryOpTerm
+  | MulDivTerm "%" UnaryOpTerm
   | UnaryOpTerm
 ;
 
 UnaryOpTerm
-  : "+"  UnaryOpTerm // << dsl.NewASTNodeUnary($0, $1, dsl.NodeTypeOperator) >>
-  | "-"  UnaryOpTerm // << dsl.NewASTNodeUnary($0, $1, dsl.NodeTypeOperator) >>
+  : "+"  UnaryOpTerm
+  | "-"  UnaryOpTerm
   | PowTerm
 ;
 
 PowTerm
   : PrecedenceChainEnd "**" PowTerm
-    // << dsl.NewASTNodeBinary($1, $0, $2, dsl.NodeTypeOperator) >>
 
   // The leading -/+ isn't part of the int/float token -- it's treated as
   // a unary operator. (Making it part of the token leads to LR1 conflicts, and is also inelegant.)
@@ -139,23 +101,8 @@ PowTerm
   // can't use 'PrecedenceChainEnd "**" UnaryOpTerm', as this also results in LR1 conflicts.
 
   | PrecedenceChainEnd "**" "-" PowTerm
-  // << dsl.NewASTNodeBinary( $1, $0,
-  // dsl.NewASTNodeUnaryNestable( $2, $3, dsl.NodeTypeOperator,), dsl.NodeTypeOperator,)
-  //   >>
 
   | PrecedenceChainEnd "**" "+" PowTerm
-//    <<
-//      dsl.NewASTNodeBinary(
-//        $1,
-//        $0,
-//        dsl.NewASTNodeUnaryNestable(
-//          $2,
-//          $3,
-//          dsl.NodeTypeOperator,
-//        ),
-//        dsl.NodeTypeOperator,
-//      )
-//    >>
 
   | PrecedenceChainEnd
 ;
@@ -165,22 +112,10 @@ PowTerm
 
 PrecedenceChainEnd
   : "(" Rvalue ")"
-  // << dsl.Nestable($1) >>
+  | variable_name
+  | int_literal
 ;
-
-PrecedenceChainEnd : RHSValue ;
-
-// ================================================================
-// END RVALUE OPERATOR-PRECEDENCE CHAIN
-// ================================================================
 
 // ----------------------------------------------------------------
-RHSValue
-  : LocalVariable
-  | IntLiteral
-;
-
-IntLiteral
-  : int_literal
-    // << dsl.NewASTNode($0, dsl.NodeTypeIntLiteral) >>
-;
+// END RVALUE OPERATOR-PRECEDENCE CHAIN
+// ----------------------------------------------------------------
