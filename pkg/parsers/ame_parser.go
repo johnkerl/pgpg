@@ -19,7 +19,7 @@ import (
 
 type AMEParser struct {
 	lexer        lexers.AbstractLexer
-	currentToken *tokens.Token
+	lookaheadToken *tokens.Token
 }
 
 func NewAMEParser() AbstractParser {
@@ -38,15 +38,15 @@ func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
 
 func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
 	// TODO: helper somehow
-	parser.currentToken = parser.lexer.Scan()
-	if parser.currentToken.IsError() {
-		return nil, errors.New(string(parser.currentToken.Lexeme))
+	parser.lookaheadToken = parser.lexer.Scan()
+	if parser.lookaheadToken.IsError() {
+		return nil, errors.New(string(parser.lookaheadToken.Lexeme))
 	}
-	if parser.currentToken.IsEOF() {
+	if parser.lookaheadToken.IsEOF() {
 		return nil, errors.New("AMEParser: no token found in input")
 	}
 
-	actualDesc, err := parser.lexer.DecodeType(parser.currentToken.Type)
+	actualDesc, err := parser.lexer.DecodeType(parser.lookaheadToken.Type)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
 		return nil, err
 	}
 
-	if parser.currentToken.Type != lexers.AMLexerTypeNumber {
+	if parser.lookaheadToken.Type != lexers.AMLexerTypeNumber {
 		return nil, fmt.Errorf(
 			"AMEParser: initial token was of type %s; expected %s",
 			actualDesc,
@@ -64,15 +64,15 @@ func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
 	}
 
 	// TODO: helper somehow
-	previousToken := parser.currentToken
-	parser.currentToken = parser.lexer.Scan()
-	if parser.currentToken.IsError() {
-		return nil, errors.New(string(parser.currentToken.Lexeme))
+	acceptedToken := parser.lookaheadToken
+	parser.lookaheadToken = parser.lexer.Scan()
+	if parser.lookaheadToken.IsError() {
+		return nil, errors.New(string(parser.lookaheadToken.Lexeme))
 	}
 
-	if parser.currentToken.IsEOF() {
+	if parser.lookaheadToken.IsEOF() {
 		// The entire expression is a single number
-		node := asts.NewASTNodeZaryNestable(previousToken) // TODO: type
+		node := asts.NewASTNodeZaryNestable(acceptedToken) // TODO: type
 		if err != nil {
 			return nil, err
 		}
@@ -81,8 +81,8 @@ func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
 
 	// Make a binary node with parent being the plus or times operator, the left child being the
 	// previous token, and the right child being TBD.
-	parent := asts.NewASTNodeZaryNestable(parser.currentToken) // TODO: type
-	leftChild := asts.NewASTNodeZaryNestable(previousToken)    // TODO: type
+	parent := asts.NewASTNodeZaryNestable(parser.lookaheadToken) // TODO: type
+	leftChild := asts.NewASTNodeZaryNestable(acceptedToken)    // TODO: type
 	rightChild, err := parser.parseAux()
 	if err != nil {
 		return nil, err

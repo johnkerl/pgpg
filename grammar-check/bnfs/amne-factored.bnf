@@ -1,0 +1,29 @@
+_decdig : '0'-'9' ;
+!whitespace : ' ' | '\t' | '\n' | '\r' ;
+!comment : '#'  {.} '\n' ;
+
+int_literal : _decdig { _decdig };
+plus: '+';
+times: '*';
+
+Root
+  : Sum
+;
+
+Sum
+  : Product RestOfSum
+;
+
+RestOfSum
+  : plus Product RestOfSum
+  | empty
+;
+
+Product:
+  : int_literal RestOfProduct
+;
+
+RestOfProduct
+  : times int_literal RestOfProduct
+  | empty
+;

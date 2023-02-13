@@ -7,15 +7,15 @@ plus: '+';
 times: '*';
 
 Root
-  : AddTerm
+  : Sum
 ;
 
-AddTerm
-  : AddTerm plus MulTerm
-  | MulTerm
+Sum
+  : Sum plus Product
+  | Product
 ;
 
-MulTerm
-  : MulTerm times int_literal
+Product
+  : Product times int_literal
   | int_literal
 ;
