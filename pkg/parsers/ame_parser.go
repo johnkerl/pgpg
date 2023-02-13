@@ -6,7 +6,6 @@ import (
 
 	"github.com/johnkerl/pgpg/pkg/asts"
 	"github.com/johnkerl/pgpg/pkg/lexers"
-	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
 // Grammar:
@@ -18,8 +17,7 @@ import (
 // ;
 
 type AMEParser struct {
-	lexer        lexers.AbstractLexer
-	lookaheadToken *tokens.Token
+	lexer *lexers.LookaheadLexer
 }
 
 func NewAMEParser() AbstractParser {
@@ -28,34 +26,34 @@ func NewAMEParser() AbstractParser {
 
 // My goal (not the only possible goal): map input string -> tokens -> AST
 func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = lexers.NewAMLexer(inputText)
-	rootNode, err := parser.parseAux()
+	parser.lexer = lexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
+	rootNode, err := parser.parseSumOrProduct()
 	if err != nil {
 		return nil, err
 	}
 	return asts.NewAST(rootNode), nil
 }
 
-func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
-	// TODO: helper somehow
-	parser.lookaheadToken = parser.lexer.Scan()
-	if parser.lookaheadToken.IsError() {
-		return nil, errors.New(string(parser.lookaheadToken.Lexeme))
+func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode, error) {
+	lookaheadToken := parser.lexer.LookAhead()
+
+	// TODO: methodize
+	if lookaheadToken.IsError() {
+		return nil, errors.New(string(lookaheadToken.Lexeme))
 	}
-	if parser.lookaheadToken.IsEOF() {
+	if lookaheadToken.IsEOF() {
 		return nil, errors.New("AMEParser: no token found in input")
 	}
 
-	actualDesc, err := parser.lexer.DecodeType(parser.lookaheadToken.Type)
-	if err != nil {
-		return nil, err
-	}
-	expectedDesc, err := parser.lexer.DecodeType(lexers.AMLexerTypeNumber)
-	if err != nil {
-		return nil, err
-	}
-
-	if parser.lookaheadToken.Type != lexers.AMLexerTypeNumber {
+	if lookaheadToken.Type != lexers.AMLexerTypeNumber {
+		actualDesc, err := parser.lexer.DecodeType(lookaheadToken.Type)
+		if err != nil {
+			return nil, err
+		}
+		expectedDesc, err := parser.lexer.DecodeType(lexers.AMLexerTypeNumber)
+		if err != nil {
+			return nil, err
+		}
 		return nil, fmt.Errorf(
 			"AMEParser: initial token was of type %s; expected %s",
 			actualDesc,
@@ -63,27 +61,23 @@ func (parser *AMEParser) parseAux() (*asts.ASTNode, error) {
 		)
 	}
 
-	// TODO: helper somehow
-	acceptedToken := parser.lookaheadToken
-	parser.lookaheadToken = parser.lexer.Scan()
-	if parser.lookaheadToken.IsError() {
-		return nil, errors.New(string(parser.lookaheadToken.Lexeme))
+	acceptedToken := parser.lexer.Advance()
+	opToken := parser.lexer.Advance()
+	if opToken.IsError() {
+		return nil, errors.New(string(opToken.Lexeme))
 	}
 
-	if parser.lookaheadToken.IsEOF() {
+	if opToken.IsEOF() {
 		// The entire expression is a single number
 		node := asts.NewASTNodeZaryNestable(acceptedToken) // TODO: type
-		if err != nil {
-			return nil, err
-		}
 		return node, nil
 	}
 
 	// Make a binary node with parent being the plus or times operator, the left child being the
 	// previous token, and the right child being TBD.
-	parent := asts.NewASTNodeZaryNestable(parser.lookaheadToken) // TODO: type
-	leftChild := asts.NewASTNodeZaryNestable(acceptedToken)    // TODO: type
-	rightChild, err := parser.parseAux()
+	parent := asts.NewASTNodeZaryNestable(opToken)   // TODO: type
+	leftChild := asts.NewASTNodeZaryNestable(acceptedToken) // TODO: type
+	rightChild, err := parser.parseSumOrProduct()
 	if err != nil {
 		return nil, err
 	}

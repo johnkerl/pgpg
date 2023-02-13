@@ -15,6 +15,7 @@ type parserInfoT struct {
 
 var parserMakerTable = map[string]parserInfoT{
 	"ame": parserInfoT{parsers.NewAMEParser, "Integers with + and * at equal precedence."},
+	"amne": parserInfoT{parsers.NewAMNEParser, "Integers with + and * at unequal precedence."},
 }
 
 func usage() {

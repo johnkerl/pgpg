@@ -44,6 +44,7 @@
 * Infra:
   * AST to-string factored out of printer
     * Use for UT
+  * ame/amne UT
   * Wrap lexers in LA1 and LA2 etc for lookahead level:
     * Hide direct calls to Scan
     * `.First()`

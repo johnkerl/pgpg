@@ -1,5 +1,9 @@
 package tokens
 
+import (
+	"fmt"
+)
+
 type TokenType int
 
 // These token-types are common to all lexers. Then, any given lexer impl will have its own
@@ -53,4 +57,14 @@ func (token *Token) IsEOF() bool {
 // IsEOF is a keystroke-saver for determining if a token's type is Error.
 func (token *Token) IsError() bool {
 	return token.Type == TokenTypeError
+}
+
+func (token Token) String() string {
+	return fmt.Sprintf(
+		"token=<<%s>> type=%d line=%d column=%d",
+		string(token.Lexeme),
+		token.Type,
+		token.Location.LineNumber,
+		token.Location.ColumnNumber,
+	)
 }
