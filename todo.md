@@ -41,6 +41,15 @@
     * [ ] Linked-in grammar + string -> AST + pass/fail
   * [ ] Iterate on PGs per se
 
+* Infra:
+  * AST to-string factored out of printer
+    * Use for UT
+  * Wrap lexers in LA1 and LA2 etc for lookahead level:
+    * Hide direct calls to Scan
+    * `.First()`
+    * `.Second()`
+    * `.Advance()`
+
 * [ ] Where (which `README.md` etc) to note this is all UTF-8
 * [ ] Credits
   * The Dragon book
