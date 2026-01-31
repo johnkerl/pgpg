@@ -89,11 +89,11 @@ that can later be turned into language-specific code.
 Generate IR from a tiny arithmetic grammar:
 
 ```
-pgpg bnf-to-ir examples/arith.bnf > examples/arith.out.json
+./pgpg bnf-to-ir examples/arith.bnf > examples/arith.out.json
 ```
 
 Generate a stub parser from a minimal IR with embedded tables:
 
 ```
-pgpg ir-to-go examples/minimal.json --out /tmp/miniparser
+./pgpg ir-to-go --out /tmp/miniparser examples/minimal.json
 ```
