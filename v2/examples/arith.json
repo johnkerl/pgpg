@@ -4,8 +4,8 @@
     "start_symbol": "expr",
     "rules": [
       { "lhs": "expr", "rhs": [ "term" ] },
-      { "lhs": "expr", "rhs": [ "expr", "+", "term" ] }, {
-        "lhs": "term", "rhs": [ "factor" ] },
+      { "lhs": "expr", "rhs": [ "expr", "+", "term" ] },
+      { "lhs": "term", "rhs": [ "factor" ] },
       { "lhs": "term", "rhs": [ "term", "*", "factor" ] },
       { "lhs": "factor", "rhs": [ "NUMBER" ] },
       { "lhs": "factor", "rhs": [ "(", "expr", ")" ] }
