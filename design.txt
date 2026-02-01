@@ -1,0 +1,168 @@
+================================================================
+@ Input files: things to be parsed into ASTs, given a .bnf or .ibnf file
+  o Really trivial grammars like 'S -> x', 'S -> S x'
+  o AME
+  * AMNE
+  * IPEMDAS
+  o VIC
+  o SENG
+  o *.mlr
+  o *.csv
+  o *.dkvp
+  o ...
+
+================================================================
+@ BNF files
+  o List of token-types for error detection
+  o List of tokens for the lexer
+  o List of production rules for the parser: using the PGPG AST language
+  o With AST-construction instructions:
+    x [No]  I guess the target language needs to be the one from the <<...>> in the BNF?
+    x [No]  What if there are no << ... >> -- option to have default actions which is AST creation? But why?
+    - [Yes] I think I want a simple AST-construction language here -- for example:
+
+      Sum: Left "+" Right { :type operator :token $1 :children $0 $2 };
+
+      Op:  Left "+" Right { :type operator :token $1 :children $0 $2 }
+         | Left "-" Right { :type operator :token $1 :children $0 $2 };
+
+      Op: ABC | DEF;
+
+================================================================
+@ IBNF files (JSON)
+  ! Maybe a light reformatting of .bnf
+  ! Maybe I should start with tools to read .ibnf, and only later make BNF-to-IBNF -- maybe boostrap :D
+
+  o Maybe:
+
+    {
+      "Sum" : [
+        {
+          "pattern": ["Left", "literal:+", "Right"],
+          "ast": {
+            "type": "operator",
+            "token": 1,
+            "children": [ 0, 2 ]
+          }
+        }
+      ],
+      "Difference" : [
+        {
+          "pattern": ["Left", "literal:-", "Right"],
+          "ast": {
+            "type": "operator",
+            "token": 1,
+            "children": [ 0, 2 ]
+          }
+        }
+      ]
+    }
+
+    {
+      "Op" : [
+        { "pattern": ["ABC"]},
+        { "pattern": ["DEF"]}
+      ]
+    }
+
+  o Version
+  o Lexer
+    - Patterns ...
+  o Parser
+    - Start symbol
+    - Productions
+  o Metadata for source .bnf
+
+================================================================
+~ Tool to read .bnf file and write .ibnf file
+
+================================================================
+@ IREP: intermediate file format for all the lookup-table business
+  o Lexer action table
+  o Lexer transition table
+  o Parser action table
+    - Make sure this handles sparsity
+  o Parser goto table
+    - Make sure this handles sparsity
+  o Parser productions table
+
+================================================================
+@ AST files (JSON)
+
+o Node:
+  - Node type
+  - Token text
+  - Meta: [file]/line/pos
+  - Children (arity)
+
+----------------------------------------------------------------
+Input "1 + 2" and IPEMDAS grammar maps to:
+
+{ "type": "operator", "token": "+", "children":
+  [
+    { "type": "number", "token": "1" },
+    { "type": "number", "token": "2" }
+  ]
+}
+
+-- or (much more compact) --
+
+[ "operator", "+", 
+  [
+    [ "number", "1" ],
+    [ "number", "2" ]
+  ]
+]
+
+-- or (with metadata)
+
+[ "operator", "+", [0, 2],
+  [
+    [ "number", "1", [0, 0] ],
+    [ "number", "2", [0, 4] ]
+  ]
+]
+
+----------------------------------------------------------------
+Input "1*2 + 3*4" and IPEMDAS grammar maps to:
+
+[ "operator", "+", 
+  [ "operator", "*", [
+    [ "number", "1" ],
+    [ "number", "2" ]
+  ],
+  [ "operator", "*", [
+    [ "number", "3" ],
+    [ "number", "4" ]
+  ]
+]
+
+================================================================
+~ AST-walker libraries for various languages
+  o Go first; Python, JS
+
+  o From-JSON and to-JSON
+
+  o Printers:
+    - Multi-line with indent
+    - Single-line with sexp
+
+  o Constructors:
+    - From terminal
+    - From children
+    - From pass-through: e.g. X: A|B|C then don't make x->a but just a
+    - Ignore/no-op -- useful for dev and other things? Also, for handling comments.
+
+================================================================
+~ Tool to just run a lexer
+  Make sure there is support somehow for lex-only grammars
+
+~ Tool to turn IREP into language-dependent data structures and code
+  Generate Go first; maybe Python, JS
+
+~ Tools to take codegen + input and make ASTs
+
+~ Example tools that take ASTs and do things with them:
+  o Arithmetic computation for IPEMDAS
+  o REPL for VIC
+  o Data transformation for CSV/DKVP

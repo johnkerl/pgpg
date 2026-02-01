@@ -12,6 +12,10 @@ This is add and multiply of integers, with unequal precedence.
 
 GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf)
 
+## PEMDAS
+
+Arithmetic with PEMDAS rules.
+
 ## VIC
 
 Variables-and-integers calculator.

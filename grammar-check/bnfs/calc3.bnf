@@ -24,7 +24,7 @@ int_literal
 << import "github.com/johnkerl/miller/internal/pkg/dsl" >>
 
 // ================================================================
-// TOP-LEVEL PRODUCTION RULE FOR THE MILLER DSL
+// TOP-LEVEL PRODUCTION RULE
 
 // ----------------------------------------------------------------
 Root

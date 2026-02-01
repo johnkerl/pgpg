@@ -24,13 +24,7 @@ int_literal
 << import "github.com/johnkerl/miller/internal/pkg/dsl" >>
 
 // ================================================================
-// TOP-LEVEL PRODUCTION RULE FOR THE MILLER DSL
-
-// ----------------------------------------------------------------
-Root
-  : Rvalue
-   << dsl.NewAST($0) >>
-;
+Root : Rvalue << dsl.NewAST($0) >> ;
 
 Rvalue : PrecedenceChainStart ;
 
@@ -49,11 +43,11 @@ MulDivTerm
   | RHSValue
 ;
 
-// ================================================================
-// END RVALUE OPERATOR-PRECEDENCE CHAIN
-// ================================================================
-
 // ----------------------------------------------------------------
+// END RVALUE OPERATOR-PRECEDENCE CHAIN
+// ----------------------------------------------------------------
+
+// ================================================================
 RHSValue
   : int_literal
     << dsl.NewASTNode($0, dsl.NodeTypeIntLiteral) >>
