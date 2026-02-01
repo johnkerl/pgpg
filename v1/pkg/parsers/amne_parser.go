@@ -66,47 +66,46 @@ func (parser *AMNEParser) Parse(inputText string) (*asts.AST, error) {
 
 // ----------------------------------------------------------------
 func (parser *AMNEParser) parseSum() (*asts.ASTNode, error) {
-
-	// TODO:
 	// Sum : Product RestOfSum ;
-
-	//    if (parser.lookaheadToken == lexers.AMLexerTypePlus) {
-	//        if err := parser.getAndValidateLookaheadToken(); err != nil {
-	//            return err
-	//        }
-	//    }
-	//    if err := parser.parseProduct(); err != nil {
-	//        return nil, err
-	//    }
-	//    while (parser.lookaheadToken == lexers.AMLexerTypePlus) {
-	//        nextsym();
-	//        err := parser.getAndValidateLookaheadToken()
-	//        if err != nil {
-	//            return err
-	//        }
-	//        parser.parseProduct();
-	//    }
-	return nil, errors.New("unimpl")
+	left, err := parser.parseProduct()
+	if err != nil {
+		return nil, err
+	}
+	return parser.parseRestOfSum(left)
 }
 
 // ----------------------------------------------------------------
-func (parser *AMNEParser) parseRestOfSum() (*asts.ASTNode, error) {
-	// TODO:
+func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, error) {
 	// RestOfSum
 	//   : plus Product RestOfSum
 	//   | empty
 	// ;
-	return nil, errors.New("unimpl")
+	accepted, opToken, err := parser.accept(lexers.AMLexerTypePlus)
+	if err != nil {
+		return nil, err
+	}
+	if !accepted {
+		return left, nil // empty production rule
+	}
+
+	right, err := parser.parseProduct()
+	if err != nil {
+		return nil, err
+	}
+	parent := asts.NewASTNodeBinaryNestable(opToken, left, right)
+	return parser.parseRestOfSum(parent)
 }
 
 // ----------------------------------------------------------------
 func (parser *AMNEParser) parseProduct() (*asts.ASTNode, error) {
-	// TODO:
 	// Product
 	//   : int_literal RestOfProduct
-	//   | empty
 	// ;
-	return nil, errors.New("unimpl")
+	left, err := parser.parseIntLiteral()
+	if err != nil {
+		return nil, err
+	}
+	return parser.parseRestOfProduct(left)
 }
 
 // ----------------------------------------------------------------
@@ -115,17 +114,21 @@ func (parser *AMNEParser) parseProduct() (*asts.ASTNode, error) {
 //     : times int_literal RestOfProduct
 //     | empty
 //   ;
-func (parser *AMNEParser) parseRestOfProduct() (*asts.ASTNode, error) {
-	accepted, _, err := parser.accept(lexers.AMLexerTypeTimes)
+func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode, error) {
+	accepted, opToken, err := parser.accept(lexers.AMLexerTypeTimes)
 	if err != nil {
 		return nil, err
 	}
-	if accepted {
-		return nil, errors.New("needs binary") // TODO: new binary
-	} else {
-		return nil, nil // empty production rule
+	if !accepted {
+		return left, nil // empty production rule
 	}
-	return nil, errors.New("unimpl")
+
+	right, err := parser.parseIntLiteral()
+	if err != nil {
+		return nil, err
+	}
+	parent := asts.NewASTNodeBinaryNestable(opToken, left, right)
+	return parser.parseRestOfProduct(parent)
 }
 
 // ----------------------------------------------------------------
@@ -138,8 +141,6 @@ func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode, error) {
 		return nil, errors.New("syntax error: expected int literal; got " + token.String())
 	}
 }
-
-// ----------------------------------------------------------------
 
 func (parser *AMNEParser) accept(tokenType tokens.TokenType) (bool, *tokens.Token, error) {
 	lookaheadToken := parser.lexer.LookAhead()
