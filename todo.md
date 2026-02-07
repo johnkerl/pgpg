@@ -18,9 +18,9 @@
   * [ ] VIC
   * [ ] Scale-test everything for perf early on -- especially channel-switching
   * Mods needed:
-    * [ ] Standardize to match/accept/backUp/etc standard names as much as possible
+    * [x] Standardize to match/accept/backUp/etc standard names as much as possible
     * [x] Explicit EOF and error tokens
-    * [ ] Userspace type-codes -- how to handle
+    * [x] Userspace type-codes -- how to handle
       * Some from the inside going out, e.g. hand-written context
       * Some from the outside coming in, e.g. PG context
 * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
@@ -36,12 +36,12 @@
 
 # Parser
 
-* [ ] Abstract/interface class
-* [ ] Hand-written recursive-descent impls for simple grammars
+* [x] Abstract/interface class
+* [x] Hand-written recursive-descent impls for simple grammars
 * [ ] Hand-written recursive-ascent impls for simple grammars
-* [ ] Connect to AST populate
+* [x] Connect to AST populate
 * [ ] CLIs for:
-  * [ ] Online grammar + string -> AST + pass/fail
+  * [x] Online grammar + string -> AST + pass/fail
   * [ ] Offline grammar -> intermediate representation
   * [ ] Precomputed grammar + string -> AST + pass/fail
   * [ ] Linked-in grammar + string -> AST + pass/fail
@@ -63,7 +63,7 @@
 # [ ] Credits
 
 * The Dragon book
-* goccmack/gocc
+* https://github.com/goccmack/gocc
 * https://go.dev/talks/2011/lex.slide#1
 * Cursor
 
