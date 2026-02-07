@@ -50,9 +50,10 @@ func (node *ASTNode[T]) printAux(depth int) {
 
 	// Token text (if non-nil) and token type
 	tok := node.Token
-	// TODO fmt.Print("* " + node.Type)
 	if tok != nil {
-		fmt.Printf("\"%s\" (%s)", (*tok).LexemeText(), (*tok).TokenTypeText())
+		fmt.Printf("\"%s\" [tt:%s] [nt:%s]", (*tok).LexemeText(), (*tok).TokenTypeText(), node.Type)
+	} else {
+		fmt.Printf("[nt:%s]", node.Type)
 	}
 	fmt.Println()
 

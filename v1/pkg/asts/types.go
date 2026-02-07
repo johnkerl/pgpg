@@ -15,8 +15,8 @@ type AST[T TokenLike] struct {
 }
 
 type ASTNode[T TokenLike] struct {
-	Token *T // Nil for tokenless/structural nodes
-	Type     TNodeType
+	Token    *T // Nil for tokenless/structural nodes
+	Type     NodeType
 	Children []*ASTNode[T]
 }
 
