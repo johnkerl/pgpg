@@ -92,7 +92,7 @@ func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, err
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNodeBinaryNestable(opToken, left, right)
+	parent := asts.NewASTNode(opToken, []interface{}{left, right})
 	return parser.parseRestOfSum(parent)
 }
 
@@ -127,7 +127,7 @@ func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode,
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNodeBinaryNestable(opToken, left, right)
+	parent := asts.NewASTNode(opToken, []interface{}{left, right})
 	return parser.parseRestOfProduct(parent)
 }
 
@@ -135,7 +135,7 @@ func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode,
 func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode, error) {
 	accepted, token, err := parser.accept(lexers.AMLexerTypeNumber)
 	if accepted && err == nil {
-		return asts.NewASTNode(token), nil
+		return asts.NewASTNode(token, nil), nil
 
 	} else {
 		return nil, errors.New("syntax error: expected int literal; got " + token.String())

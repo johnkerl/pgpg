@@ -69,20 +69,18 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode, error) {
 
 	if opToken.IsEOF() {
 		// The entire expression is a single number
-		node := asts.NewASTNodeZaryNestable(acceptedToken) // TODO: type
+		node := asts.NewASTNode(acceptedToken, nil) // TODO: type
 		return node, nil
 	}
 
 	// Make a binary node with parent being the plus or times operator, the left child being the
 	// previous token, and the right child being TBD.
-	parent := asts.NewASTNodeZaryNestable(opToken)   // TODO: type
-	leftChild := asts.NewASTNodeZaryNestable(acceptedToken) // TODO: type
 	rightChild, err := parser.parseSumOrProduct()
 	if err != nil {
 		return nil, err
 	}
-	parent.AddChild(leftChild)
-	parent.AddChild(rightChild)
+	leftChild := asts.NewASTNode(acceptedToken, nil) // TODO: type
+	parent := asts.NewASTNode(opToken, []interface{}{leftChild, rightChild}) // TODO: type
 
 	return parent, nil
 }

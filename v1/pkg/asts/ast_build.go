@@ -5,6 +5,8 @@
 package asts
 
 import (
+	"fmt"
+
 	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
@@ -26,7 +28,7 @@ func NewAST(iroot interface{}) *AST {
 // literal.)
 func NewASTNode(
 	itok interface{},
-	nodeType TNodeType,
+	// nodeType TNodeType,
 	children []interface{},
 ) *ASTNode {
 
@@ -36,8 +38,8 @@ func NewASTNode(
 	}
 
 	node := &ASTNode{
-		Token:    tok,
-		Type:     nodeType,
+		Token: tok,
+		// Type:     nodeType,
 		Children: nil,
 	}
 
@@ -53,14 +55,14 @@ func NewASTNode(
 	return node
 }
 
-func NewASTNodeTerminal(itok interface{}, nodeType TNodeType) *ASTNode {
+func NewASTNodeTerminal(itok interface{} /*nodeType TNodeType*/) *ASTNode {
 	var tok *tokens.Token = nil
 	if itok != nil {
 		tok = itok.(*tokens.Token)
 	}
 	return &ASTNode{
-		Token:    tok,
-		Type:     nodeType,
+		Token: tok,
+		// Type:     nodeType,
 		Children: nil,
 	}
 }
@@ -121,10 +123,10 @@ func (node *ASTNode) CheckArity(
 // since nothing is actually spelled like that in the DSL.
 func NewASTToken(iliteral interface{}, iclonee interface{}) *tokens.Token {
 	literal := iliteral.(string)
-	clonee := iclonee.(*tokens.Token)
+	// clonee := iclonee.(*tokens.Token)
 	return &tokens.Token{
-		Type: clonee.Type,
-		Lit:  []byte(literal),
-		Pos:  clonee.Pos,
+		// Type: clonee.Type,
+		Lexeme: []rune(literal),
+		// Position: clonee.Position,
 	}
 }
