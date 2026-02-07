@@ -100,7 +100,7 @@ func (lexer *PEMDASLexer) Scan() (token *tokens.Token) {
 
 	} else {
 		return tokens.NewErrorToken(
-			fmt.Sprintf("PEMDAS lexer: unrecognized token %c (%d)", r, r),
+			fmt.Sprintf("PEMDAS lexer: unrecognized token %q (%U)", r, r),
 			lexer.tokenLocation,
 		)
 	}
