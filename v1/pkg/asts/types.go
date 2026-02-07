@@ -7,6 +7,7 @@ package asts
 // TokenLike is a minimal interface for tokens used in the AST.
 type TokenLike interface {
 	LexemeText() string
+	TokenTypeText() string
 }
 
 type AST[T TokenLike] struct {

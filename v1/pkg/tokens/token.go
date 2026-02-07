@@ -57,3 +57,7 @@ func (token Token) String() string {
 func (token Token) LexemeText() string {
 	return string(token.Lexeme)
 }
+
+func (token Token) TokenTypeText() string {
+	return string(token.Type)
+}
