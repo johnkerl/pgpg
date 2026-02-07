@@ -28,6 +28,10 @@ var parserMakerTable = map[string]parserInfoT{
 		parsers.NewVBCParser,
 		"Boolean expressions with identifiers and AND/OR/NOT.",
 	},
+	"ebnf": parserInfoT{
+		parsers.NewEBNFParser,
+		"EBNF grammar with identifiers, literals, and operators.",
+	},
 }
 
 func usage() {
