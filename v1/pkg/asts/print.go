@@ -52,7 +52,7 @@ func (node *ASTNode[T]) printAux(depth int) {
 	tok := node.Token
 	// TODO fmt.Print("* " + node.Type)
 	if tok != nil {
-		fmt.Printf("\"%s\"", (*tok).LexemeText())
+		fmt.Printf("\"%s\" (%s)", (*tok).LexemeText(), (*tok).TokenTypeText())
 	}
 	fmt.Println()
 
@@ -135,7 +135,7 @@ func (node *ASTNode[T]) printParexOneLineAux() {
 
 // IsLeaf determines if an AST node is a leaf node.
 func (node *ASTNode[T]) IsLeaf() bool {
-	return node.Children == nil || len(node.Children) == 0
+	return len(node.Children) == 0
 }
 
 // ChildrenAreAllLeaves determines if an AST node's children are all leaf nodes.

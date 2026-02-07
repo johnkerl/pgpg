@@ -54,7 +54,7 @@ func main() {
 			os.Exit(1)
 		}
 		// TODO: CLI option
-		// ast.Print()
-		ast.PrintParex()
+		ast.Print()
+		// ast.PrintParex()
 	}
 }
