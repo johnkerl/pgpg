@@ -24,7 +24,6 @@ func NewAMEParser() AbstractParser {
 	return &AMEParser{}
 }
 
-// My goal (not the only possible goal): map input string -> tokens -> AST
 func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
 	parser.lexer = lexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
 	rootNode, err := parser.parseSumOrProduct()

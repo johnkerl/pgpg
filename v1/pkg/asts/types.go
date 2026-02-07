@@ -8,12 +8,10 @@ import (
 	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
-// ----------------------------------------------------------------
 type AST struct {
 	RootNode *ASTNode
 }
 
-// ----------------------------------------------------------------
 type ASTNode struct {
 	Token *tokens.Token // Nil for tokenless/structural nodes
 	// TODO

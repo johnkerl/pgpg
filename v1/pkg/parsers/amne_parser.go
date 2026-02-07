@@ -48,7 +48,6 @@ func NewAMNEParser() AbstractParser {
 	return &AMNEParser{}
 }
 
-// My goal (not the only possible goal): map input string -> tokens -> AST
 func (parser *AMNEParser) Parse(inputText string) (*asts.AST, error) {
 	parser.lexer = lexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
 
@@ -64,7 +63,6 @@ func (parser *AMNEParser) Parse(inputText string) (*asts.AST, error) {
 	return asts.NewAST(rootNode), nil
 }
 
-// ----------------------------------------------------------------
 func (parser *AMNEParser) parseSum() (*asts.ASTNode, error) {
 	// Sum : Product RestOfSum ;
 	left, err := parser.parseProduct()
@@ -74,7 +72,6 @@ func (parser *AMNEParser) parseSum() (*asts.ASTNode, error) {
 	return parser.parseRestOfSum(left)
 }
 
-// ----------------------------------------------------------------
 func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, error) {
 	// RestOfSum
 	//   : plus Product RestOfSum
@@ -96,7 +93,6 @@ func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, err
 	return parser.parseRestOfSum(parent)
 }
 
-// ----------------------------------------------------------------
 func (parser *AMNEParser) parseProduct() (*asts.ASTNode, error) {
 	// Product
 	//   : int_literal RestOfProduct
@@ -108,7 +104,6 @@ func (parser *AMNEParser) parseProduct() (*asts.ASTNode, error) {
 	return parser.parseRestOfProduct(left)
 }
 
-// ----------------------------------------------------------------
 // parseRestOfProduct implements the following production rule:
 //
 //	RestOfProduct
@@ -132,7 +127,6 @@ func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode,
 	return parser.parseRestOfProduct(parent)
 }
 
-// ----------------------------------------------------------------
 func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode, error) {
 	accepted, token, err := parser.accept(lexers.AMLexerTypeNumber)
 	if accepted && err == nil {
