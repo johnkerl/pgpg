@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"io"
 
-	"github.com/johnkerl/pgpgx/grammar"
+	"github.com/johnkerl/pgpg/v2/grammar"
 )
 
 // IR is the language-independent grammar representation.

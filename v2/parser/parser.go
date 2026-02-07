@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/johnkerl/pgpgx/internal/errutil"
-	"github.com/johnkerl/pgpgx/lexer"
+	"github.com/johnkerl/pgpg/v2/internal/errutil"
+	"github.com/johnkerl/pgpg/v2/lexer"
 )
 
 // Result captures parser output and diagnostics.
