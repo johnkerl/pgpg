@@ -6,7 +6,8 @@ build:
 	go build github.com/johnkerl/pgpg/cmd/tryparse
 
 check:
-	go test github.com/johnkerl/pgpg/...
+	#go test github.com/johnkerl/pgpg/...
+	go test ./...
 	
 # ----------------------------------------------------------------
 # Formatting

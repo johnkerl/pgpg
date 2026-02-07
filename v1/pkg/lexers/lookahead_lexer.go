@@ -37,8 +37,3 @@ func (lal *LookaheadLexer) Advance() (token *tokens.Token) {
 	lal.lookToken = lal.underlying.Scan()
 	return currentToken
 }
-
-// DecodeType is a pass-through to the undelying lexer.
-func (lal *LookaheadLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
-	return lal.underlying.DecodeType(tokenType)
-}
