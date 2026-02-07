@@ -44,6 +44,11 @@ type AMNEParser struct {
 	lexer *lexers.LookaheadLexer
 }
 
+const (
+	AMNEParserNodeTypeNumber   asts.NodeType = "number"
+	AMNEParserNodeTypeOperator asts.NodeType = "operator"
+)
+
 func NewAMNEParser() AbstractParser[tokens.Token] {
 	return &AMNEParser{}
 }
@@ -89,7 +94,7 @@ func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode[tokens.Token]) (*ast
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, AMNEParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
 	return parser.parseRestOfSum(parent)
 }
 
@@ -123,14 +128,14 @@ func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode[tokens.Token]) (
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, AMNEParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
 	return parser.parseRestOfProduct(parent)
 }
 
 func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode[tokens.Token], error) {
 	accepted, token, err := parser.accept(lexers.AMLexerTypeNumber)
 	if accepted && err == nil {
-		return asts.NewASTNode(token, nil), nil
+		return asts.NewASTNode(token, AMNEParserNodeTypeNumber, nil), nil
 
 	} else {
 		return nil, errors.New("syntax error: expected int literal; got " + token.String())

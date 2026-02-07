@@ -27,12 +27,12 @@ func NewAST[T TokenLike](root *ASTNode[T]) *AST[T] {
 // literal.)
 func NewASTNode[T TokenLike](
 	tok *T,
-	// nodeType TNodeType,
+	nodeType NodeType,
 	children []*ASTNode[T],
 ) *ASTNode[T] {
 	node := &ASTNode[T]{
-		Token: tok,
-		// Type:     nodeType,
+		Token:    tok,
+		Type:     nodeType,
 		Children: nil,
 	}
 
@@ -44,10 +44,10 @@ func NewASTNode[T TokenLike](
 	return node
 }
 
-func NewASTNodeTerminal[T TokenLike](tok *T /*nodeType TNodeType*/) *ASTNode[T] {
+func NewASTNodeTerminal[T TokenLike](tok *T, nodeType NodeType) *ASTNode[T] {
 	return &ASTNode[T]{
-		Token: tok,
-		// Type:     nodeType,
+		Token:    tok,
+		Type:     nodeType,
 		Children: nil,
 	}
 }

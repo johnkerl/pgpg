@@ -21,6 +21,11 @@ type AMEParser struct {
 	lexer *lexers.LookaheadLexer
 }
 
+const (
+	AMEParserNodeTypeNumber   asts.NodeType = "number"
+	AMEParserNodeTypeOperator asts.NodeType = "operator"
+)
+
 func NewAMEParser() AbstractParser[tokens.Token] {
 	return &AMEParser{}
 }
@@ -70,7 +75,7 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error
 
 	if lookaheadToken.IsEOF() {
 		// The entire expression is a single number
-		node := asts.NewASTNode(acceptedToken, nil) // TODO: type
+		node := asts.NewASTNode(acceptedToken, AMEParserNodeTypeNumber, nil)
 		return node, nil
 	}
 
@@ -94,9 +99,8 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error
 	if err != nil {
 		return nil, err
 	}
-	// TODO: type
-	leftChild := asts.NewASTNode(acceptedToken, nil)
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{leftChild, rightChild})
+	leftChild := asts.NewASTNode(acceptedToken, AMEParserNodeTypeNumber, nil)
+	parent := asts.NewASTNode(opToken, AMEParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{leftChild, rightChild})
 
 	return parent, nil
 }

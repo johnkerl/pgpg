@@ -12,6 +12,11 @@ type PEMDASParser struct {
 	lexer *lexers.LookaheadLexer
 }
 
+const (
+	PEMDASParserNodeTypeNumber   asts.NodeType = "number"
+	PEMDASParserNodeTypeOperator asts.NodeType = "operator"
+)
+
 func NewPEMDASParser() AbstractParser[tokens.Token] {
 	return &PEMDASParser{}
 }
@@ -64,7 +69,7 @@ func (parser *PEMDASParser) parseRestOfSum(left *asts.ASTNode[tokens.Token]) (*a
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
 	return parser.parseRestOfSum(parent)
 }
 
@@ -103,7 +108,7 @@ func (parser *PEMDASParser) parseRestOfProduct(left *asts.ASTNode[tokens.Token])
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
 	return parser.parseRestOfProduct(parent)
 }
 
@@ -135,7 +140,7 @@ func (parser *PEMDASParser) parseRestOfPower(left *asts.ASTNode[tokens.Token]) (
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
 	return parent, nil
 }
 
@@ -160,7 +165,7 @@ func (parser *PEMDASParser) parseUnary() (*asts.ASTNode[tokens.Token], error) {
 		if err != nil {
 			return nil, err
 		}
-		return asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{child}), nil
+		return asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{child}), nil
 	}
 
 	return parser.parsePrimary()
@@ -172,7 +177,7 @@ func (parser *PEMDASParser) parsePrimary() (*asts.ASTNode[tokens.Token], error) 
 		return nil, err
 	}
 	if accepted {
-		return asts.NewASTNode(token, nil), nil
+		return asts.NewASTNode(token, PEMDASParserNodeTypeNumber, nil), nil
 	}
 
 	accepted, _, err = parser.accept(lexers.PEMDASLexerTypeLParen)
