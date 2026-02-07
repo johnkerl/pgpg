@@ -5,7 +5,9 @@
   * AMNE
   * IPEMDAS
   o VIC
+  o VBC
   o SENG
+  o EBNF
   o *.mlr
   o *.csv
   o *.dkvp
