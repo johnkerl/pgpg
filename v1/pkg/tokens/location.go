@@ -1,15 +1,5 @@
 package tokens
 
-// TokenLocation contains information for lexer state, namely the ByteOffset, as well
-// as user-facing information in the form of LineNumber and ColumnNumber.
-// A string FileName is not included -- I feel like this is too bulky to keep this for every single
-// token from a given input file. The filename information should be tracked up a level.
-type TokenLocation struct {
-	LineNumber   int
-	ColumnNumber int
-	ByteOffset   int
-}
-
 // NewTokenLocation is the normal use-case for a lexer starting at the beginning of input text.
 func NewTokenLocation() *TokenLocation {
 	return &TokenLocation{
