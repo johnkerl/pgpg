@@ -5,10 +5,9 @@ import (
 	"os"
 
 	"github.com/johnkerl/pgpg/pkg/parsers"
-	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
-type parserMaker func() parsers.AbstractParser[tokens.Token]
+type parserMaker func() parsers.AbstractParser
 type parserInfoT struct {
 	maker parserMaker
 	help  string

@@ -4,20 +4,16 @@
 
 package asts
 
-// TokenLike is a minimal interface for tokens used in the AST.
-type TokenLike interface {
-	LexemeText() string
-	TokenTypeText() string
+import "github.com/johnkerl/pgpg/pkg/tokens"
+
+type AST struct {
+	RootNode *ASTNode
 }
 
-type AST[T TokenLike] struct {
-	RootNode *ASTNode[T]
-}
-
-type ASTNode[T TokenLike] struct {
-	Token    *T // Nil for tokenless/structural nodes
+type ASTNode struct {
+	Token    *tokens.Token // Nil for tokenless/structural nodes
 	Type     NodeType
-	Children []*ASTNode[T]
+	Children []*ASTNode
 }
 
 type NodeType string

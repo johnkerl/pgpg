@@ -49,11 +49,11 @@ const (
 	AMNEParserNodeTypeOperator asts.NodeType = "operator"
 )
 
-func NewAMNEParser() AbstractParser[tokens.Token] {
+func NewAMNEParser() AbstractParser {
 	return &AMNEParser{}
 }
 
-func (parser *AMNEParser) Parse(inputText string) (*asts.AST[tokens.Token], error) {
+func (parser *AMNEParser) Parse(inputText string) (*asts.AST, error) {
 	parser.lexer = lexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
 
 	rootNode, err := parser.parseSum()
@@ -68,7 +68,7 @@ func (parser *AMNEParser) Parse(inputText string) (*asts.AST[tokens.Token], erro
 	return asts.NewAST(rootNode), nil
 }
 
-func (parser *AMNEParser) parseSum() (*asts.ASTNode[tokens.Token], error) {
+func (parser *AMNEParser) parseSum() (*asts.ASTNode, error) {
 	// Sum : Product RestOfSum ;
 	left, err := parser.parseProduct()
 	if err != nil {
@@ -77,7 +77,7 @@ func (parser *AMNEParser) parseSum() (*asts.ASTNode[tokens.Token], error) {
 	return parser.parseRestOfSum(left)
 }
 
-func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode[tokens.Token]) (*asts.ASTNode[tokens.Token], error) {
+func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, error) {
 	// RestOfSum
 	//   : plus Product RestOfSum
 	//   | empty
@@ -94,11 +94,11 @@ func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode[tokens.Token]) (*ast
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, AMNEParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, AMNEParserNodeTypeOperator, []*asts.ASTNode{left, right})
 	return parser.parseRestOfSum(parent)
 }
 
-func (parser *AMNEParser) parseProduct() (*asts.ASTNode[tokens.Token], error) {
+func (parser *AMNEParser) parseProduct() (*asts.ASTNode, error) {
 	// Product
 	//   : int_literal RestOfProduct
 	// ;
@@ -115,7 +115,7 @@ func (parser *AMNEParser) parseProduct() (*asts.ASTNode[tokens.Token], error) {
 //	  : times int_literal RestOfProduct
 //	  | empty
 //	;
-func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode[tokens.Token]) (*asts.ASTNode[tokens.Token], error) {
+func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode, error) {
 	accepted, opToken, err := parser.accept(lexers.AMLexerTypeTimes)
 	if err != nil {
 		return nil, err
@@ -128,11 +128,11 @@ func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode[tokens.Token]) (
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, AMNEParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, AMNEParserNodeTypeOperator, []*asts.ASTNode{left, right})
 	return parser.parseRestOfProduct(parent)
 }
 
-func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode[tokens.Token], error) {
+func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode, error) {
 	accepted, token, err := parser.accept(lexers.AMLexerTypeNumber)
 	if accepted && err == nil {
 		return asts.NewASTNode(token, AMNEParserNodeTypeNumber, nil), nil

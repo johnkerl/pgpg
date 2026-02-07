@@ -11,7 +11,7 @@ import (
 
 func assertOpNode(
 	t *testing.T,
-	node *asts.ASTNode[tokens.Token],
+	node *asts.ASTNode,
 	expectedType tokens.TokenType,
 	expectedChildren int,
 ) {
@@ -24,7 +24,7 @@ func assertOpNode(
 
 func assertNumberLeaf(
 	t *testing.T,
-	node *asts.ASTNode[tokens.Token],
+	node *asts.ASTNode,
 	expectedLexeme string,
 ) {
 	t.Helper()

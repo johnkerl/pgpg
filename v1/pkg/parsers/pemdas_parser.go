@@ -17,11 +17,11 @@ const (
 	PEMDASParserNodeTypeOperator asts.NodeType = "operator"
 )
 
-func NewPEMDASParser() AbstractParser[tokens.Token] {
+func NewPEMDASParser() AbstractParser {
 	return &PEMDASParser{}
 }
 
-func (parser *PEMDASParser) Parse(inputText string) (*asts.AST[tokens.Token], error) {
+func (parser *PEMDASParser) Parse(inputText string) (*asts.AST, error) {
 	parser.lexer = lexers.NewLookaheadLexer(lexers.NewPEMDASLexer(inputText))
 
 	rootNode, err := parser.parseSum()
@@ -36,7 +36,7 @@ func (parser *PEMDASParser) Parse(inputText string) (*asts.AST[tokens.Token], er
 	return asts.NewAST(rootNode), nil
 }
 
-func (parser *PEMDASParser) parseSum() (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parseSum() (*asts.ASTNode, error) {
 	// Sum : Product RestOfSum ;
 	left, err := parser.parseProduct()
 	if err != nil {
@@ -45,7 +45,7 @@ func (parser *PEMDASParser) parseSum() (*asts.ASTNode[tokens.Token], error) {
 	return parser.parseRestOfSum(left)
 }
 
-func (parser *PEMDASParser) parseRestOfSum(left *asts.ASTNode[tokens.Token]) (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, error) {
 	// RestOfSum
 	//   : plus Product RestOfSum
 	//   | minus Product RestOfSum
@@ -69,11 +69,11 @@ func (parser *PEMDASParser) parseRestOfSum(left *asts.ASTNode[tokens.Token]) (*a
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode{left, right})
 	return parser.parseRestOfSum(parent)
 }
 
-func (parser *PEMDASParser) parseProduct() (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parseProduct() (*asts.ASTNode, error) {
 	// Product : Power RestOfProduct ;
 	left, err := parser.parsePower()
 	if err != nil {
@@ -89,7 +89,7 @@ func (parser *PEMDASParser) parseProduct() (*asts.ASTNode[tokens.Token], error) 
 //	  | divide Power RestOfProduct
 //	  | empty
 //	;
-func (parser *PEMDASParser) parseRestOfProduct(left *asts.ASTNode[tokens.Token]) (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode, error) {
 	accepted, opToken, err := parser.accept(lexers.PEMDASLexerTypeTimes)
 	if err != nil {
 		return nil, err
@@ -108,11 +108,11 @@ func (parser *PEMDASParser) parseRestOfProduct(left *asts.ASTNode[tokens.Token])
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode{left, right})
 	return parser.parseRestOfProduct(parent)
 }
 
-func (parser *PEMDASParser) parsePower() (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parsePower() (*asts.ASTNode, error) {
 	// Power : Unary RestOfPower ;
 	left, err := parser.parseUnary()
 	if err != nil {
@@ -127,7 +127,7 @@ func (parser *PEMDASParser) parsePower() (*asts.ASTNode[tokens.Token], error) {
 //	  : power Power
 //	  | empty
 //	;
-func (parser *PEMDASParser) parseRestOfPower(left *asts.ASTNode[tokens.Token]) (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parseRestOfPower(left *asts.ASTNode) (*asts.ASTNode, error) {
 	accepted, opToken, err := parser.accept(lexers.PEMDASLexerTypePower)
 	if err != nil {
 		return nil, err
@@ -140,11 +140,11 @@ func (parser *PEMDASParser) parseRestOfPower(left *asts.ASTNode[tokens.Token]) (
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{left, right})
+	parent := asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode{left, right})
 	return parent, nil
 }
 
-func (parser *PEMDASParser) parseUnary() (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parseUnary() (*asts.ASTNode, error) {
 	// Unary
 	//   : plus Unary
 	//   | minus Unary
@@ -165,13 +165,13 @@ func (parser *PEMDASParser) parseUnary() (*asts.ASTNode[tokens.Token], error) {
 		if err != nil {
 			return nil, err
 		}
-		return asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{child}), nil
+		return asts.NewASTNode(opToken, PEMDASParserNodeTypeOperator, []*asts.ASTNode{child}), nil
 	}
 
 	return parser.parsePrimary()
 }
 
-func (parser *PEMDASParser) parsePrimary() (*asts.ASTNode[tokens.Token], error) {
+func (parser *PEMDASParser) parsePrimary() (*asts.ASTNode, error) {
 	accepted, token, err := parser.accept(lexers.PEMDASLexerTypeNumber)
 	if err != nil {
 		return nil, err
