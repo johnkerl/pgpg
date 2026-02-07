@@ -4,24 +4,22 @@
 
 package asts
 
-import (
-	"github.com/johnkerl/pgpg/pkg/tokens"
-)
-
-// ----------------------------------------------------------------
-type AST struct {
-	RootNode *ASTNode
+// TokenLike is a minimal interface for tokens used in the AST.
+type TokenLike interface {
+	LexemeText() string
 }
 
-// ----------------------------------------------------------------
-type ASTNode struct {
-	Token *tokens.Token // Nil for tokenless/structural nodes
+type AST[T TokenLike] struct {
+	RootNode *ASTNode[T]
+}
+
+type ASTNode[T TokenLike] struct {
+	Token *T // Nil for tokenless/structural nodes
 	// TODO
 	// Type     TNodeType
-	Children []*ASTNode
+	Children []*ASTNode[T]
 }
 
-//// ----------------------------------------------------------------
 //type TNodeType string
 //const (
 //	NodeTypeTBD TNodeType = "TBD"

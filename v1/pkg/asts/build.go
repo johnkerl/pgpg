@@ -5,84 +5,105 @@
 package asts
 
 import (
+	"fmt"
+
 	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
 // NewAST constructs a new root for the abstract syntax tree.
-// The argument-typing is interface{} as a holdover from my experience with GOCC; this may change.
-func NewAST(iroot interface{}) *AST {
-	return &AST{
-		RootNode: iroot.(*ASTNode),
+// The AST is generic so parsers can use their own token types.
+func NewAST[T TokenLike](root *ASTNode[T]) *AST[T] {
+	return &AST[T]{
+		RootNode: root,
 	}
 }
 
 // NewASTNode constructs a new node for the abstract syntax tree.
-// The argument-typing is interface{}, rather than tokens.Token, as a holdover from my experience
-// with GOCC; this will probably change.
-func NewASTNode(itok interface{}) *ASTNode {
-	return NewASTNodeNestable(itok)
+//
+// The token type is generic to allow different parser token representations.
+//
+// If children is non-nil and length 0, a zary node is created. (Example: a function call with zero
+// arguments.) If children is nil, a terminal node is created. (Example: a string or integer
+// literal.)
+func NewASTNode[T TokenLike](
+	tok *T,
+	// nodeType TNodeType,
+	children []*ASTNode[T],
+) *ASTNode[T] {
+	node := &ASTNode[T]{
+		Token: tok,
+		// Type:     nodeType,
+		Children: nil,
+	}
+
+	if children == nil {
+		return node
+	}
+
+	node.Children = children
+	return node
 }
 
-// Holdover from my experience with GOCC; will almost certainly change.
-func NewASTNodeNestable(itok interface{}) *ASTNode {
-	var tok *tokens.Token = nil
-	if itok != nil {
-		tok = itok.(*tokens.Token)
-	}
-	return &ASTNode{
-		Token:    tok,
+func NewASTNodeTerminal[T TokenLike](tok *T /*nodeType TNodeType*/) *ASTNode[T] {
+	return &ASTNode[T]{
+		Token: tok,
+		// Type:     nodeType,
 		Children: nil,
 	}
 }
 
-// Signature: Token
-// Holdover from my experience with GOCC; will almost certainly change.
-func NewASTNodeZaryNestable(itok interface{}) *ASTNode {
-	parent := NewASTNodeNestable(itok)
-	convertToZary(parent)
-	return parent
+func WithChildPrepended[T TokenLike](parent *ASTNode[T], child *ASTNode[T]) (*ASTNode[T], error) {
+	if parent.Children == nil {
+		parent.Children = []*ASTNode[T]{child}
+	} else {
+		parent.Children = append([]*ASTNode[T]{child}, parent.Children...)
+	}
+	return parent, nil
 }
 
-// Signature: Token
-// Holdover from my experience with GOCC; will almost certainly change.
-func NewASTNodeZary(
-	itok interface{},
-) (*ASTNode, error) {
-	return NewASTNodeZaryNestable(itok), nil
+func WithTwoChildrenPreprended[T TokenLike](parent *ASTNode[T], childA, childB *ASTNode[T]) (*ASTNode[T], error) {
+	if parent.Children == nil {
+		parent.Children = []*ASTNode[T]{childA, childB}
+	} else {
+		parent.Children = append([]*ASTNode[T]{childA, childB}, parent.Children...)
+	}
+	return parent, nil
 }
 
-// Signature: Token Node Node Type
-// Holdover from my experience with GOCC; will almost certainly change.
-func NewASTNodeBinaryNestable(itok, childA, childB interface{}) *ASTNode {
-	parent := NewASTNodeNestable(itok)
-	convertToBinary(parent, childA, childB)
-	return parent
+func WithChildAppended[T TokenLike](parent *ASTNode[T], child *ASTNode[T]) (*ASTNode[T], error) {
+	if parent.Children == nil {
+		parent.Children = []*ASTNode[T]{child}
+	} else {
+		parent.Children = append(parent.Children, child)
+	}
+	return parent, nil
 }
 
-// Signature: Token Node Node Type
-// Holdover from my experience with GOCC; will almost certainly change.
-func NewASTNodeBinary(
-	itok, childA, childB interface{},
-) (*ASTNode, error) {
-	return NewASTNodeBinaryNestable(itok, childA, childB), nil
+func WithChildrenAdopted[T TokenLike](parent *ASTNode[T], child *ASTNode[T]) (*ASTNode[T], error) {
+	parent.Children = child.Children
+	child.Children = nil
+	return parent, nil
 }
 
-// Holdover from my experience with GOCC; will almost certainly change.
-func convertToZary(iparent interface{}) {
-	parent := iparent.(*ASTNode)
-	children := make([]*ASTNode, 0)
-	parent.Children = children
+func (node *ASTNode[T]) CheckArity(
+	arity int,
+) error {
+	if len(node.Children) != arity {
+		return fmt.Errorf("expected AST node arity %d, got %d", arity, len(node.Children))
+	} else {
+		return nil
+	}
 }
 
-// Holdover from my experience with GOCC; will almost certainly change.
-func convertToBinary(iparent interface{}, childA, childB interface{}) {
-	parent := iparent.(*ASTNode)
-	children := make([]*ASTNode, 2)
-	children[0] = childA.(*ASTNode)
-	children[1] = childB.(*ASTNode)
-	parent.Children = children
-}
-
-func (node *ASTNode) AddChild(child *ASTNode) {
-	node.Children = append(node.Children, child)
+// Tokens are produced by GOCC. However there is an exception: for the ternary
+// operator I want the AST to have a "?:" token, which GOCC doesn't produce
+// since nothing is actually spelled like that in the DSL.
+func NewASTToken(iliteral interface{}, iclonee interface{}) *tokens.Token {
+	literal := iliteral.(string)
+	// clonee := iclonee.(*tokens.Token)
+	return &tokens.Token{
+		// Type: clonee.Type,
+		Lexeme: []rune(literal),
+		// Position: clonee.Position,
+	}
 }

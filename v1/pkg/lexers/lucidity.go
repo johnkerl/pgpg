@@ -11,7 +11,6 @@ func Run(lexer AbstractLexer) error {
 		if err != nil {
 			return err
 		}
-		// TODO: token.String()
 		fmt.Printf(
 			"Line %4d column %4d type %-10s (%2d) token <<%s>>\n",
 			token.Location.LineNumber,

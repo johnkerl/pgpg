@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestSENGLexer1(t *testing.T) {
 	lexer := NewSENGLexer("")
 
@@ -14,7 +13,6 @@ func TestSENGLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestSENGLexer2(t *testing.T) {
 	lexer := NewSENGLexer("the the \n dog")
 
@@ -37,7 +35,6 @@ func TestSENGLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestSENGLexer3(t *testing.T) {
 	lexer := NewSENGLexer(" the nonesuch goes")
 

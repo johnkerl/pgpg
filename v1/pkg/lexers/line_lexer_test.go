@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestLineLexer1(t *testing.T) {
 	lexer := NewLineLexer("")
 
@@ -14,7 +13,6 @@ func TestLineLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestLineLexer2(t *testing.T) {
 	lexer := NewLineLexer("abc")
 
@@ -27,7 +25,6 @@ func TestLineLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestLineLexer3(t *testing.T) {
 	lexer := NewLineLexer("a\nbc")
 
@@ -45,7 +42,6 @@ func TestLineLexer3(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestLineLexer4(t *testing.T) {
 	lexer := NewLineLexer("\n\n\n")
 

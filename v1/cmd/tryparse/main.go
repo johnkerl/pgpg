@@ -5,16 +5,17 @@ import (
 	"os"
 
 	"github.com/johnkerl/pgpg/pkg/parsers"
+	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
-type parserMaker func() parsers.AbstractParser
+type parserMaker func() parsers.AbstractParser[tokens.Token]
 type parserInfoT struct {
 	maker parserMaker
 	help  string
 }
 
 var parserMakerTable = map[string]parserInfoT{
-	"ame": parserInfoT{parsers.NewAMEParser, "Integers with + and * at equal precedence."},
+	"ame":  parserInfoT{parsers.NewAMEParser, "Integers with + and * at equal precedence."},
 	"amne": parserInfoT{parsers.NewAMNEParser, "Integers with + and * at unequal precedence."},
 }
 

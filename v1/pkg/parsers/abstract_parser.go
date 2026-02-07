@@ -4,6 +4,6 @@ import (
 	"github.com/johnkerl/pgpg/pkg/asts"
 )
 
-type AbstractParser interface {
-	Parse(inputText string) (*asts.AST, error)
+type AbstractParser[T asts.TokenLike] interface {
+	Parse(inputText string) (*asts.AST[T], error)
 }
