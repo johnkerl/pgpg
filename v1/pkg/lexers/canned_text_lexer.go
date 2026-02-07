@@ -1,14 +1,12 @@
 package lexers
 
 import (
-	"fmt"
-
 	"github.com/johnkerl/pgpg/pkg/tokens"
 	"github.com/johnkerl/pgpg/pkg/util"
 )
 
 const (
-	CannedTextLexerTypeWord = 1
+	CannedTextLexerTypeWord tokens.TokenType = "word"
 )
 
 // CannedTextLexer is primarily for unit-test purposes.
@@ -41,17 +39,4 @@ func (lexer *CannedTextLexer) Scan() (token *tokens.Token) {
 	lexer.position++
 	lexer.tokenLocation.ColumnNumber++
 	return retval
-}
-
-func (lexer *CannedTextLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
-	switch tokenType {
-	case tokens.TokenTypeEOF:
-		return "EOF", nil
-	case tokens.TokenTypeError:
-		return "error", nil
-	case CannedTextLexerTypeWord:
-		return "word", nil
-	default:
-		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
-	}
 }

@@ -1,14 +1,12 @@
 package lexers
 
 import (
-	"fmt"
-
 	"github.com/johnkerl/pgpg/pkg/tokens"
 	"unicode/utf8"
 )
 
 const (
-	RuneLexerRuneType = 1
+	RuneLexerRuneType tokens.TokenType = "rune"
 )
 
 // RuneLexer is primarily for unit-test purposes. Every rune is its own token.
@@ -42,17 +40,4 @@ func (lexer *RuneLexer) Scan() (token *tokens.Token) {
 	lexer.tokenLocation.LocateRune(r, runeWidth)
 
 	return retval
-}
-
-func (lexer *RuneLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
-	switch tokenType {
-	case tokens.TokenTypeEOF:
-		return "EOF", nil
-	case tokens.TokenTypeError:
-		return "error", nil
-	case RuneLexerRuneType:
-		return "rune", nil
-	default:
-		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
-	}
 }

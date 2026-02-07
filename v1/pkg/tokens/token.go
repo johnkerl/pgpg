@@ -46,7 +46,7 @@ func (token *Token) IsError() bool {
 
 func (token Token) String() string {
 	return fmt.Sprintf(
-		"token=<<%s>> type=%d line=%d column=%d",
+		"token=<<%s>> type=%s line=%d column=%d",
 		string(token.Lexeme),
 		token.Type,
 		token.Location.LineNumber,

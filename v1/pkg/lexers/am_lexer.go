@@ -11,9 +11,9 @@ import (
 const amLexerInitialCapacity = 1024
 
 const (
-	AMLexerTypeNumber tokens.TokenType = 1
-	AMLexerTypePlus   tokens.TokenType = 2
-	AMLexerTypeTimes  tokens.TokenType = 3
+	AMLexerTypeNumber tokens.TokenType = "number"
+	AMLexerTypePlus   tokens.TokenType = "+"
+	AMLexerTypeTimes  tokens.TokenType = "*"
 )
 
 // AMLexer is for the AME and AMNE grammars: addition and multiplication of integers.  At the syntax
@@ -120,21 +120,4 @@ func (lexer *AMLexer) readRune() rune {
 	r, runeWidth := lexer.peekRune()
 	lexer.tokenLocation.LocateRune(r, runeWidth)
 	return r
-}
-
-func (lexer *AMLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
-	switch tokenType {
-	case tokens.TokenTypeEOF:
-		return "EOF", nil
-	case tokens.TokenTypeError:
-		return "error", nil
-	case AMLexerTypePlus:
-		return "+", nil
-	case AMLexerTypeTimes:
-		return "*", nil
-	case AMLexerTypeNumber:
-		return "number", nil
-	default:
-		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
-	}
 }

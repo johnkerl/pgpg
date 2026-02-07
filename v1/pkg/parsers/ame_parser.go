@@ -48,18 +48,10 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error
 	}
 
 	if lookaheadToken.Type != lexers.AMLexerTypeNumber {
-		actualDesc, err := parser.lexer.DecodeType(lookaheadToken.Type)
-		if err != nil {
-			return nil, err
-		}
-		expectedDesc, err := parser.lexer.DecodeType(lexers.AMLexerTypeNumber)
-		if err != nil {
-			return nil, err
-		}
 		return nil, fmt.Errorf(
 			"AMEParser: initial token was of type %s; expected %s",
-			actualDesc,
-			expectedDesc,
+			lookaheadToken.Type,
+			lexers.AMLexerTypeNumber,
 		)
 	}
 
@@ -83,23 +75,11 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error
 	}
 
 	if lookaheadToken.Type != lexers.AMLexerTypePlus && lookaheadToken.Type != lexers.AMLexerTypeTimes {
-		actualDesc, err := parser.lexer.DecodeType(lookaheadToken.Type)
-		if err != nil {
-			return nil, err
-		}
-		expectedPlus, err := parser.lexer.DecodeType(lexers.AMLexerTypePlus)
-		if err != nil {
-			return nil, err
-		}
-		expectedTimes, err := parser.lexer.DecodeType(lexers.AMLexerTypeTimes)
-		if err != nil {
-			return nil, err
-		}
 		return nil, fmt.Errorf(
 			"AMEParser: expected %s or %s; got %s",
-			expectedPlus,
-			expectedTimes,
-			actualDesc,
+			lexers.AMLexerTypePlus,
+			lexers.AMLexerTypeTimes,
+			lookaheadToken.Type,
 		)
 	}
 

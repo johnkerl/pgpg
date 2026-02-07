@@ -1,8 +1,6 @@
 package lexers
 
 import (
-	"fmt"
-
 	"github.com/johnkerl/pgpg/pkg/tokens"
 	"unicode"
 	"unicode/utf8"
@@ -11,7 +9,7 @@ import (
 const wordLexerInitialCapacity = 1024
 
 const (
-	WordLexerTypeWord = 1
+	WordLexerTypeWord tokens.TokenType = "word"
 )
 
 // WordLexer is for unit-test purposes, as well as perhaps a layer underneath the lexer for the SENG
@@ -92,17 +90,4 @@ func (lexer *WordLexer) readRune() rune {
 	r, runeWidth := lexer.peekRune()
 	lexer.tokenLocation.LocateRune(r, runeWidth)
 	return r
-}
-
-func (lexer *WordLexer) DecodeType(tokenType tokens.TokenType) (string, error) {
-	switch tokenType {
-	case tokens.TokenTypeEOF:
-		return "EOF", nil
-	case tokens.TokenTypeError:
-		return "error", nil
-	case WordLexerTypeWord:
-		return "word", nil
-	default:
-		return "", fmt.Errorf("unrecognized token type %d", int(tokenType))
-	}
 }
