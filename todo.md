@@ -17,6 +17,7 @@
     * Prepositional phrases?
   * [x] VIC
   * [x] VBC
+  * [x] EBNF
   * [ ] Scale-test everything for perf early on -- especially channel-switching
   * Mods needed:
     * [x] Standardize to match/accept/backUp/etc standard names as much as possible

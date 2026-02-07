@@ -92,8 +92,13 @@ func (lexer *AMLexer) Scan() (token *tokens.Token) {
 }
 
 func (lexer *AMLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
-	// TODO explicit EOF handling
+	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
+		return false
+	}
 	r, runeWidth := lexer.peekRune()
+	if runeWidth == 0 {
+		return false
+	}
 
 	if predicate(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
@@ -104,7 +109,6 @@ func (lexer *AMLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
 }
 
 func (lexer *AMLexer) ignoreNextRunesIf(predicate runePredicateFunc) {
-	// TODO explicit EOF handling
 	for lexer.ignoreNextRuneIf(predicate) {
 	}
 }

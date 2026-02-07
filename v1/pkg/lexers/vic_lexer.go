@@ -138,8 +138,13 @@ func isVICIdentifierContinue(r rune) bool {
 }
 
 func (lexer *VICLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
-	// TODO explicit EOF handling
+	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
+		return false
+	}
 	r, runeWidth := lexer.peekRune()
+	if runeWidth == 0 {
+		return false
+	}
 
 	if predicate(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
@@ -150,7 +155,6 @@ func (lexer *VICLexer) ignoreNextRuneIf(predicate runePredicateFunc) bool {
 }
 
 func (lexer *VICLexer) ignoreNextRunesIf(predicate runePredicateFunc) {
-	// TODO explicit EOF handling
 	for lexer.ignoreNextRuneIf(predicate) {
 	}
 }
