@@ -24,6 +24,10 @@ var parserMakerTable = map[string]parserInfoT{
 		parsers.NewVICParser,
 		"Arithmetic with identifiers, assignments, and PEMDAS precedence.",
 	},
+	"vbc": parserInfoT{
+		parsers.NewVBCParser,
+		"Boolean expressions with identifiers and AND/OR/NOT.",
+	},
 }
 
 func usage() {
