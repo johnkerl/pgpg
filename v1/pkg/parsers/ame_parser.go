@@ -79,8 +79,8 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	leftChild := asts.NewASTNode(acceptedToken, nil) // TODO: type
-	parent := asts.NewASTNode(opToken, []interface{}{leftChild, rightChild}) // TODO: type
+	leftChild := asts.NewASTNode(acceptedToken, nil)                           // TODO: type
+	parent := asts.NewASTNode(opToken, []*asts.ASTNode{leftChild, rightChild}) // TODO: type
 
 	return parent, nil
 }

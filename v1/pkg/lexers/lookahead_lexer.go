@@ -8,7 +8,7 @@ import (
 // an Advance().
 type LookaheadLexer struct {
 	underlying AbstractLexer
-	lookToken *tokens.Token
+	lookToken  *tokens.Token
 }
 
 func NewLookaheadLexer(underlying AbstractLexer) *LookaheadLexer {
@@ -19,9 +19,8 @@ func NewLookaheadLexer(underlying AbstractLexer) *LookaheadLexer {
 	// There is always at least one token, even if it's Error or EOF.
 	lal.lookToken = lal.underlying.Scan()
 
-	return lal;
+	return lal
 }
-
 
 // LookAhead returns the current lookahead token without advancing the underlying scanner.  On EOF, the
 // token-type will be EOF.  On error, the token-type will be Error, with Lexeme slot having the

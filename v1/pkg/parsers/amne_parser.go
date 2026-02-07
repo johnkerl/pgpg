@@ -92,7 +92,7 @@ func (parser *AMNEParser) parseRestOfSum(left *asts.ASTNode) (*asts.ASTNode, err
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []interface{}{left, right})
+	parent := asts.NewASTNode(opToken, []*asts.ASTNode{left, right})
 	return parser.parseRestOfSum(parent)
 }
 
@@ -110,10 +110,11 @@ func (parser *AMNEParser) parseProduct() (*asts.ASTNode, error) {
 
 // ----------------------------------------------------------------
 // parseRestOfProduct implements the following production rule:
-//   RestOfProduct
-//     : times int_literal RestOfProduct
-//     | empty
-//   ;
+//
+//	RestOfProduct
+//	  : times int_literal RestOfProduct
+//	  | empty
+//	;
 func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode, error) {
 	accepted, opToken, err := parser.accept(lexers.AMLexerTypeTimes)
 	if err != nil {
@@ -127,7 +128,7 @@ func (parser *AMNEParser) parseRestOfProduct(left *asts.ASTNode) (*asts.ASTNode,
 	if err != nil {
 		return nil, err
 	}
-	parent := asts.NewASTNode(opToken, []interface{}{left, right})
+	parent := asts.NewASTNode(opToken, []*asts.ASTNode{left, right})
 	return parser.parseRestOfProduct(parent)
 }
 

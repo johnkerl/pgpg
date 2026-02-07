@@ -29,7 +29,7 @@ func NewAST(iroot interface{}) *AST {
 func NewASTNode(
 	itok interface{},
 	// nodeType TNodeType,
-	children []interface{},
+	children []*ASTNode,
 ) *ASTNode {
 
 	var tok *tokens.Token = nil
@@ -47,11 +47,7 @@ func NewASTNode(
 		return node
 	}
 
-	n := len(children)
-	node.Children = make([]*ASTNode, n)
-	for i, child := range children {
-		node.Children[i] = child.(*ASTNode)
-	}
+	node.Children = children
 	return node
 }
 
