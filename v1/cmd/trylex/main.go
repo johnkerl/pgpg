@@ -21,6 +21,7 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"seng":   lexerInfoT{lexers.NewSENGLexer, "SENG lexicon."},
 	"am":     lexerInfoT{lexers.NewAMLexer, "Integers with + and *."},
 	"pemdas": lexerInfoT{lexers.NewPEMDASLexer, "Arithmetic with parentheses and PEMDAS operators."},
+	"vic":    lexerInfoT{lexers.NewVICLexer, "Arithmetic with identifiers, assignments, and PEMDAS operators."},
 }
 
 func usage() {
