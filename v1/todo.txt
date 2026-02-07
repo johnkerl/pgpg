@@ -1,4 +1,3 @@
-* PEMDAS manual parser
-* VIC    manual parser
-* VBOOL  manual parser
-* SENG   manual parser
+* VIC   manual parser
+* VBOOL manual parser
+* SENG  manual parser
