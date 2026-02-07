@@ -22,6 +22,7 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"am":     lexerInfoT{lexers.NewAMLexer, "Integers with + and *."},
 	"pemdas": lexerInfoT{lexers.NewPEMDASLexer, "Arithmetic with parentheses and PEMDAS operators."},
 	"vic":    lexerInfoT{lexers.NewVICLexer, "Arithmetic with identifiers, assignments, and PEMDAS operators."},
+	"vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
 }
 
 func usage() {

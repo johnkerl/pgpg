@@ -15,7 +15,8 @@
   * [x] AM for AME and AMNE
   * [x] SENG (lexicon-driven) -- maybe SENG lexer layered atop word-lexer?
     * Prepositional phrases?
-  * [ ] VIC
+  * [x] VIC
+  * [x] VBC
   * [ ] Scale-test everything for perf early on -- especially channel-switching
   * Mods needed:
     * [x] Standardize to match/accept/backUp/etc standard names as much as possible
@@ -49,8 +50,8 @@
 
 # Infra:
 
-* AST to-string factored out of printer
-  * Use for UT
+* [ ] AST to-string factored out of printer
+  * [ ] Use for UT
 * ame/amne UT
 * Wrap lexers in LA1 and LA2 etc for lookahead level:
   * Hide direct calls to Scan
