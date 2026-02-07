@@ -8,69 +8,6 @@ import (
 	"github.com/johnkerl/pgpg/pkg/tokens"
 )
 
-// ----------------------------------------------------------------
-// Original grammar:
-// Root : Sum ;
-//
-// Sum
-//   : Sum plus Product
-//   | Sum minus Product
-//   | Product ;
-//
-// Product
-//   : Product times Power
-//   | Product divide Power
-//   | Power ;
-//
-// Power
-//   : Unary power Power
-//   | Unary ;
-//
-// Unary
-//   : plus Unary
-//   | minus Unary
-//   | Primary ;
-//
-// Primary
-//   : int_literal
-//   | lparen Sum rparen ;
-// ----------------------------------------------------------------
-
-// ----------------------------------------------------------------
-// Factored grammar:
-//
-// Root : Sum ;
-//
-// Sum : Product RestOfSum ;
-//
-// RestOfSum
-//   : plus Product RestOfSum
-//   | minus Product RestOfSum
-//   | empty ;
-//
-// Product : Power RestOfProduct ;
-//
-// RestOfProduct
-//   : times Power RestOfProduct
-//   | divide Power RestOfProduct
-//   | empty ;
-//
-// Power : Unary RestOfPower ;
-//
-// RestOfPower
-//   : power Power
-//   | empty ;
-//
-// Unary
-//   : plus Unary
-//   | minus Unary
-//   | Primary ;
-//
-// Primary
-//   : int_literal
-//   | lparen Sum rparen ;
-// ----------------------------------------------------------------
-
 type PEMDASParser struct {
 	lexer *lexers.LookaheadLexer
 }

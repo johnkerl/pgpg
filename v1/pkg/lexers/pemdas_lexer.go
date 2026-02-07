@@ -16,7 +16,7 @@ const (
 	PEMDASLexerTypeMinus  tokens.TokenType = "-"
 	PEMDASLexerTypeTimes  tokens.TokenType = "*"
 	PEMDASLexerTypeDivide tokens.TokenType = "/"
-	PEMDASLexerTypePower  tokens.TokenType = "^"
+	PEMDASLexerTypePower  tokens.TokenType = "**"
 	PEMDASLexerTypeLParen tokens.TokenType = "("
 	PEMDASLexerTypeRParen tokens.TokenType = ")"
 )
@@ -61,16 +61,18 @@ func (lexer *PEMDASLexer) Scan() (token *tokens.Token) {
 		return tokens.NewToken([]rune{r}, PEMDASLexerTypeMinus, &startLocation)
 
 	} else if r == '*' {
+		nextRune, nextWidth := utf8.DecodeRuneInString(lexer.inputText[lexer.tokenLocation.ByteOffset+runeWidth:])
+		if nextRune == '*' {
+			lexer.tokenLocation.LocateRune(r, runeWidth)
+			lexer.tokenLocation.LocateRune(nextRune, nextWidth)
+			return tokens.NewToken([]rune{r, nextRune}, PEMDASLexerTypePower, &startLocation)
+		}
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return tokens.NewToken([]rune{r}, PEMDASLexerTypeTimes, &startLocation)
 
 	} else if r == '/' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return tokens.NewToken([]rune{r}, PEMDASLexerTypeDivide, &startLocation)
-
-	} else if r == '^' {
-		lexer.tokenLocation.LocateRune(r, runeWidth)
-		return tokens.NewToken([]rune{r}, PEMDASLexerTypePower, &startLocation)
 
 	} else if r == '(' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)

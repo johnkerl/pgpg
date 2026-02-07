@@ -30,7 +30,7 @@ func TestPEMDASLexer2(t *testing.T) {
 
 // ----------------------------------------------------------------
 func TestPEMDASLexer3(t *testing.T) {
-	lexer := NewPEMDASLexer("+-*/^()8888")
+	lexer := NewPEMDASLexer("+-*/**()8888")
 
 	token := lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), "+")
@@ -57,7 +57,7 @@ func TestPEMDASLexer3(t *testing.T) {
 	assert.Equal(t, token.Type, PEMDASLexerTypeDivide)
 
 	token = lexer.Scan()
-	assert.Equal(t, string(token.Lexeme), "^")
+	assert.Equal(t, string(token.Lexeme), "**")
 	assert.Equal(t, token.Location.LineNumber, 1)
 	assert.Equal(t, token.Location.ColumnNumber, 5)
 	assert.Equal(t, token.Type, PEMDASLexerTypePower)
@@ -65,19 +65,19 @@ func TestPEMDASLexer3(t *testing.T) {
 	token = lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), "(")
 	assert.Equal(t, token.Location.LineNumber, 1)
-	assert.Equal(t, token.Location.ColumnNumber, 6)
+	assert.Equal(t, token.Location.ColumnNumber, 7)
 	assert.Equal(t, token.Type, PEMDASLexerTypeLParen)
 
 	token = lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), ")")
 	assert.Equal(t, token.Location.LineNumber, 1)
-	assert.Equal(t, token.Location.ColumnNumber, 7)
+	assert.Equal(t, token.Location.ColumnNumber, 8)
 	assert.Equal(t, token.Type, PEMDASLexerTypeRParen)
 
 	token = lexer.Scan()
 	assert.Equal(t, string(token.Lexeme), "8888")
 	assert.Equal(t, token.Location.LineNumber, 1)
-	assert.Equal(t, token.Location.ColumnNumber, 8)
+	assert.Equal(t, token.Location.ColumnNumber, 9)
 	assert.Equal(t, token.Type, PEMDASLexerTypeNumber)
 
 	token = lexer.Scan()
