@@ -26,11 +26,11 @@ const (
 	AMEParserNodeTypeOperator asts.NodeType = "operator"
 )
 
-func NewAMEParser() AbstractParser[tokens.Token] {
+func NewAMEParser() AbstractParser {
 	return &AMEParser{}
 }
 
-func (parser *AMEParser) Parse(inputText string) (*asts.AST[tokens.Token], error) {
+func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
 	parser.lexer = lexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
 	rootNode, err := parser.parseSumOrProduct()
 	if err != nil {
@@ -42,7 +42,7 @@ func (parser *AMEParser) Parse(inputText string) (*asts.AST[tokens.Token], error
 	return asts.NewAST(rootNode), nil
 }
 
-func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error) {
+func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode, error) {
 	lookaheadToken := parser.lexer.LookAhead()
 
 	if lookaheadToken.IsError() {
@@ -100,7 +100,7 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error
 		return nil, err
 	}
 	leftChild := asts.NewASTNode(acceptedToken, AMEParserNodeTypeNumber, nil)
-	parent := asts.NewASTNode(opToken, AMEParserNodeTypeOperator, []*asts.ASTNode[tokens.Token]{leftChild, rightChild})
+	parent := asts.NewASTNode(opToken, AMEParserNodeTypeOperator, []*asts.ASTNode{leftChild, rightChild})
 
 	return parent, nil
 }

@@ -9,7 +9,7 @@ func main() {
 	node := asts.NewASTNode(
 		tokens.NewToken([]rune("+"), tokens.TokenType("+"), tokens.NewNonDefaultTokenLocation(1, 2)),
 		asts.NodeType("operator"),
-		[]*asts.ASTNode[tokens.Token]{
+		[]*asts.ASTNode{
 			asts.NewASTNode(
 				tokens.NewToken([]rune("a"), tokens.TokenType("word"), tokens.NewNonDefaultTokenLocation(1, 1)),
 				asts.NodeType("word"),
