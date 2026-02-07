@@ -16,15 +16,8 @@ type AST[T TokenLike] struct {
 
 type ASTNode[T TokenLike] struct {
 	Token *T // Nil for tokenless/structural nodes
-	// TODO
-	// Type     TNodeType
+	Type     TNodeType
 	Children []*ASTNode[T]
 }
 
-//type TNodeType string
-//const (
-//	NodeTypeTBD TNodeType = "TBD"
-//
-//	// A special token which causes a panic when evaluated.  This is for testing.
-//	NodeTypePanic TNodeType = "panic token"
-//)
+type NodeType string

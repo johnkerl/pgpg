@@ -12,6 +12,11 @@ type PEMDASParser struct {
 	lexer *lexers.LookaheadLexer
 }
 
+const (
+	PEMDASParserNodeTypeNumber   tokens.TokenType = "number"
+	PEMDASParserNodeTypeOperator tokens.TokenType = "operator"
+)
+
 func NewPEMDASParser() AbstractParser[tokens.Token] {
 	return &PEMDASParser{}
 }
