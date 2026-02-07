@@ -34,6 +34,6 @@ PGPG is the Pretty Good Parser Generator. As of Feburary 2023 it is very much a 
 
 ## Versions
 
-`v1` is a started-then-paused attempt from 2023.
+`v1` is a started-then-paused attempt from 2023, restarted in 2026.
 
 `v2` is an attempt from 2026, making significant use of Cursor.

@@ -22,6 +22,12 @@ Variables-and-integers calculator.
 
 GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf)
 
+## VBC
+
+Variables-and-booleans calculator.
+
+Variable names, `AND`, `OR`, `NOT`, parentheses, assignments, evaluations.
+
 ## SENG
 
 Simple English statements:
