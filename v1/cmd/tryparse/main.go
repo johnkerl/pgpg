@@ -20,6 +20,10 @@ var parserMakerTable = map[string]parserInfoT{
 		parsers.NewPEMDASParser,
 		"Arithmetic with parentheses and PEMDAS precedence.",
 	},
+	"vic": parserInfoT{
+		parsers.NewVICParser,
+		"Arithmetic with identifiers, assignments, and PEMDAS precedence.",
+	},
 }
 
 func usage() {
