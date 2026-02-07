@@ -21,11 +21,11 @@ type AMEParser struct {
 	lexer *lexers.LookaheadLexer
 }
 
-func NewAMEParser() AbstractParser {
+func NewAMEParser() AbstractParser[tokens.Token] {
 	return &AMEParser{}
 }
 
-func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
+func (parser *AMEParser) Parse(inputText string) (*asts.AST[tokens.Token], error) {
 	parser.lexer = lexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
 	rootNode, err := parser.parseSumOrProduct()
 	if err != nil {
@@ -37,7 +37,7 @@ func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
 	return asts.NewAST(rootNode), nil
 }
 
-func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode, error) {
+func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode[tokens.Token], error) {
 	lookaheadToken := parser.lexer.LookAhead()
 
 	if lookaheadToken.IsError() {
@@ -114,8 +114,9 @@ func (parser *AMEParser) parseSumOrProduct() (*asts.ASTNode, error) {
 	if err != nil {
 		return nil, err
 	}
-	leftChild := asts.NewASTNode(acceptedToken, nil)                           // TODO: type
-	parent := asts.NewASTNode(opToken, []*asts.ASTNode{leftChild, rightChild}) // TODO: type
+	// TODO: type
+	leftChild := asts.NewASTNode(acceptedToken, nil)
+	parent := asts.NewASTNode(opToken, []*asts.ASTNode[tokens.Token]{leftChild, rightChild})
 
 	return parent, nil
 }
@@ -141,7 +142,8 @@ func (parser *AMEParser) expect(tokenType tokens.TokenType) error {
 	if !accepted {
 		// No lex error getting the next token, but the current
 		// token isn't of the expected type
-		return errors.New("expect: unexpected symbol") // XXX describe it: expected & actual type and lexeme
+		// TODO: describe it: expected & actual type and lexeme
+		return errors.New("expect: unexpected symbol")
 	}
 	return nil
 }

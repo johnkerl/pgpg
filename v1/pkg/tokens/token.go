@@ -53,3 +53,7 @@ func (token Token) String() string {
 		token.Location.ColumnNumber,
 	)
 }
+
+func (token Token) LexemeText() string {
+	return string(token.Lexeme)
+}

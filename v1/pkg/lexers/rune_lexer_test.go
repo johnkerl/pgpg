@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestRuneLexer1(t *testing.T) {
 	lexer := NewRuneLexer("")
 
@@ -15,7 +14,6 @@ func TestRuneLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestRuneLexer2(t *testing.T) {
 	lexer := NewRuneLexer("abc")
 
@@ -38,7 +36,6 @@ func TestRuneLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestRuneLexer3(t *testing.T) {
 	lexer := NewRuneLexer("a\nbc")
 

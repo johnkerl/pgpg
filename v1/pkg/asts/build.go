@@ -11,33 +11,26 @@ import (
 )
 
 // NewAST constructs a new root for the abstract syntax tree.
-// The argument-typing is interface{} as a holdover from my experience with GOCC; this may change.
-func NewAST(iroot interface{}) *AST {
-	return &AST{
-		RootNode: iroot.(*ASTNode),
+// The AST is generic so parsers can use their own token types.
+func NewAST[T TokenLike](root *ASTNode[T]) *AST[T] {
+	return &AST[T]{
+		RootNode: root,
 	}
 }
 
 // NewASTNode constructs a new node for the abstract syntax tree.
 //
-// The argument-typing is interface{}, rather than tokens.Token, as a holdover from my experience
-// with GOCC; this will probably change.
+// The token type is generic to allow different parser token representations.
 //
 // If children is non-nil and length 0, a zary node is created. (Example: a function call with zero
 // arguments.) If children is nil, a terminal node is created. (Example: a string or integer
 // literal.)
-func NewASTNode(
-	itok interface{},
+func NewASTNode[T TokenLike](
+	tok *T,
 	// nodeType TNodeType,
-	children []*ASTNode,
-) *ASTNode {
-
-	var tok *tokens.Token = nil
-	if itok != nil {
-		tok = itok.(*tokens.Token)
-	}
-
-	node := &ASTNode{
+	children []*ASTNode[T],
+) *ASTNode[T] {
+	node := &ASTNode[T]{
 		Token: tok,
 		// Type:     nodeType,
 		Children: nil,
@@ -51,60 +44,48 @@ func NewASTNode(
 	return node
 }
 
-func NewASTNodeTerminal(itok interface{} /*nodeType TNodeType*/) *ASTNode {
-	var tok *tokens.Token = nil
-	if itok != nil {
-		tok = itok.(*tokens.Token)
-	}
-	return &ASTNode{
+func NewASTNodeTerminal[T TokenLike](tok *T /*nodeType TNodeType*/) *ASTNode[T] {
+	return &ASTNode[T]{
 		Token: tok,
 		// Type:     nodeType,
 		Children: nil,
 	}
 }
 
-func WithChildPrepended(iparent interface{}, ichild interface{}) (*ASTNode, error) {
-	parent := iparent.(*ASTNode)
-	child := ichild.(*ASTNode)
+func WithChildPrepended[T TokenLike](parent *ASTNode[T], child *ASTNode[T]) (*ASTNode[T], error) {
 	if parent.Children == nil {
-		parent.Children = []*ASTNode{child}
+		parent.Children = []*ASTNode[T]{child}
 	} else {
-		parent.Children = append([]*ASTNode{child}, parent.Children...)
+		parent.Children = append([]*ASTNode[T]{child}, parent.Children...)
 	}
 	return parent, nil
 }
 
-func WithTwoChildrenPreprended(iparent interface{}, ichildA, ichildB interface{}) (*ASTNode, error) {
-	parent := iparent.(*ASTNode)
-	childA := ichildA.(*ASTNode)
-	childB := ichildB.(*ASTNode)
+func WithTwoChildrenPreprended[T TokenLike](parent *ASTNode[T], childA, childB *ASTNode[T]) (*ASTNode[T], error) {
 	if parent.Children == nil {
-		parent.Children = []*ASTNode{childA, childB}
+		parent.Children = []*ASTNode[T]{childA, childB}
 	} else {
-		parent.Children = append([]*ASTNode{childA, childB}, parent.Children...)
+		parent.Children = append([]*ASTNode[T]{childA, childB}, parent.Children...)
 	}
 	return parent, nil
 }
 
-func WithChildAppended(iparent interface{}, child interface{}) (*ASTNode, error) {
-	parent := iparent.(*ASTNode)
+func WithChildAppended[T TokenLike](parent *ASTNode[T], child *ASTNode[T]) (*ASTNode[T], error) {
 	if parent.Children == nil {
-		parent.Children = []*ASTNode{child.(*ASTNode)}
+		parent.Children = []*ASTNode[T]{child}
 	} else {
-		parent.Children = append(parent.Children, child.(*ASTNode))
+		parent.Children = append(parent.Children, child)
 	}
 	return parent, nil
 }
 
-func WithChildrenAdopted(iparent interface{}, ichild interface{}) (*ASTNode, error) {
-	parent := iparent.(*ASTNode)
-	child := ichild.(*ASTNode)
+func WithChildrenAdopted[T TokenLike](parent *ASTNode[T], child *ASTNode[T]) (*ASTNode[T], error) {
 	parent.Children = child.Children
 	child.Children = nil
 	return parent, nil
 }
 
-func (node *ASTNode) CheckArity(
+func (node *ASTNode[T]) CheckArity(
 	arity int,
 ) error {
 	if len(node.Children) != arity {

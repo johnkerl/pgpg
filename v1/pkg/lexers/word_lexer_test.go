@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestWordLexer1(t *testing.T) {
 	lexer := NewWordLexer("")
 
@@ -14,7 +13,6 @@ func TestWordLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestWordLexer2(t *testing.T) {
 	lexer := NewWordLexer("abc")
 
@@ -27,7 +25,6 @@ func TestWordLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestWordLexer3(t *testing.T) {
 	lexer := NewWordLexer(" abc  def   \n ghi ")
 
