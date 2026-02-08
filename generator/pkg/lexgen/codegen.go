@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/format"
 	"sort"
 	"strings"
 )
@@ -19,6 +20,19 @@ func DecodeTables(data []byte) (*Tables, error) {
 
 // GenerateGoLexerCode creates Go source implementing a lexer from tables.
 func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([]byte, error) {
+	raw, err := GenerateGoLexerCodeRaw(tables, packageName, typeName)
+	if err != nil {
+		return nil, err
+	}
+	formatted, err := format.Source(raw)
+	if err != nil {
+		return nil, fmt.Errorf("format generated code: %w", err)
+	}
+	return formatted, nil
+}
+
+// GenerateGoLexerCodeRaw creates unformatted Go source implementing a lexer from tables.
+func GenerateGoLexerCodeRaw(tables *Tables, packageName string, typeName string) ([]byte, error) {
 	if tables == nil {
 		return nil, fmt.Errorf("nil tables")
 	}

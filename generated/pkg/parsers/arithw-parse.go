@@ -3,12 +3,12 @@ package parsers
 import (
 	"fmt"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
+	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type ArithWhitespaceParser struct {}
+type ArithWhitespaceParser struct{}
 
 func NewArithWhitespaceParser() *ArithWhitespaceParser { return &ArithWhitespaceParser{} }
 
@@ -86,119 +86,119 @@ type ArithWhitespaceParserProduction struct {
 
 var ArithWhitespaceParserActions = map[int]map[tokens.TokenType]ArithWhitespaceParserAction{
 	0: {
-		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 6},
+		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 2},
 	},
 	1: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 1},
+		tokens.TokenTypeEOF:       {kind: ArithWhitespaceParserActionReduce, target: 3},
+		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionShift, target: 9},
+		tokens.TokenType("plus"):  {kind: ArithWhitespaceParserActionShift, target: 8},
 	},
 	2: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 2},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 11},
+		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 11},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 11},
+		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 11},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 11},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionReduce, target: 11},
 	},
 	3: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 10},
-		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 10},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 10},
-		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 10},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 10},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionReduce, target: 10},
+		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 1},
 	},
 	4: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 3},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionShift, target: 9},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionShift, target: 8},
+		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 2},
 	},
 	5: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 6},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 6},
 		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionShift, target: 12},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 6},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 6},
 		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionShift, target: 10},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 6},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionShift, target: 11},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 6},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionShift, target: 11},
 	},
 	6: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 11},
-		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 11},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 11},
-		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 11},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 11},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionReduce, target: 11},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 10},
+		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 10},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 10},
+		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 10},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 10},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionReduce, target: 10},
 	},
 	7: {
 		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionAccept},
 	},
 	8: {
-		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 6},
+		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 2},
 	},
 	9: {
-		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 6},
+		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 2},
 	},
 	10: {
-		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 6},
+		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 2},
 	},
 	11: {
-		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 6},
+		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 2},
 	},
 	12: {
-		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 6},
+		tokens.TokenType("int_literal"): {kind: ArithWhitespaceParserActionShift, target: 2},
 	},
 	13: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 4},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 4},
 		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionShift, target: 12},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 4},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 4},
 		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionShift, target: 10},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 4},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionShift, target: 11},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 4},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionShift, target: 11},
 	},
 	14: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 5},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 5},
 		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionShift, target: 12},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 5},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 5},
 		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionShift, target: 10},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 5},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionShift, target: 11},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 5},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionShift, target: 11},
 	},
 	15: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 9},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 9},
 		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 9},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 9},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 9},
 		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 9},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 9},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionReduce, target: 9},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 9},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionReduce, target: 9},
 	},
 	16: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 7},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 7},
 		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 7},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 7},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 7},
 		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 7},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 7},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionReduce, target: 7},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 7},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionReduce, target: 7},
 	},
 	17: {
-		tokens.TokenTypeEOF: {kind: ArithWhitespaceParserActionReduce, target: 8},
+		tokens.TokenTypeEOF:        {kind: ArithWhitespaceParserActionReduce, target: 8},
 		tokens.TokenType("divide"): {kind: ArithWhitespaceParserActionReduce, target: 8},
-		tokens.TokenType("minus"): {kind: ArithWhitespaceParserActionReduce, target: 8},
+		tokens.TokenType("minus"):  {kind: ArithWhitespaceParserActionReduce, target: 8},
 		tokens.TokenType("modulo"): {kind: ArithWhitespaceParserActionReduce, target: 8},
-		tokens.TokenType("plus"): {kind: ArithWhitespaceParserActionReduce, target: 8},
-		tokens.TokenType("times"): {kind: ArithWhitespaceParserActionReduce, target: 8},
+		tokens.TokenType("plus"):   {kind: ArithWhitespaceParserActionReduce, target: 8},
+		tokens.TokenType("times"):  {kind: ArithWhitespaceParserActionReduce, target: 8},
 	},
 }
 
 var ArithWhitespaceParserGotos = map[int]map[asts.NodeType]int{
 	0: {
-		asts.NodeType("AddSubTerm"): 4,
-		asts.NodeType("MulDivTerm"): 5,
-		asts.NodeType("PrecedenceChainStart"): 2,
-		asts.NodeType("RHSValue"): 3,
-		asts.NodeType("Root"): 7,
-		asts.NodeType("Rvalue"): 1,
+		asts.NodeType("AddSubTerm"):           1,
+		asts.NodeType("MulDivTerm"):           5,
+		asts.NodeType("PrecedenceChainStart"): 4,
+		asts.NodeType("RHSValue"):             6,
+		asts.NodeType("Root"):                 7,
+		asts.NodeType("Rvalue"):               3,
 	},
 	8: {
 		asts.NodeType("MulDivTerm"): 13,
-		asts.NodeType("RHSValue"): 3,
+		asts.NodeType("RHSValue"):   6,
 	},
 	9: {
 		asts.NodeType("MulDivTerm"): 14,
-		asts.NodeType("RHSValue"): 3,
+		asts.NodeType("RHSValue"):   6,
 	},
 	10: {
 		asts.NodeType("RHSValue"): 15,

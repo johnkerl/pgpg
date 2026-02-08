@@ -1,6 +1,8 @@
 # Structure
 
 * Use `go:embed` rather than extensive `buf.WriteString` for codgen templates
+* Try to get the generated code the same from run to run---there appears to be some
+  non-determinism with regard to hashmap ordering or somesuch.
 
 # [x] Markdown defs of simple grammars
 

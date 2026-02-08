@@ -4,31 +4,39 @@
     "0": {
       "int_literal": {
         "type": "shift",
-        "target": 6
+        "target": 2
       }
     },
     "1": {
       "EOF": {
         "type": "reduce",
-        "target": 1
+        "target": 3
+      },
+      "minus": {
+        "type": "shift",
+        "target": 9
+      },
+      "plus": {
+        "type": "shift",
+        "target": 8
       }
     },
     "10": {
       "int_literal": {
         "type": "shift",
-        "target": 6
+        "target": 2
       }
     },
     "11": {
       "int_literal": {
         "type": "shift",
-        "target": 6
+        "target": 2
       }
     },
     "12": {
       "int_literal": {
         "type": "shift",
-        "target": 6
+        "target": 2
       }
     },
     "13": {
@@ -164,47 +172,39 @@
     "2": {
       "EOF": {
         "type": "reduce",
-        "target": 2
+        "target": 11
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 11
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 11
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 11
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 11
+      },
+      "times": {
+        "type": "reduce",
+        "target": 11
       }
     },
     "3": {
       "EOF": {
         "type": "reduce",
-        "target": 10
-      },
-      "divide": {
-        "type": "reduce",
-        "target": 10
-      },
-      "minus": {
-        "type": "reduce",
-        "target": 10
-      },
-      "modulo": {
-        "type": "reduce",
-        "target": 10
-      },
-      "plus": {
-        "type": "reduce",
-        "target": 10
-      },
-      "times": {
-        "type": "reduce",
-        "target": 10
+        "target": 1
       }
     },
     "4": {
       "EOF": {
         "type": "reduce",
-        "target": 3
-      },
-      "minus": {
-        "type": "shift",
-        "target": 9
-      },
-      "plus": {
-        "type": "shift",
-        "target": 8
+        "target": 2
       }
     },
     "5": {
@@ -236,27 +236,27 @@
     "6": {
       "EOF": {
         "type": "reduce",
-        "target": 11
+        "target": 10
       },
       "divide": {
         "type": "reduce",
-        "target": 11
+        "target": 10
       },
       "minus": {
         "type": "reduce",
-        "target": 11
+        "target": 10
       },
       "modulo": {
         "type": "reduce",
-        "target": 11
+        "target": 10
       },
       "plus": {
         "type": "reduce",
-        "target": 11
+        "target": 10
       },
       "times": {
         "type": "reduce",
-        "target": 11
+        "target": 10
       }
     },
     "7": {
@@ -267,24 +267,24 @@
     "8": {
       "int_literal": {
         "type": "shift",
-        "target": 6
+        "target": 2
       }
     },
     "9": {
       "int_literal": {
         "type": "shift",
-        "target": 6
+        "target": 2
       }
     }
   },
   "gotos": {
     "0": {
-      "AddSubTerm": 4,
+      "AddSubTerm": 1,
       "MulDivTerm": 5,
-      "PrecedenceChainStart": 2,
-      "RHSValue": 3,
+      "PrecedenceChainStart": 4,
+      "RHSValue": 6,
       "Root": 7,
-      "Rvalue": 1
+      "Rvalue": 3
     },
     "10": {
       "RHSValue": 15
@@ -297,11 +297,11 @@
     },
     "8": {
       "MulDivTerm": 13,
-      "RHSValue": 3
+      "RHSValue": 6
     },
     "9": {
       "MulDivTerm": 14,
-      "RHSValue": 3
+      "RHSValue": 6
     }
   },
   "productions": [

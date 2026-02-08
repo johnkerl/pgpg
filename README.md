@@ -25,7 +25,7 @@ As of February 2026 I'm picking this back up again, making significant use of Cu
   * Maybe Python and/or JavaScript and/or Rust later
   * Aim for non-clever abstraction and concept reuse
   * Try to use language-independent data structures when possible
-* Generator target initially Go
+* Generator initially in Go
   * Maybe Python and/or JavaScript and/or Rust later
   * Try to use language-independent data structures when possible
 

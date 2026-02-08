@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go/format"
 	"sort"
 	"strconv"
 )
@@ -19,6 +20,19 @@ func DecodeTables(data []byte) (*Tables, error) {
 
 // GenerateGoParserCode creates Go source implementing an LR(1) parser from tables.
 func GenerateGoParserCode(tables *Tables, packageName string, typeName string) ([]byte, error) {
+	raw, err := GenerateGoParserCodeRaw(tables, packageName, typeName)
+	if err != nil {
+		return nil, err
+	}
+	formatted, err := format.Source(raw)
+	if err != nil {
+		return nil, fmt.Errorf("format generated code: %w", err)
+	}
+	return formatted, nil
+}
+
+// GenerateGoParserCodeRaw creates unformatted Go source implementing an LR(1) parser from tables.
+func GenerateGoParserCodeRaw(tables *Tables, packageName string, typeName string) ([]byte, error) {
 	if tables == nil {
 		return nil, fmt.Errorf("nil tables")
 	}
