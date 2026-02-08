@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -39,7 +40,8 @@ var parserMakerTable = map[string]parserInfoT{
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} {one or more strings to parse ...}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} expr {one or more strings to parse ...}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} file {one or more filenames}\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Parser names:\n")
 	names := make([]string, 0, len(parserMakerTable))
@@ -64,10 +66,12 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	if flag.NArg() < 2 {
+	if flag.NArg() < 3 {
 		usage()
 	}
 	parserName := flag.Arg(0)
+	mode := flag.Arg(1)
+	args := flag.Args()[2:]
 
 	parserInfo, ok := parserMakerTable[parserName]
 	if !ok {
@@ -80,15 +84,21 @@ func main() {
 		stack:  traceStack,
 	}
 
-	for _, arg := range flag.Args()[1:] {
-		ast, err := run(arg, opts)
-		if err != nil {
+	switch mode {
+	case "expr":
+		for _, arg := range args {
+			if err := runParserOnce(run, arg, opts); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		}
+	case "file":
+		if err := runParserOnFiles(run, args, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		// TODO: CLI option
-		ast.Print()
-		// ast.PrintParex()
+	default:
+		usage()
 	}
 }
 
@@ -118,6 +128,41 @@ func runGeneratedStatementsParser(input string, opts traceOptions) (*asts.AST, e
 	parser := generatedparsers.NewStatementsParser()
 	attachStatementsTrace(parser, opts)
 	return parser.Parse(lexer)
+}
+
+func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input string, opts traceOptions) error {
+	ast, err := run(input, opts)
+	if err != nil {
+		return err
+	}
+	// TODO: CLI option
+	ast.Print()
+	// ast.PrintParex()
+	return nil
+}
+
+func runParserOnFiles(run func(string, traceOptions) (*asts.AST, error), filenames []string, opts traceOptions) error {
+	for _, filename := range filenames {
+		handle, err := os.Open(filename)
+		if err != nil {
+			return err
+		}
+		scanner := bufio.NewScanner(handle)
+		for scanner.Scan() {
+			if err := runParserOnce(run, scanner.Text(), opts); err != nil {
+				_ = handle.Close()
+				return err
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			_ = handle.Close()
+			return err
+		}
+		if err := handle.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func attachArithTrace(parser *generatedparsers.ArithParser, opts traceOptions) {

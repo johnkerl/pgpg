@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"sort"
@@ -34,7 +36,9 @@ var lexerMakerTable = map[string]lexerInfoT{
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} {one or more strings to lex ...}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} expr {one or more strings to lex ...}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} file {one or more filenames}\n", os.Args[0])
+	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Lexer names:\n")
 	names := make([]string, 0, len(lexerMakerTable))
 	for name := range lexerMakerTable {
@@ -49,10 +53,15 @@ func usage() {
 }
 
 func main() {
-	if len(os.Args) < 3 {
+	flag.Usage = usage
+	flag.Parse()
+
+	if flag.NArg() < 3 {
 		usage()
 	}
-	lexerName := os.Args[1]
+	lexerName := flag.Arg(0)
+	mode := flag.Arg(1)
+	args := flag.Args()[2:]
 
 	lexerInfo, ok := lexerMakerTable[lexerName]
 	if !ok {
@@ -60,12 +69,49 @@ func main() {
 	}
 	lexerMaker := lexerInfo.maker
 
-	for _, arg := range os.Args[2:] {
-		lexer := lexerMaker(arg)
-		err := lexers.Run(lexer)
-		if err != nil {
+	switch mode {
+	case "expr":
+		for _, arg := range args {
+			if err := runLexerOnce(lexerMaker, arg); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		}
+	case "file":
+		if err := runLexerOnFiles(lexerMaker, args); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+	default:
+		usage()
 	}
+}
+
+func runLexerOnce(lexerMaker lexerMaker, input string) error {
+	lexer := lexerMaker(input)
+	return lexers.Run(lexer)
+}
+
+func runLexerOnFiles(lexerMaker lexerMaker, filenames []string) error {
+	for _, filename := range filenames {
+		handle, err := os.Open(filename)
+		if err != nil {
+			return err
+		}
+		scanner := bufio.NewScanner(handle)
+		for scanner.Scan() {
+			if err := runLexerOnce(lexerMaker, scanner.Text()); err != nil {
+				_ = handle.Close()
+				return err
+			}
+		}
+		if err := scanner.Err(); err != nil {
+			_ = handle.Close()
+			return err
+		}
+		if err := handle.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
