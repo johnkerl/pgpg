@@ -9,8 +9,10 @@
 * Allow comments in grammars
 * Trace mode for debugging ...
 * Some multi-statement grammars.
+* Some note ... somewhere ... keywords need to precede IDs in BNF lex.
 * `trylex`/`tryparse` options to take command-line strings or filenames.
 * See how the parsegen handles various conflicts.
+* Doc `tryparse` with `-tokens`, `-states`, `-stack`.
 
 # [x] Markdown defs of simple grammars
 

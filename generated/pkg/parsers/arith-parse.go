@@ -8,7 +8,15 @@ import (
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type ArithParser struct{}
+type ArithParser struct {
+	Trace *ArithParserTraceHooks
+}
+
+type ArithParserTraceHooks struct {
+	OnToken  func(tok *tokens.Token)
+	OnAction func(state int, action ArithParserAction, lookahead *tokens.Token)
+	OnStack  func(stateStack []int, nodeStack []*asts.ASTNode)
+}
 
 func NewArithParser() *ArithParser { return &ArithParser{} }
 
@@ -19,6 +27,9 @@ func (parser *ArithParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, e
 	stateStack := []int{0}
 	nodeStack := []*asts.ASTNode{}
 	lookahead := lexer.Scan()
+	if parser.Trace != nil && parser.Trace.OnToken != nil {
+		parser.Trace.OnToken(lookahead)
+	}
 	for {
 		if lookahead == nil {
 			return nil, fmt.Errorf("parser: lexer returned nil token")
@@ -31,13 +42,22 @@ func (parser *ArithParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, e
 		if !ok {
 			return nil, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
 		}
-		switch action.kind {
+		if parser.Trace != nil && parser.Trace.OnAction != nil {
+			parser.Trace.OnAction(state, action, lookahead)
+		}
+		switch action.Kind {
 		case ArithParserActionShift:
 			nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
-			stateStack = append(stateStack, action.target)
+			stateStack = append(stateStack, action.Target)
 			lookahead = lexer.Scan()
+			if parser.Trace != nil && parser.Trace.OnToken != nil {
+				parser.Trace.OnToken(lookahead)
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
 		case ArithParserActionReduce:
-			prod := ArithParserProductions[action.target]
+			prod := ArithParserProductions[action.Target]
 			children := make([]*asts.ASTNode, prod.rhsCount)
 			for i := prod.rhsCount - 1; i >= 0; i-- {
 				stateStack = stateStack[:len(stateStack)-1]
@@ -55,9 +75,15 @@ func (parser *ArithParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, e
 				return nil, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
 			}
 			stateStack = append(stateStack, nextState)
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
 		case ArithParserActionAccept:
 			if len(nodeStack) != 1 {
 				return nil, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
 			}
 			return asts.NewAST(nodeStack[0]), nil
 		default:
@@ -75,8 +101,8 @@ const (
 )
 
 type ArithParserAction struct {
-	kind   ArithParserActionKind
-	target int
+	Kind   ArithParserActionKind
+	Target int
 }
 
 type ArithParserProduction struct {
@@ -86,100 +112,100 @@ type ArithParserProduction struct {
 
 var ArithParserActions = map[int]map[tokens.TokenType]ArithParserAction{
 	0: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {Kind: ArithParserActionShift, Target: 7},
 	},
 	1: {
-		tokens.TokenTypeEOF:       {kind: ArithParserActionReduce, target: 3},
-		tokens.TokenType("minus"): {kind: ArithParserActionShift, target: 8},
-		tokens.TokenType("plus"):  {kind: ArithParserActionShift, target: 9},
+		tokens.TokenTypeEOF:       {Kind: ArithParserActionReduce, Target: 3},
+		tokens.TokenType("minus"): {Kind: ArithParserActionShift, Target: 8},
+		tokens.TokenType("plus"):  {Kind: ArithParserActionShift, Target: 9},
 	},
 	2: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 6},
-		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 6},
-		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 11},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 6},
-		tokens.TokenType("times"):  {kind: ArithParserActionShift, target: 12},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 6},
+		tokens.TokenType("divide"): {Kind: ArithParserActionShift, Target: 10},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 6},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionShift, Target: 11},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 6},
+		tokens.TokenType("times"):  {Kind: ArithParserActionShift, Target: 12},
 	},
 	3: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 2},
+		tokens.TokenTypeEOF: {Kind: ArithParserActionReduce, Target: 2},
 	},
 	4: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 10},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 10},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 10},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 10},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 10},
-		tokens.TokenType("times"):  {kind: ArithParserActionReduce, target: 10},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 10},
+		tokens.TokenType("divide"): {Kind: ArithParserActionReduce, Target: 10},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 10},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionReduce, Target: 10},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 10},
+		tokens.TokenType("times"):  {Kind: ArithParserActionReduce, Target: 10},
 	},
 	5: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionAccept},
+		tokens.TokenTypeEOF: {Kind: ArithParserActionAccept},
 	},
 	6: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 1},
+		tokens.TokenTypeEOF: {Kind: ArithParserActionReduce, Target: 1},
 	},
 	7: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 11},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 11},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 11},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 11},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 11},
-		tokens.TokenType("times"):  {kind: ArithParserActionReduce, target: 11},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 11},
+		tokens.TokenType("divide"): {Kind: ArithParserActionReduce, Target: 11},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 11},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionReduce, Target: 11},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 11},
+		tokens.TokenType("times"):  {Kind: ArithParserActionReduce, Target: 11},
 	},
 	8: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {Kind: ArithParserActionShift, Target: 7},
 	},
 	9: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {Kind: ArithParserActionShift, Target: 7},
 	},
 	10: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {Kind: ArithParserActionShift, Target: 7},
 	},
 	11: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {Kind: ArithParserActionShift, Target: 7},
 	},
 	12: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {Kind: ArithParserActionShift, Target: 7},
 	},
 	13: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 5},
-		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 5},
-		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 11},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 5},
-		tokens.TokenType("times"):  {kind: ArithParserActionShift, target: 12},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 5},
+		tokens.TokenType("divide"): {Kind: ArithParserActionShift, Target: 10},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 5},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionShift, Target: 11},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 5},
+		tokens.TokenType("times"):  {Kind: ArithParserActionShift, Target: 12},
 	},
 	14: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 4},
-		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 4},
-		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 11},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 4},
-		tokens.TokenType("times"):  {kind: ArithParserActionShift, target: 12},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 4},
+		tokens.TokenType("divide"): {Kind: ArithParserActionShift, Target: 10},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 4},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionShift, Target: 11},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 4},
+		tokens.TokenType("times"):  {Kind: ArithParserActionShift, Target: 12},
 	},
 	15: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 8},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 8},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 8},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 8},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 8},
-		tokens.TokenType("times"):  {kind: ArithParserActionReduce, target: 8},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 8},
+		tokens.TokenType("divide"): {Kind: ArithParserActionReduce, Target: 8},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 8},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionReduce, Target: 8},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 8},
+		tokens.TokenType("times"):  {Kind: ArithParserActionReduce, Target: 8},
 	},
 	16: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("times"):  {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 9},
+		tokens.TokenType("divide"): {Kind: ArithParserActionReduce, Target: 9},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 9},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionReduce, Target: 9},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 9},
+		tokens.TokenType("times"):  {Kind: ArithParserActionReduce, Target: 9},
 	},
 	17: {
-		tokens.TokenTypeEOF:        {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("minus"):  {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("plus"):   {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("times"):  {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenTypeEOF:        {Kind: ArithParserActionReduce, Target: 7},
+		tokens.TokenType("divide"): {Kind: ArithParserActionReduce, Target: 7},
+		tokens.TokenType("minus"):  {Kind: ArithParserActionReduce, Target: 7},
+		tokens.TokenType("modulo"): {Kind: ArithParserActionReduce, Target: 7},
+		tokens.TokenType("plus"):   {Kind: ArithParserActionReduce, Target: 7},
+		tokens.TokenType("times"):  {Kind: ArithParserActionReduce, Target: 7},
 	},
 }
 

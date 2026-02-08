@@ -8428,9 +8428,9 @@ var StatementsLexerActions = map[int]tokens.TokenType{
 	142: "id",
 	143: "id",
 	144: "id",
-	145: "id",
+	145: "if",
 	146: "id",
 	147: "id",
 	148: "id",
-	149: "id",
+	149: "print",
 }

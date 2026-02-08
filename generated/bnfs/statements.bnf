@@ -3,6 +3,9 @@
 _decdig      ::= "0"-"9";
 int_literal  ::= _decdig { _decdig };
 
+if    ::= "if";
+print ::= "print";
+
 _id_start    ::= "_" | "a"-"z" | "A"-"Z";
 _id_continue ::= _id_start | _decdig ;
 id           ::= _id_start { _id_continue } ;
@@ -11,9 +14,6 @@ lparen    ::= "(";
 rparen    ::= ")";
 semicolon ::= ";";
 equals    ::= "=";
-
-if    ::= "if";
-print ::= "print";
 
 Program        ::= { Statement };
 Statement      ::= Expression semicolon | IfStatement | PrintStatement ;

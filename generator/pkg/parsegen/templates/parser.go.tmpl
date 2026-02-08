@@ -8,7 +8,15 @@ import (
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type {{.TypeName}} struct {}
+type {{.TypeName}} struct {
+	Trace *{{.TypeName}}TraceHooks
+}
+
+type {{.TypeName}}TraceHooks struct {
+	OnToken  func(tok *tokens.Token)
+	OnAction func(state int, action {{.TypeName}}Action, lookahead *tokens.Token)
+	OnStack  func(stateStack []int, nodeStack []*asts.ASTNode)
+}
 
 func New{{.TypeName}}() *{{.TypeName}} { return &{{.TypeName}}{} }
 
@@ -19,6 +27,9 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 	stateStack := []int{0}
 	nodeStack := []*asts.ASTNode{}
 	lookahead := lexer.Scan()
+	if parser.Trace != nil && parser.Trace.OnToken != nil {
+		parser.Trace.OnToken(lookahead)
+	}
 	for {
 		if lookahead == nil {
 			return nil, fmt.Errorf("parser: lexer returned nil token")
@@ -31,13 +42,22 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 		if !ok {
 			return nil, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
 		}
-		switch action.kind {
+		if parser.Trace != nil && parser.Trace.OnAction != nil {
+			parser.Trace.OnAction(state, action, lookahead)
+		}
+		switch action.Kind {
 		case {{.TypeName}}ActionShift:
 			nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
-			stateStack = append(stateStack, action.target)
+			stateStack = append(stateStack, action.Target)
 			lookahead = lexer.Scan()
+			if parser.Trace != nil && parser.Trace.OnToken != nil {
+				parser.Trace.OnToken(lookahead)
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
 		case {{.TypeName}}ActionReduce:
-			prod := {{.TypeName}}Productions[action.target]
+			prod := {{.TypeName}}Productions[action.Target]
 			children := make([]*asts.ASTNode, prod.rhsCount)
 			for i := prod.rhsCount - 1; i >= 0; i-- {
 				stateStack = stateStack[:len(stateStack)-1]
@@ -55,9 +75,15 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 				return nil, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
 			}
 			stateStack = append(stateStack, nextState)
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
 		case {{.TypeName}}ActionAccept:
 			if len(nodeStack) != 1 {
 				return nil, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
 			}
 			return asts.NewAST(nodeStack[0]), nil
 		default:
@@ -75,8 +101,8 @@ const (
 )
 
 type {{.TypeName}}Action struct {
-	kind   {{.TypeName}}ActionKind
-	target int
+	Kind   {{.TypeName}}ActionKind
+	Target int
 }
 
 type {{.TypeName}}Production struct {
@@ -88,7 +114,7 @@ var {{.TypeName}}Actions = map[int]map[tokens.TokenType]{{.TypeName}}Action{
 {{- range .Actions }}
 	{{.State}}: {
 {{- range .Entries }}
-		{{.TerminalLiteral}}: {kind: {{.KindLiteral}}{{if .HasTarget}}, target: {{.Target}}{{end}}},
+		{{.TerminalLiteral}}: {Kind: {{.KindLiteral}}{{if .HasTarget}}, Target: {{.Target}}{{end}}},
 {{- end }}
 	},
 {{- end }}
