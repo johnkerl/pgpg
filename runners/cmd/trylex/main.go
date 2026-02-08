@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 
+	generatedlexers "github.com/johnkerl/pgpg/generated/pkg"
 	"github.com/johnkerl/pgpg/manual/pkg/lexers"
 )
 
@@ -25,6 +26,7 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"vic":    lexerInfoT{lexers.NewVICLexer, "Arithmetic with identifiers, assignments, and PEMDAS operators."},
 	"vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
 	"ebnf":   lexerInfoT{lexers.NewEBNFLexer, "EBNF grammar with identifiers, literals, and operators."},
+	"arith":  lexerInfoT{generatedlexers.NewArithLexLexer, "Generated arithmetic lexer from ../generated/pkg/arith-lex.go."},
 }
 
 func usage() {
