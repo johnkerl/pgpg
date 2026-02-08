@@ -7,6 +7,16 @@ import (
 	"go/format"
 	"sort"
 	"strconv"
+	"text/template"
+
+	_ "embed"
+)
+
+//go:embed templates/parser.go.tmpl
+var parserTemplateText string
+
+var parserTemplate = template.Must(
+	template.New("parser").Parse(parserTemplateText),
 )
 
 // DecodeTables reads tables JSON into Tables.
@@ -43,161 +53,133 @@ func GenerateGoParserCodeRaw(tables *Tables, packageName string, typeName string
 		return nil, fmt.Errorf("type name is required")
 	}
 
+	data := parserTemplateData{
+		PackageName: packageName,
+		TypeName:    typeName,
+		Actions:     buildParserActions(tables, typeName),
+		Gotos:       buildParserGotos(tables),
+		Productions: buildParserProductions(tables),
+	}
+
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "package %s\n\n", packageName)
-	buf.WriteString("import (\n")
-	buf.WriteString("\t\"fmt\"\n\n")
-	buf.WriteString("\tmanuallexers \"github.com/johnkerl/pgpg/manual/pkg/lexers\"\n")
-	buf.WriteString("\t\"github.com/johnkerl/pgpg/manual/pkg/asts\"\n")
-	buf.WriteString("\t\"github.com/johnkerl/pgpg/manual/pkg/tokens\"\n")
-	buf.WriteString(")\n\n")
-
-	fmt.Fprintf(&buf, "type %s struct {}\n\n", typeName)
-	fmt.Fprintf(&buf, "func New%s() *%s { return &%s{} }\n\n", typeName, typeName, typeName)
-
-	buf.WriteString("func (parser *" + typeName + ") Parse(lexer manuallexers.AbstractLexer) (*asts.AST, error) {\n")
-	buf.WriteString("\tif lexer == nil {\n")
-	buf.WriteString("\t\treturn nil, fmt.Errorf(\"parser: nil lexer\")\n")
-	buf.WriteString("\t}\n")
-	buf.WriteString("\tstateStack := []int{0}\n")
-	buf.WriteString("\tnodeStack := []*asts.ASTNode{}\n")
-	buf.WriteString("\tlookahead := lexer.Scan()\n")
-	buf.WriteString("\tfor {\n")
-	buf.WriteString("\t\tif lookahead == nil {\n")
-	buf.WriteString("\t\t\treturn nil, fmt.Errorf(\"parser: lexer returned nil token\")\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t\tif lookahead.Type == tokens.TokenTypeError {\n")
-	buf.WriteString("\t\t\treturn nil, fmt.Errorf(\"lexer error: %s\", string(lookahead.Lexeme))\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t\tstate := stateStack[len(stateStack)-1]\n")
-	buf.WriteString("\t\taction, ok := " + typeName + "Actions[state][lookahead.Type]\n")
-	buf.WriteString("\t\tif !ok {\n")
-	buf.WriteString("\t\t\treturn nil, fmt.Errorf(\"parse error: unexpected %s (%q)\", lookahead.Type, string(lookahead.Lexeme))\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t\tswitch action.kind {\n")
-	buf.WriteString("\t\tcase " + typeName + "ActionShift:\n")
-	buf.WriteString("\t\t\tnodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))\n")
-	buf.WriteString("\t\t\tstateStack = append(stateStack, action.target)\n")
-	buf.WriteString("\t\t\tlookahead = lexer.Scan()\n")
-	buf.WriteString("\t\tcase " + typeName + "ActionReduce:\n")
-	buf.WriteString("\t\t\tprod := " + typeName + "Productions[action.target]\n")
-	buf.WriteString("\t\t\tchildren := make([]*asts.ASTNode, prod.rhsCount)\n")
-	buf.WriteString("\t\t\tfor i := prod.rhsCount - 1; i >= 0; i-- {\n")
-	buf.WriteString("\t\t\t\tstateStack = stateStack[:len(stateStack)-1]\n")
-	buf.WriteString("\t\t\t\tchildren[i] = nodeStack[len(nodeStack)-1]\n")
-	buf.WriteString("\t\t\t\tnodeStack = nodeStack[:len(nodeStack)-1]\n")
-	buf.WriteString("\t\t\t}\n")
-	buf.WriteString("\t\t\tif prod.rhsCount == 0 {\n")
-	buf.WriteString("\t\t\t\tchildren = []*asts.ASTNode{}\n")
-	buf.WriteString("\t\t\t}\n")
-	buf.WriteString("\t\t\tnode := asts.NewASTNode(nil, prod.lhs, children)\n")
-	buf.WriteString("\t\t\tnodeStack = append(nodeStack, node)\n")
-	buf.WriteString("\t\t\tstate = stateStack[len(stateStack)-1]\n")
-	buf.WriteString("\t\t\tnextState, ok := " + typeName + "Gotos[state][prod.lhs]\n")
-	buf.WriteString("\t\t\tif !ok {\n")
-	buf.WriteString("\t\t\t\treturn nil, fmt.Errorf(\"parse error: missing goto for %s\", prod.lhs)\n")
-	buf.WriteString("\t\t\t}\n")
-	buf.WriteString("\t\t\tstateStack = append(stateStack, nextState)\n")
-	buf.WriteString("\t\tcase " + typeName + "ActionAccept:\n")
-	buf.WriteString("\t\t\tif len(nodeStack) != 1 {\n")
-	buf.WriteString("\t\t\t\treturn nil, fmt.Errorf(\"parse error: unexpected parse stack size %d\", len(nodeStack))\n")
-	buf.WriteString("\t\t\t}\n")
-	buf.WriteString("\t\t\treturn asts.NewAST(nodeStack[0]), nil\n")
-	buf.WriteString("\t\tdefault:\n")
-	buf.WriteString("\t\t\treturn nil, fmt.Errorf(\"parse error: no action\")\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t}\n")
-	buf.WriteString("}\n\n")
-
-	buf.WriteString("type " + typeName + "ActionKind int\n\n")
-	buf.WriteString("const (\n")
-	buf.WriteString("\t" + typeName + "ActionShift " + typeName + "ActionKind = iota\n")
-	buf.WriteString("\t" + typeName + "ActionReduce\n")
-	buf.WriteString("\t" + typeName + "ActionAccept\n")
-	buf.WriteString(")\n\n")
-
-	buf.WriteString("type " + typeName + "Action struct {\n")
-	buf.WriteString("\tkind   " + typeName + "ActionKind\n")
-	buf.WriteString("\ttarget int\n")
-	buf.WriteString("}\n\n")
-
-	buf.WriteString("type " + typeName + "Production struct {\n")
-	buf.WriteString("\tlhs      asts.NodeType\n")
-	buf.WriteString("\trhsCount int\n")
-	buf.WriteString("}\n\n")
-
-	buf.WriteString("var " + typeName + "Actions = map[int]map[tokens.TokenType]" + typeName + "Action{\n")
-	writeActions(&buf, tables, typeName)
-	buf.WriteString("}\n\n")
-
-	buf.WriteString("var " + typeName + "Gotos = map[int]map[asts.NodeType]int{\n")
-	writeGotos(&buf, tables)
-	buf.WriteString("}\n\n")
-
-	buf.WriteString("var " + typeName + "Productions = []" + typeName + "Production{\n")
-	writeProductions(&buf, tables)
-	buf.WriteString("}\n")
-
+	if err := parserTemplate.Execute(&buf, data); err != nil {
+		return nil, fmt.Errorf("render parser template: %w", err)
+	}
 	return buf.Bytes(), nil
 }
 
-func writeActions(buf *bytes.Buffer, tables *Tables, typeName string) {
+type parserTemplateData struct {
+	PackageName string
+	TypeName    string
+	Actions     []parserActionState
+	Gotos       []parserGotoState
+	Productions []parserProductionInfo
+}
+
+type parserActionState struct {
+	State   int
+	Entries []parserActionEntry
+}
+
+type parserActionEntry struct {
+	TerminalLiteral string
+	KindLiteral     string
+	Target          int
+	HasTarget       bool
+}
+
+type parserGotoState struct {
+	State   int
+	Entries []parserGotoEntry
+}
+
+type parserGotoEntry struct {
+	NontermLiteral string
+	Target         int
+}
+
+type parserProductionInfo struct {
+	LHSLiteral string
+	RHSCount   int
+}
+
+func buildParserActions(tables *Tables, typeName string) []parserActionState {
 	stateIDs := make([]int, 0, len(tables.Actions))
 	for state := range tables.Actions {
 		stateIDs = append(stateIDs, state)
 	}
 	sort.Ints(stateIDs)
+
+	out := make([]parserActionState, 0, len(stateIDs))
 	for _, state := range stateIDs {
-		buf.WriteString(fmt.Sprintf("\t%d: {\n", state))
 		entries := tables.Actions[state]
-		terms := make([]string, 0, len(entries))
+		terminals := make([]string, 0, len(entries))
 		for term := range entries {
-			terms = append(terms, term)
+			terminals = append(terminals, term)
 		}
-		sort.Strings(terms)
-		for _, term := range terms {
+		sort.Strings(terminals)
+
+		actionEntries := make([]parserActionEntry, 0, len(terminals))
+		for _, term := range terminals {
 			action := entries[term]
-			buf.WriteString("\t\t")
-			buf.WriteString(tokenTypeLiteral(term))
-			buf.WriteString(": {kind: " + actionKindLiteral(action.Type, typeName))
-			if action.Type == "shift" || action.Type == "reduce" {
-				buf.WriteString(fmt.Sprintf(", target: %d", action.Target))
-			}
-			buf.WriteString("},\n")
+			hasTarget := action.Type == "shift" || action.Type == "reduce"
+			actionEntries = append(actionEntries, parserActionEntry{
+				TerminalLiteral: tokenTypeLiteral(term),
+				KindLiteral:     actionKindLiteral(action.Type, typeName),
+				Target:          action.Target,
+				HasTarget:       hasTarget,
+			})
 		}
-		buf.WriteString("\t},\n")
+
+		out = append(out, parserActionState{
+			State:   state,
+			Entries: actionEntries,
+		})
 	}
+	return out
 }
 
-func writeGotos(buf *bytes.Buffer, tables *Tables) {
+func buildParserGotos(tables *Tables) []parserGotoState {
 	stateIDs := make([]int, 0, len(tables.Gotos))
 	for state := range tables.Gotos {
 		stateIDs = append(stateIDs, state)
 	}
 	sort.Ints(stateIDs)
+
+	out := make([]parserGotoState, 0, len(stateIDs))
 	for _, state := range stateIDs {
-		buf.WriteString(fmt.Sprintf("\t%d: {\n", state))
 		entries := tables.Gotos[state]
 		names := make([]string, 0, len(entries))
 		for name := range entries {
 			names = append(names, name)
 		}
 		sort.Strings(names)
+
+		gotoEntries := make([]parserGotoEntry, 0, len(names))
 		for _, name := range names {
-			buf.WriteString("\t\tasts.NodeType(" + strconv.Quote(name) + "): ")
-			buf.WriteString(fmt.Sprintf("%d", entries[name]))
-			buf.WriteString(",\n")
+			gotoEntries = append(gotoEntries, parserGotoEntry{
+				NontermLiteral: "asts.NodeType(" + strconv.Quote(name) + ")",
+				Target:         entries[name],
+			})
 		}
-		buf.WriteString("\t},\n")
+
+		out = append(out, parserGotoState{
+			State:   state,
+			Entries: gotoEntries,
+		})
 	}
+	return out
 }
 
-func writeProductions(buf *bytes.Buffer, tables *Tables) {
+func buildParserProductions(tables *Tables) []parserProductionInfo {
+	out := make([]parserProductionInfo, 0, len(tables.Productions))
 	for _, prod := range tables.Productions {
-		buf.WriteString("\t{lhs: asts.NodeType(" + strconv.Quote(prod.LHS) + "), rhsCount: ")
-		buf.WriteString(fmt.Sprintf("%d", len(prod.RHS)))
-		buf.WriteString("},\n")
+		out = append(out, parserProductionInfo{
+			LHSLiteral: "asts.NodeType(" + strconv.Quote(prod.LHS) + ")",
+			RHSCount:   len(prod.RHS),
+		})
 	}
+	return out
 }
 
 func actionKindLiteral(kind string, typeName string) string {

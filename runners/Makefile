@@ -21,7 +21,6 @@ clean:
 # go fmt ./... finds Python files which we want to ignore.
 fmt:
 	-go fmt ./cmd/...
-	-go fmt ./pkg/...
 
 # ----------------------------------------------------------------
 # Static analysis

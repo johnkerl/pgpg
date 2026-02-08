@@ -90,7 +90,6 @@ func ArithLexerLookupTransition(state int, r rune) (int, bool) {
 	}
 	return 0, false
 }
-
 func ArithLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
 	return strings.HasPrefix(string(tokenType), "!")
 }

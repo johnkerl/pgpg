@@ -16,11 +16,11 @@ const eofSymbol = "EOF"
 
 // Tables captures LR(1) parsing tables and productions.
 type Tables struct {
-	StartSymbol string                 `json:"start_symbol"`
+	StartSymbol string                    `json:"start_symbol"`
 	Actions     map[int]map[string]Action `json:"actions"`
-	Gotos       map[int]map[string]int `json:"gotos"`
-	Productions []Production           `json:"productions"`
-	Metadata    map[string]string      `json:"metadata,omitempty"`
+	Gotos       map[int]map[string]int    `json:"gotos"`
+	Productions []Production              `json:"productions"`
+	Metadata    map[string]string         `json:"metadata,omitempty"`
 }
 
 type Action struct {
