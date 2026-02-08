@@ -35,7 +35,6 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:vbc":    {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":   {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
 	"g:arith":  {run: runGeneratedArithParser, help: "Generated arithmetic parser from generated/pkg/arith-parse.go."},
-	"g:arithw": {run: runGeneratedArithWhitespaceParser, help: "Generated arithmetic parser from generated/pkg/arithw-parse.go."},
 	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/pkg/parsers/statements-parse.go."},
 }
 
@@ -116,13 +115,6 @@ func runGeneratedArithParser(input string, opts traceOptions) (*asts.AST, error)
 	return parser.Parse(lexer)
 }
 
-func runGeneratedArithWhitespaceParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewArithWhitespaceLexer(input)
-	parser := generatedparsers.NewArithWhitespaceParser()
-	attachArithWhitespaceTrace(parser, opts)
-	return parser.Parse(lexer)
-}
-
 func runGeneratedStatementsParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewStatementsLexer(input)
 	parser := generatedparsers.NewStatementsParser()
@@ -181,32 +173,6 @@ func attachArithTrace(parser *generatedparsers.ArithParser, opts traceOptions) {
 				return
 			}
 			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatArithAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func attachArithWhitespaceTrace(parser *generatedparsers.ArithWhitespaceParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.ArithWhitespaceParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.ArithWhitespaceParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatArithWhitespaceAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
 		},
 		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
 			if !opts.stack {
@@ -291,19 +257,6 @@ func formatArithAction(action generatedparsers.ArithParserAction) string {
 	case generatedparsers.ArithParserActionReduce:
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case generatedparsers.ArithParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
-}
-
-func formatArithWhitespaceAction(action generatedparsers.ArithWhitespaceParserAction) string {
-	switch action.Kind {
-	case generatedparsers.ArithWhitespaceParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.ArithWhitespaceParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.ArithWhitespaceParserActionAccept:
 		return "accept"
 	default:
 		return "unknown"

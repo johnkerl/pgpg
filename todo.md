@@ -6,7 +6,6 @@
   * Callbacks somehow ... .
 * Replace generated arith with pemdas, more closely to match the manual one.
   Likewise with other manual grammars.
-* `trylex`/`tryparse` options to take command-line strings or filenames.
 * See how the parsegen handles various conflicts.
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
 
