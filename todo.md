@@ -6,6 +6,7 @@
   * Callbacks somehow ... .
 * Replace generated arith with pemdas, more closely to match the manual one.
   Likewise with other manual grammars.
+* Allow comments in grammars
 * Some multi-statement grammars.
 * See how the parsegen handles various conflicts.
 

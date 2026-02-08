@@ -1,0 +1,17 @@
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+_decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+int_literal ::= _decdig { _decdig };
+
+lparen    ::= "(";
+rparen    ::= ")";
+semicolon ::= ";";
+equals    ::= "=";
+
+if        ::= "if";
+print     ::= "print";
+
+Program        : Statement+ ;
+Statement      : Expression semicolon | IfStatement | PrintStatement ;
+Expression     : ID equals int_literal | int_literal ;
+IfStatement    : 'if' '(' Expression ')' statement ;
+PrintStatement : print lparen Expression rparen semicolon ;

@@ -16,14 +16,14 @@ Rvalue ::= PrecedenceChainStart ;
 
 PrecedenceChainStart ::= AddSubTerm ;
 
-AddSubTerm
-  ::= AddSubTerm plus  MulDivTerm
+AddSubTerm ::=
+    AddSubTerm plus  MulDivTerm
   | AddSubTerm minus  MulDivTerm
   | MulDivTerm
 ;
 
-MulDivTerm
-  ::= MulDivTerm times   RHSValue
+MulDivTerm ::=
+    MulDivTerm times    RHSValue
   | MulDivTerm divide   RHSValue
   | MulDivTerm modulo   RHSValue
   | RHSValue
