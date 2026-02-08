@@ -1,14 +1,20 @@
-_decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+# ----------------------------------------------------------------
+# Lexing rules
+
 whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+
+_decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
 plus ::= "+";
 minus ::= "-";
 times ::= "*";
 divide ::= "/";
 modulo ::= "%";
 
-int_literal
-  ::= _decdig { _decdig }
-;
+int_literal ::= _decdig { _decdig } ;
+
+# ----------------------------------------------------------------
+# Parsing rules
 
 Root ::= Rvalue;
 
@@ -29,6 +35,4 @@ MulDivTerm
   | RHSValue
 ;
 
-RHSValue
-  ::= int_literal
-;
+RHSValue ::= int_literal ;
