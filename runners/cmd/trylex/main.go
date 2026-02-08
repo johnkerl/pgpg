@@ -30,6 +30,7 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexer, "Generated sign/digit lexer from generated/pkg/sign-digit.go."},
 	"g:arith":  lexerInfoT{generatedlexers.NewArithLexer, "Generated arithmetic lexer from generated/pkg/arith-lex.go."},
 	"g:arithw": lexerInfoT{generatedlexers.NewArithWhitespaceLexer, "Generated arithmetic lexer from generated/arithw.go."},
+	"g:stmts":  lexerInfoT{generatedlexers.NewStatementsLexer, "Generated statements lexer from generated/pkg/lexers/statements-lex.go."},
 }
 
 func usage() {

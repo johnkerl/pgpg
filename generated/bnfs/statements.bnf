@@ -1,0 +1,22 @@
+!whitespace  ::= ' ' | '\t' | '\n' | '\r' ;
+
+_decdig      ::= "0"-"9";
+int_literal  ::= _decdig { _decdig };
+
+if    ::= "if";
+print ::= "print";
+
+_id_start    ::= "_" | "a"-"z" | "A"-"Z";
+_id_continue ::= _id_start | _decdig ;
+id           ::= _id_start { _id_continue } ;
+
+lparen    ::= "(";
+rparen    ::= ")";
+semicolon ::= ";";
+equals    ::= "=";
+
+Program        ::= { Statement };
+Statement      ::= Expression semicolon | IfStatement | PrintStatement ;
+Expression     ::= id equals int_literal | int_literal ;
+IfStatement    ::= if lparen Expression rparen Statement ;
+PrintStatement ::= print lparen Expression rparen semicolon ;

@@ -1,0 +1,12 @@
+// Example grammar demonstrating EBNF range syntax in lexer rules.
+
+_lower ::= "a"-"z";
+_upper ::= "A"-"Z";
+_digit ::= "0"-"9";
+
+id_start ::= "_" | _lower | _upper;
+id_continue ::= id_start | _digit;
+
+id ::= id_start { id_continue };
+
+Root ::= id;

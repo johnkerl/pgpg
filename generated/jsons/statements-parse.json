@@ -1,0 +1,471 @@
+{
+  "start_symbol": "Program",
+  "actions": {
+    "0": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      },
+      "id": {
+        "type": "shift",
+        "target": 7
+      },
+      "if": {
+        "type": "shift",
+        "target": 8
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 9
+      },
+      "print": {
+        "type": "shift",
+        "target": 10
+      }
+    },
+    "1": {
+      "semicolon": {
+        "type": "shift",
+        "target": 11
+      }
+    },
+    "2": {
+      "EOF": {
+        "type": "reduce",
+        "target": 5
+      },
+      "id": {
+        "type": "reduce",
+        "target": 5
+      },
+      "if": {
+        "type": "reduce",
+        "target": 5
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 5
+      },
+      "print": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "3": {
+      "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "id": {
+        "type": "reduce",
+        "target": 6
+      },
+      "if": {
+        "type": "reduce",
+        "target": 6
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 6
+      },
+      "print": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "4": {
+      "EOF": {
+        "type": "accept"
+      }
+    },
+    "5": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      },
+      "id": {
+        "type": "shift",
+        "target": 7
+      },
+      "if": {
+        "type": "shift",
+        "target": 8
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 9
+      },
+      "print": {
+        "type": "shift",
+        "target": 10
+      }
+    },
+    "6": {
+      "EOF": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "7": {
+      "equals": {
+        "type": "shift",
+        "target": 13
+      }
+    },
+    "8": {
+      "lparen": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "9": {
+      "semicolon": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "10": {
+      "lparen": {
+        "type": "shift",
+        "target": 15
+      }
+    },
+    "11": {
+      "EOF": {
+        "type": "reduce",
+        "target": 4
+      },
+      "id": {
+        "type": "reduce",
+        "target": 4
+      },
+      "if": {
+        "type": "reduce",
+        "target": 4
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 4
+      },
+      "print": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "12": {
+      "EOF": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "13": {
+      "int_literal": {
+        "type": "shift",
+        "target": 16
+      }
+    },
+    "14": {
+      "id": {
+        "type": "shift",
+        "target": 18
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 19
+      }
+    },
+    "15": {
+      "id": {
+        "type": "shift",
+        "target": 18
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 19
+      }
+    },
+    "16": {
+      "semicolon": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "17": {
+      "rparen": {
+        "type": "shift",
+        "target": 21
+      }
+    },
+    "18": {
+      "equals": {
+        "type": "shift",
+        "target": 22
+      }
+    },
+    "19": {
+      "rparen": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "20": {
+      "rparen": {
+        "type": "shift",
+        "target": 23
+      }
+    },
+    "21": {
+      "id": {
+        "type": "shift",
+        "target": 7
+      },
+      "if": {
+        "type": "shift",
+        "target": 8
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 9
+      },
+      "print": {
+        "type": "shift",
+        "target": 10
+      }
+    },
+    "22": {
+      "int_literal": {
+        "type": "shift",
+        "target": 25
+      }
+    },
+    "23": {
+      "semicolon": {
+        "type": "shift",
+        "target": 26
+      }
+    },
+    "24": {
+      "EOF": {
+        "type": "reduce",
+        "target": 9
+      },
+      "id": {
+        "type": "reduce",
+        "target": 9
+      },
+      "if": {
+        "type": "reduce",
+        "target": 9
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 9
+      },
+      "print": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "25": {
+      "rparen": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "26": {
+      "EOF": {
+        "type": "reduce",
+        "target": 10
+      },
+      "id": {
+        "type": "reduce",
+        "target": 10
+      },
+      "if": {
+        "type": "reduce",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 10
+      },
+      "print": {
+        "type": "reduce",
+        "target": 10
+      }
+    }
+  },
+  "gotos": {
+    "0": {
+      "Expression": 1,
+      "IfStatement": 2,
+      "PrintStatement": 3,
+      "Program": 4,
+      "Statement": 5,
+      "__pgpg_repeat_1": 6
+    },
+    "5": {
+      "Expression": 1,
+      "IfStatement": 2,
+      "PrintStatement": 3,
+      "Statement": 5,
+      "__pgpg_repeat_1": 12
+    },
+    "14": {
+      "Expression": 17
+    },
+    "15": {
+      "Expression": 20
+    },
+    "21": {
+      "Expression": 1,
+      "IfStatement": 2,
+      "PrintStatement": 3,
+      "Statement": 24
+    }
+  },
+  "productions": [
+    {
+      "lhs": "__pgpg_start_2",
+      "rhs": [
+        {
+          "name": "Program",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": [
+        {
+          "name": "Statement",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Program",
+      "rhs": [
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Statement",
+      "rhs": [
+        {
+          "name": "Expression",
+          "terminal": false
+        },
+        {
+          "name": "semicolon",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Statement",
+      "rhs": [
+        {
+          "name": "IfStatement",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Statement",
+      "rhs": [
+        {
+          "name": "PrintStatement",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Expression",
+      "rhs": [
+        {
+          "name": "id",
+          "terminal": true
+        },
+        {
+          "name": "equals",
+          "terminal": true
+        },
+        {
+          "name": "int_literal",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Expression",
+      "rhs": [
+        {
+          "name": "int_literal",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "IfStatement",
+      "rhs": [
+        {
+          "name": "if",
+          "terminal": true
+        },
+        {
+          "name": "lparen",
+          "terminal": true
+        },
+        {
+          "name": "Expression",
+          "terminal": false
+        },
+        {
+          "name": "rparen",
+          "terminal": true
+        },
+        {
+          "name": "Statement",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "PrintStatement",
+      "rhs": [
+        {
+          "name": "print",
+          "terminal": true
+        },
+        {
+          "name": "lparen",
+          "terminal": true
+        },
+        {
+          "name": "Expression",
+          "terminal": false
+        },
+        {
+          "name": "rparen",
+          "terminal": true
+        },
+        {
+          "name": "semicolon",
+          "terminal": true
+        }
+      ]
+    }
+  ]
+}

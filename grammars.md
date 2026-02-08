@@ -54,6 +54,17 @@ take the green and grey book.
 
 [Comma-separated-value](https://miller.readthedocs.io/en/latest/file-formats/#csvtsvasvusvetc) and [DKVP](https://miller.readthedocs.io/en/latest/file-formats/#dkvp-key-value-pairs) files (Miller).
 
+## EBNF Notes
+
+This repo's EBNF dialect supports character ranges for lexer rules, using single-rune string literals. Example:
+
+```
+_lower ::= "a"-"z";
+_upper ::= "A"-"Z";
+_digit ::= "0"-"9";
+id ::= ("_" | _lower | _upper) { "_" | _lower | _upper | _digit };
+```
+
 ## Miller DSL
 
 This is an ultimate goal. GOCC grammar: [https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf](https://github.com/johnkerl/miller/blob/main/internal/pkg/parsing/mlr.bnf).
