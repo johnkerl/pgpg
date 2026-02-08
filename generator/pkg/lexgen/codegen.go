@@ -45,6 +45,7 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 		buf.WriteString("\t\"strings\"\n")
 	}
 	buf.WriteString("\t\"unicode/utf8\"\n\n")
+	buf.WriteString("\tmanuallexers \"github.com/johnkerl/pgpg/manual/pkg/lexers\"\n")
 	buf.WriteString("\t\"github.com/johnkerl/pgpg/manual/pkg/tokens\"\n")
 	buf.WriteString(")\n\n")
 
@@ -54,7 +55,9 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\ttokenLocation *tokens.TokenLocation\n")
 	buf.WriteString("}\n\n")
 
-	fmt.Fprintf(&buf, "func New%s(inputText string) *%s {\n", typeName, typeName)
+	fmt.Fprintf(&buf, "var _ manuallexers.AbstractLexer = (*%s)(nil)\n\n", typeName)
+
+	fmt.Fprintf(&buf, "func New%s(inputText string) manuallexers.AbstractLexer {\n", typeName)
 	fmt.Fprintf(&buf, "\treturn &%s{\n", typeName)
 	buf.WriteString("\t\tinputText:     inputText,\n")
 	buf.WriteString("\t\tinputLength:   len(inputText),\n")
@@ -69,7 +72,7 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\t\t}\n\n")
 	buf.WriteString("\t\tstartLocation := *lexer.tokenLocation\n")
 	buf.WriteString("\t\tscanLocation := *lexer.tokenLocation\n")
-	buf.WriteString("\t\tstate := startState\n")
+	buf.WriteString("\t\tstate := " + typeName + "StartState\n")
 	buf.WriteString("\t\tlastAcceptState := -1\n")
 	buf.WriteString("\t\tlastAcceptLocation := scanLocation\n\n")
 	buf.WriteString("\t\tfor {\n")
@@ -77,13 +80,13 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\t\t\t\tbreak\n")
 	buf.WriteString("\t\t\t}\n")
 	buf.WriteString("\t\t\tr, width := lexer.peekRuneAt(scanLocation.ByteOffset)\n")
-	buf.WriteString("\t\t\tnextState, ok := lookupTransition(state, r)\n")
+	buf.WriteString("\t\t\tnextState, ok := " + typeName + "LookupTransition(state, r)\n")
 	buf.WriteString("\t\t\tif !ok {\n")
 	buf.WriteString("\t\t\t\tbreak\n")
 	buf.WriteString("\t\t\t}\n")
 	buf.WriteString("\t\t\tscanLocation.LocateRune(r, width)\n")
 	buf.WriteString("\t\t\tstate = nextState\n")
-	buf.WriteString("\t\t\tif _, ok := actions[state]; ok {\n")
+	buf.WriteString("\t\t\tif _, ok := " + typeName + "Actions[state]; ok {\n")
 	buf.WriteString("\t\t\t\tlastAcceptState = state\n")
 	buf.WriteString("\t\t\t\tlastAcceptLocation = scanLocation\n")
 	buf.WriteString("\t\t\t}\n")
@@ -95,9 +98,9 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\t\tlexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]\n")
 	buf.WriteString("\t\tlexeme := []rune(lexemeText)\n")
 	buf.WriteString("\t\t*lexer.tokenLocation = lastAcceptLocation\n")
-	buf.WriteString("\t\ttokenType := actions[lastAcceptState]\n")
+	buf.WriteString("\t\ttokenType := " + typeName + "Actions[lastAcceptState]\n")
 	if hasIgnoredActions {
-		buf.WriteString("\t\tif isIgnoredToken(tokenType) {\n")
+		buf.WriteString("\t\tif " + typeName + "IsIgnoredToken(tokenType) {\n")
 		buf.WriteString("\t\t\tcontinue\n")
 		buf.WriteString("\t\t}\n")
 	}
@@ -110,8 +113,8 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\treturn r, width\n")
 	buf.WriteString("}\n\n")
 
-	buf.WriteString("func lookupTransition(state int, r rune) (int, bool) {\n")
-	buf.WriteString("\ttransitionsForState, ok := transitions[state]\n")
+	buf.WriteString("func " + typeName + "LookupTransition(state int, r rune) (int, bool) {\n")
+	buf.WriteString("\ttransitionsForState, ok := " + typeName + "Transitions[state]\n")
 	buf.WriteString("\tif !ok {\n")
 	buf.WriteString("\t\treturn 0, false\n")
 	buf.WriteString("\t}\n")
@@ -127,25 +130,25 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("}\n\n")
 
 	if hasIgnoredActions {
-		buf.WriteString("func isIgnoredToken(tokenType tokens.TokenType) bool {\n")
+		buf.WriteString("func " + typeName + "IsIgnoredToken(tokenType tokens.TokenType) bool {\n")
 		buf.WriteString("\treturn strings.HasPrefix(string(tokenType), \"!\")\n")
 		buf.WriteString("}\n\n")
 	}
 
-	buf.WriteString("const startState = ")
+	buf.WriteString("const " + typeName + "StartState = ")
 	buf.WriteString(fmt.Sprintf("%d\n\n", tables.StartState))
 
-	buf.WriteString("type rangeTransition struct {\n")
+	buf.WriteString("type " + typeName + "RangeTransition struct {\n")
 	buf.WriteString("\tfrom rune\n")
 	buf.WriteString("\tto   rune\n")
 	buf.WriteString("\tnext int\n")
 	buf.WriteString("}\n\n")
 
-	buf.WriteString("var transitions = map[int][]rangeTransition{\n")
+	buf.WriteString("var " + typeName + "Transitions = map[int][]" + typeName + "RangeTransition{\n")
 	writeTransitions(&buf, tables)
 	buf.WriteString("}\n\n")
 
-	buf.WriteString("var actions = map[int]tokens.TokenType{\n")
+	buf.WriteString("var " + typeName + "Actions = map[int]tokens.TokenType{\n")
 	writeActions(&buf, tables)
 	buf.WriteString("}\n")
 

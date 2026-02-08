@@ -1,3 +1,4 @@
+* Use `go:embed` rather than extensive `buf.WriteString` for codgen templates
 * DFA minimization
 * Maybe: auto‑include operator literals from parser rules:
   * Scan all grammar rules

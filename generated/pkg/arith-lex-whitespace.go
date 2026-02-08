@@ -4,24 +4,27 @@ import (
 	"fmt"
 	"unicode/utf8"
 
+	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type GeneratedLexer struct {
+type ArithLexWhitespaceLexer struct {
 	inputText     string
 	inputLength   int
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewGeneratedLexer(inputText string) *GeneratedLexer {
-	return &GeneratedLexer{
+var _ manuallexers.AbstractLexer = (*ArithLexWhitespaceLexer)(nil)
+
+func NewArithLexWhitespaceLexer(inputText string) manuallexers.AbstractLexer {
+	return &ArithLexWhitespaceLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
-func (lexer *GeneratedLexer) Scan() *tokens.Token {
+func (lexer *ArithLexWhitespaceLexer) Scan() *tokens.Token {
 	for {
 		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 			return tokens.NewEOFToken(lexer.tokenLocation)
@@ -29,7 +32,7 @@ func (lexer *GeneratedLexer) Scan() *tokens.Token {
 
 		startLocation := *lexer.tokenLocation
 		scanLocation := *lexer.tokenLocation
-		state := startState
+		state := ArithLexWhitespaceLexerStartState
 		lastAcceptState := -1
 		lastAcceptLocation := scanLocation
 
@@ -38,13 +41,13 @@ func (lexer *GeneratedLexer) Scan() *tokens.Token {
 				break
 			}
 			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-			nextState, ok := lookupTransition(state, r)
+			nextState, ok := ArithLexWhitespaceLexerLookupTransition(state, r)
 			if !ok {
 				break
 			}
 			scanLocation.LocateRune(r, width)
 			state = nextState
-			if _, ok := actions[state]; ok {
+			if _, ok := ArithLexWhitespaceLexerActions[state]; ok {
 				lastAcceptState = state
 				lastAcceptLocation = scanLocation
 			}
@@ -58,18 +61,18 @@ func (lexer *GeneratedLexer) Scan() *tokens.Token {
 		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
 		lexeme := []rune(lexemeText)
 		*lexer.tokenLocation = lastAcceptLocation
-		tokenType := actions[lastAcceptState]
+		tokenType := ArithLexWhitespaceLexerActions[lastAcceptState]
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
 
-func (lexer *GeneratedLexer) peekRuneAt(byteOffset int) (rune, int) {
+func (lexer *ArithLexWhitespaceLexer) peekRuneAt(byteOffset int) (rune, int) {
 	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
 	return r, width
 }
 
-func lookupTransition(state int, r rune) (int, bool) {
-	transitionsForState, ok := transitions[state]
+func ArithLexWhitespaceLexerLookupTransition(state int, r rune) (int, bool) {
+	transitionsForState, ok := ArithLexWhitespaceLexerTransitions[state]
 	if !ok {
 		return 0, false
 	}
@@ -84,15 +87,15 @@ func lookupTransition(state int, r rune) (int, bool) {
 	return 0, false
 }
 
-const startState = 0
+const ArithLexWhitespaceLexerStartState = 0
 
-type rangeTransition struct {
+type ArithLexWhitespaceLexerRangeTransition struct {
 	from rune
 	to   rune
 	next int
 }
 
-var transitions = map[int][]rangeTransition{
+var ArithLexWhitespaceLexerTransitions = map[int][]ArithLexWhitespaceLexerRangeTransition{
 	0: {
 		{from: '\t', to: '\t', next: 1},
 		{from: '\n', to: '\n', next: 2},
@@ -356,7 +359,7 @@ var transitions = map[int][]rangeTransition{
 	},
 }
 
-var actions = map[int]tokens.TokenType{
+var ArithLexWhitespaceLexerActions = map[int]tokens.TokenType{
 	1: "_whitespace",
 	2: "_whitespace",
 	3: "_whitespace",
