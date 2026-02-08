@@ -23,6 +23,7 @@ const (
 	EBNFLexerTypeRBrace     tokens.TokenType = "}"
 	EBNFLexerTypeSemicolon  tokens.TokenType = ";"
 	EBNFLexerTypeDash       tokens.TokenType = "-"
+	EBNFLexerTypeDot        tokens.TokenType = "."
 )
 
 // EBNFLexer tokenizes a common EBNF dialect with identifiers, string literals,
@@ -148,6 +149,10 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 	} else if r == '-' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return tokens.NewToken([]rune{r}, EBNFLexerTypeDash, &startLocation)
+
+	} else if r == '.' {
+		lexer.tokenLocation.LocateRune(r, runeWidth)
+		return tokens.NewToken([]rune{r}, EBNFLexerTypeDot, &startLocation)
 
 		} else if r == '"' || r == '\'' {
 			return lexer.scanStringLiteral(r, runeWidth, &startLocation)

@@ -24,6 +24,7 @@ const (
 	EBNFParserNodeTypeIdentifier asts.NodeType = "identifier"
 	EBNFParserNodeTypeLiteral    asts.NodeType = "literal"
 	EBNFParserNodeTypeRange      asts.NodeType = "range"
+	EBNFParserNodeTypeWildcard   asts.NodeType = "wildcard"
 )
 
 func NewEBNFParser() AbstractParser {
@@ -181,6 +182,14 @@ func (parser *EBNFParser) parseTermIfPresent() (*asts.ASTNode, bool, error) {
 		}
 		endNode := asts.NewASTNode(endToken, EBNFParserNodeTypeLiteral, nil)
 		return asts.NewASTNode(nil, EBNFParserNodeTypeRange, []*asts.ASTNode{literalNode, endNode}), true, nil
+	}
+
+	accepted, token, err = parser.accept(lexers.EBNFLexerTypeDot)
+	if err != nil {
+		return nil, false, err
+	}
+	if accepted {
+		return asts.NewASTNode(token, EBNFParserNodeTypeWildcard, nil), true, nil
 	}
 
 	accepted, _, err = parser.accept(lexers.EBNFLexerTypeLParen)

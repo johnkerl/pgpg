@@ -423,6 +423,8 @@ func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([][]Symbol, error
 		return [][]Symbol{{{Name: unquoted, Terminal: true}}}, nil
 	case parsers.EBNFParserNodeTypeRange:
 		return nil, fmt.Errorf("range expressions are only allowed in lexer rules")
+	case parsers.EBNFParserNodeTypeWildcard:
+		return nil, fmt.Errorf("wildcard '.' is only allowed in lexer rules")
 	case parsers.EBNFParserNodeTypeIdentifier:
 		if node.Token == nil {
 			return nil, fmt.Errorf("identifier node missing token")

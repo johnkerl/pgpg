@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	"github.com/johnkerl/pgpg/manual/pkg/parsers"
@@ -247,7 +248,7 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 	actions := map[int]string{}
 	for _, state := range dfa.states {
 		if len(state.transitions) > 0 {
-			transitions[state.id] = compressRuneTransitions(state.transitions)
+			transitions[state.id] = mergeRangeTransitions(state.transitions)
 		}
 		if state.accept != nil {
 			actions[state.id] = state.accept.name
@@ -336,12 +337,15 @@ const (
 	regexAlternate
 	regexOptional
 	regexStar
+	regexRange
 )
 
 type regexNode struct {
 	kind     regexKind
 	literal  string
 	children []*regexNode
+	from     rune
+	to       rune
 }
 
 func buildRegexForRule(
@@ -424,9 +428,12 @@ func regexFromAST(
 		if startRune == endRune {
 			return &regexNode{kind: regexLiteral, literal: string(startRune)}, nil
 		}
-		children := make([]*regexNode, 0, int(endRune-startRune)+1)
-		for r := startRune; r <= endRune; r++ {
-			children = append(children, &regexNode{kind: regexLiteral, literal: string(r)})
+		return &regexNode{kind: regexRange, from: startRune, to: endRune}, nil
+	case parsers.EBNFParserNodeTypeWildcard:
+		children := []*regexNode{
+			{kind: regexRange, from: 0x0000, to: '\t'},
+			{kind: regexRange, from: '\v', to: '\f'},
+			{kind: regexRange, from: 0x000E, to: utf8.MaxRune},
 		}
 		return &regexNode{kind: regexAlternate, children: children}, nil
 	case parsers.EBNFParserNodeTypeSequence:
@@ -510,6 +517,8 @@ func canBeEmpty(node *regexNode) bool {
 		return false
 	case regexOptional, regexStar:
 		return true
+	case regexRange:
+		return false
 	default:
 		return false
 	}
@@ -523,8 +532,14 @@ type acceptRule struct {
 type nfaState struct {
 	id          int
 	epsilon     []*nfaState
-	transitions map[rune][]*nfaState
+	transitions []nfaTransition
 	accepts     []acceptRule
+}
+
+type nfaTransition struct {
+	from rune
+	to   rune
+	next *nfaState
 }
 
 type nfaFragment struct {
@@ -538,8 +553,7 @@ type nfaBuilder struct {
 
 func (builder *nfaBuilder) newState() *nfaState {
 	state := &nfaState{
-		id:          builder.nextID,
-		transitions: map[rune][]*nfaState{},
+		id: builder.nextID,
 	}
 	builder.nextID++
 	return state
@@ -552,10 +566,15 @@ func (builder *nfaBuilder) build(node *regexNode) (*nfaFragment, error) {
 		current := start
 		for _, r := range []rune(node.literal) {
 			next := builder.newState()
-			current.transitions[r] = append(current.transitions[r], next)
+			current.transitions = append(current.transitions, nfaTransition{from: r, to: r, next: next})
 			current = next
 		}
 		return &nfaFragment{start: start, accepts: []*nfaState{current}}, nil
+	case regexRange:
+		start := builder.newState()
+		accept := builder.newState()
+		start.transitions = append(start.transitions, nfaTransition{from: node.from, to: node.to, next: accept})
+		return &nfaFragment{start: start, accepts: []*nfaState{accept}}, nil
 	case regexConcat:
 		if len(node.children) == 0 {
 			start := builder.newState()
@@ -631,7 +650,7 @@ func (builder *nfaBuilder) build(node *regexNode) (*nfaFragment, error) {
 type dfaState struct {
 	id          int
 	nfaSet      map[int]*nfaState
-	transitions map[rune]int
+	transitions []RangeTransition
 	accept      *acceptRule
 }
 
@@ -651,7 +670,7 @@ func buildDFA(start *nfaState) *dfaResult {
 		state := &dfaState{
 			id:          nextID,
 			nfaSet:      set,
-			transitions: map[rune]int{},
+			transitions: nil,
 			accept:      selectAcceptRule(set),
 		}
 		nextID++
@@ -666,36 +685,75 @@ func buildDFA(start *nfaState) *dfaResult {
 	for len(queue) > 0 {
 		state := queue[0]
 		queue = queue[1:]
-		runeTargets := map[rune]map[int]*nfaState{}
-		for _, nfa := range state.nfaSet {
-			for r, targets := range nfa.transitions {
-				targetSet := runeTargets[r]
-				if targetSet == nil {
-					targetSet = map[int]*nfaState{}
-					runeTargets[r] = targetSet
-				}
-				for _, target := range targets {
-					targetSet[target.id] = target
-				}
-			}
-		}
-		runes := make([]rune, 0, len(runeTargets))
-		for r := range runeTargets {
-			runes = append(runes, r)
-		}
-		sort.Slice(runes, func(i, j int) bool { return runes[i] < runes[j] })
-		for _, r := range runes {
-			targetSet := epsilonClosure(runeTargets[r])
+		ranges := buildDFATransitions(state.nfaSet)
+		for _, tr := range ranges {
+			targetSet := epsilonClosure(tr.targets)
 			key := setKey(targetSet)
 			targetState, ok := stateMap[key]
 			if !ok {
 				targetState = newState(targetSet)
 			}
-			state.transitions[r] = targetState.id
+			state.transitions = append(state.transitions, RangeTransition{
+				From: tr.from,
+				To:   tr.to,
+				Next: targetState.id,
+			})
 		}
 	}
 
 	return &dfaResult{startID: startState.id, states: states}
+}
+
+type dfaTransitionSeed struct {
+	from    rune
+	to      rune
+	targets map[int]*nfaState
+}
+
+func buildDFATransitions(nfaSet map[int]*nfaState) []dfaTransitionSeed {
+	var transitions []nfaTransition
+	for _, nfa := range nfaSet {
+		transitions = append(transitions, nfa.transitions...)
+	}
+	if len(transitions) == 0 {
+		return nil
+	}
+
+	boundaries := make([]int, 0, len(transitions)*2)
+	for _, tr := range transitions {
+		boundaries = append(boundaries, int(tr.from))
+		boundaries = append(boundaries, int(tr.to)+1)
+	}
+	sort.Ints(boundaries)
+	unique := boundaries[:0]
+	for _, b := range boundaries {
+		if len(unique) == 0 || unique[len(unique)-1] != b {
+			unique = append(unique, b)
+		}
+	}
+	if len(unique) < 2 {
+		return nil
+	}
+
+	var out []dfaTransitionSeed
+	for i := 0; i < len(unique)-1; i++ {
+		start := rune(unique[i])
+		end := rune(unique[i+1] - 1)
+		if start > end {
+			continue
+		}
+		targetSet := map[int]*nfaState{}
+		for _, tr := range transitions {
+			if tr.from <= end && tr.to >= start {
+				targetSet[tr.next.id] = tr.next
+			}
+		}
+		if len(targetSet) == 0 {
+			continue
+		}
+		out = append(out, dfaTransitionSeed{from: start, to: end, targets: targetSet})
+	}
+	return out
 }
 
 func epsilonClosure(initial map[int]*nfaState) map[int]*nfaState {
@@ -748,32 +806,31 @@ func selectAcceptRule(set map[int]*nfaState) *acceptRule {
 	return best
 }
 
-func compressRuneTransitions(transitions map[rune]int) []RangeTransition {
+func mergeRangeTransitions(transitions []RangeTransition) []RangeTransition {
 	if len(transitions) == 0 {
 		return nil
 	}
-	runes := make([]rune, 0, len(transitions))
-	for r := range transitions {
-		runes = append(runes, r)
-	}
-	sort.Slice(runes, func(i, j int) bool { return runes[i] < runes[j] })
-	var out []RangeTransition
-	start := runes[0]
-	prev := runes[0]
-	currentNext := transitions[start]
-	for i := 1; i < len(runes); i++ {
-		r := runes[i]
-		next := transitions[r]
-		if r == prev+1 && next == currentNext {
-			prev = r
+	sort.Slice(transitions, func(i, j int) bool {
+		if transitions[i].From == transitions[j].From {
+			if transitions[i].To == transitions[j].To {
+				return transitions[i].Next < transitions[j].Next
+			}
+			return transitions[i].To < transitions[j].To
+		}
+		return transitions[i].From < transitions[j].From
+	})
+	out := []RangeTransition{transitions[0]}
+	for i := 1; i < len(transitions); i++ {
+		prev := &out[len(out)-1]
+		cur := transitions[i]
+		if cur.From <= prev.To+1 && cur.Next == prev.Next {
+			if cur.To > prev.To {
+				prev.To = cur.To
+			}
 			continue
 		}
-		out = append(out, RangeTransition{From: start, To: prev, Next: currentNext})
-		start = r
-		prev = r
-		currentNext = next
+		out = append(out, cur)
 	}
-	out = append(out, RangeTransition{From: start, To: prev, Next: currentNext})
 	return out
 }
 
@@ -812,6 +869,8 @@ func regexToString(node *regexNode) string {
 		return "(" + regexToString(node.children[0]) + ")?"
 	case regexStar:
 		return "(" + regexToString(node.children[0]) + ")*"
+	case regexRange:
+		return strconv.QuoteRuneToASCII(node.from) + "-" + strconv.QuoteRuneToASCII(node.to)
 	default:
 		return "<?>"
 	}
