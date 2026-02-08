@@ -689,11 +689,11 @@ func setAction(actions map[int]map[string]Action, state int, terminal string, ac
 
 func conflictError(state int, terminal string, existing Action, next Action, itemSet map[string]item, grammar *grammar, stateLabels map[int]string) error {
 	var b strings.Builder
-	fmt.Fprintf(&b, "action conflict\n  state: %s\n  lookahead: %q\n\n", formatStateLabel(state, stateLabels), terminal)
-	b.WriteString(formatAction("existing", existing, grammar, stateLabels))
-	b.WriteString(formatAction("new", next, grammar, stateLabels))
+	fmt.Fprintf(&b, "Action conflict\n  State: %s\n  Lookahead: %q\n\n", formatStateLabel(state, stateLabels), terminal)
+	b.WriteString(formatAction("Existing", existing, grammar, stateLabels))
+	b.WriteString(formatAction("New", next, grammar, stateLabels))
 	if grammar != nil && itemSet != nil {
-		b.WriteString("\n  items in state:\n")
+		b.WriteString("\n  Items in state:\n")
 		for _, it := range sortedItems(itemSet) {
 			b.WriteString("    ")
 			b.WriteString(formatItem(it, grammar))
@@ -701,7 +701,7 @@ func conflictError(state int, terminal string, existing Action, next Action, ite
 		}
 	}
 	if hint := buildConflictHint(existing, next, grammar); hint != "" {
-		b.WriteString("\n  hint:\n")
+		b.WriteString("\n  Hint:\n")
 		b.WriteString(hint)
 	}
 	return fmt.Errorf(b.String())
@@ -790,7 +790,7 @@ func buildConflictHint(existing Action, next Action, grammar *grammar) string {
 		hints = append(hints, reduceHint(next.Target, grammar)...)
 	}
 	if existing.Type == "shift" || next.Type == "shift" {
-		hints = append(hints, "- shift/reduce conflicts often come from ambiguous operator precedence or unintended recursion")
+		hints = append(hints, "- Shift/reduce conflicts often come from ambiguous operator precedence or unintended recursion")
 	}
 	if len(hints) == 0 {
 		return ""
@@ -806,10 +806,10 @@ func reduceHint(prodIndex int, grammar *grammar) []string {
 	var hints []string
 	userStart := userStartSymbol(grammar)
 	if userStart != "" && containsSymbol(prod.RHS, userStart) {
-		hints = append(hints, fmt.Sprintf("- production reduces to %s via %s; check for cycles involving the start symbol", prod.LHS, userStart))
+		hints = append(hints, fmt.Sprintf("- Production reduces to %s via %s; check for cycles involving the start symbol", prod.LHS, userStart))
 	}
 	if containsSymbol(prod.RHS, prod.LHS) {
-		hints = append(hints, fmt.Sprintf("- production %s ::= ... %s ... is directly recursive; verify it appears only where intended", prod.LHS, prod.LHS))
+		hints = append(hints, fmt.Sprintf("- Production %s ::= ... %s ... is directly recursive; verify it appears only where intended", prod.LHS, prod.LHS))
 	}
 	return hints
 }
