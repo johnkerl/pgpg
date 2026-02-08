@@ -31,13 +31,19 @@ type EBNFLexer struct {
 	inputText     string
 	inputLength   int
 	tokenLocation *tokens.TokenLocation
+	sourceName    string
 }
 
 func NewEBNFLexer(inputText string) AbstractLexer {
+	return NewEBNFLexerWithSourceName(inputText, "")
+}
+
+func NewEBNFLexerWithSourceName(inputText string, sourceName string) AbstractLexer {
 	return &EBNFLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
 		tokenLocation: tokens.NewTokenLocation(),
+		sourceName:    sourceName,
 	}
 }
 
@@ -81,10 +87,9 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 		if nextRune != ':' {
 			return tokens.NewErrorToken(
 				fmt.Sprintf(
-					"EBNF lexer: expected '::=' but found ':%c' at line %d, column %d",
+					"EBNF lexer: expected '::=' but found ':%c' at %s",
 					nextRune,
-					startLocation.LineNumber,
-					startLocation.ColumnNumber,
+					lexer.formatLocation(&startLocation),
 				),
 				lexer.tokenLocation,
 			)
@@ -94,10 +99,9 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 		if nextRune != '=' {
 			return tokens.NewErrorToken(
 				fmt.Sprintf(
-					"EBNF lexer: expected '::=' but found '::%c' at line %d, column %d",
+					"EBNF lexer: expected '::=' but found '::%c' at %s",
 					nextRune,
-					startLocation.LineNumber,
-					startLocation.ColumnNumber,
+					lexer.formatLocation(&startLocation),
 				),
 				lexer.tokenLocation,
 			)
@@ -145,8 +149,8 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return tokens.NewToken([]rune{r}, EBNFLexerTypeDash, &startLocation)
 
-	} else if r == '"' || r == '\'' {
-		return lexer.scanStringLiteral(r, runeWidth, &startLocation)
+		} else if r == '"' || r == '\'' {
+			return lexer.scanStringLiteral(r, runeWidth, &startLocation)
 
 	} else if isEBNFIdentifierStart(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
@@ -166,7 +170,7 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 
 	} else {
 		return tokens.NewErrorToken(
-			fmt.Sprintf("EBNF lexer: unrecognized token %q (%U)", r, r),
+			fmt.Sprintf("EBNF lexer: unrecognized token %q (%U) at %s", r, r, lexer.formatLocation(&startLocation)),
 			lexer.tokenLocation,
 		)
 	}
@@ -183,7 +187,10 @@ func (lexer *EBNFLexer) scanStringLiteral(
 
 	for {
 		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-			return tokens.NewErrorToken("EBNF lexer: unterminated string literal", lexer.tokenLocation)
+			return tokens.NewErrorToken(
+				fmt.Sprintf("EBNF lexer: unterminated string literal at %s", lexer.formatLocation(startLocation)),
+				lexer.tokenLocation,
+			)
 		}
 		r, runeWidth := lexer.peekRune()
 		lexer.tokenLocation.LocateRune(r, runeWidth)
@@ -191,7 +198,10 @@ func (lexer *EBNFLexer) scanStringLiteral(
 
 		if r == '\\' {
 			if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-				return tokens.NewErrorToken("EBNF lexer: unterminated escape in string literal", lexer.tokenLocation)
+				return tokens.NewErrorToken(
+					fmt.Sprintf("EBNF lexer: unterminated escape in string literal at %s", lexer.formatLocation(startLocation)),
+					lexer.tokenLocation,
+				)
 			}
 			r, runeWidth = lexer.peekRune()
 			lexer.tokenLocation.LocateRune(r, runeWidth)
@@ -239,6 +249,21 @@ func (lexer *EBNFLexer) readRune() rune {
 	r, runeWidth := lexer.peekRune()
 	lexer.tokenLocation.LocateRune(r, runeWidth)
 	return r
+}
+
+func (lexer *EBNFLexer) formatLocation(location *tokens.TokenLocation) string {
+	if location == nil {
+		return "unknown location"
+	}
+	if lexer.sourceName != "" {
+		return fmt.Sprintf(
+			"%s, line %d, column %d",
+			lexer.sourceName,
+			location.LineNumber,
+			location.ColumnNumber,
+		)
+	}
+	return fmt.Sprintf("line %d, column %d", location.LineNumber, location.ColumnNumber)
 }
 
 func isEBNFIdentifierStart(r rune) bool {
