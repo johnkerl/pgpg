@@ -65,7 +65,7 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\t\t\tbreak\n")
 	buf.WriteString("\t\t}\n")
 	buf.WriteString("\t\tr, width := lexer.peekRuneAt(scanLocation.ByteOffset)\n")
-	buf.WriteString("\t\tnextState, ok := transitions[state][r]\n")
+	buf.WriteString("\t\tnextState, ok := lookupTransition(state, r)\n")
 	buf.WriteString("\t\tif !ok {\n")
 	buf.WriteString("\t\t\tbreak\n")
 	buf.WriteString("\t\t}\n")
@@ -91,10 +91,32 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\treturn r, width\n")
 	buf.WriteString("}\n\n")
 
+	buf.WriteString("func lookupTransition(state int, r rune) (int, bool) {\n")
+	buf.WriteString("\ttransitionsForState, ok := transitions[state]\n")
+	buf.WriteString("\tif !ok {\n")
+	buf.WriteString("\t\treturn 0, false\n")
+	buf.WriteString("\t}\n")
+	buf.WriteString("\tfor _, tr := range transitionsForState {\n")
+	buf.WriteString("\t\tif r < tr.from {\n")
+	buf.WriteString("\t\t\treturn 0, false\n")
+	buf.WriteString("\t\t}\n")
+	buf.WriteString("\t\tif r >= tr.from && r <= tr.to {\n")
+	buf.WriteString("\t\t\treturn tr.next, true\n")
+	buf.WriteString("\t\t}\n")
+	buf.WriteString("\t}\n")
+	buf.WriteString("\treturn 0, false\n")
+	buf.WriteString("}\n\n")
+
 	buf.WriteString("const startState = ")
 	buf.WriteString(fmt.Sprintf("%d\n\n", tables.StartState))
 
-	buf.WriteString("var transitions = map[int]map[rune]int{\n")
+	buf.WriteString("type rangeTransition struct {\n")
+	buf.WriteString("\tfrom rune\n")
+	buf.WriteString("\tto   rune\n")
+	buf.WriteString("\tnext int\n")
+	buf.WriteString("}\n\n")
+
+	buf.WriteString("var transitions = map[int][]rangeTransition{\n")
 	writeTransitions(&buf, tables)
 	buf.WriteString("}\n\n")
 
@@ -113,17 +135,15 @@ func writeTransitions(buf *bytes.Buffer, tables *Tables) {
 	sort.Ints(stateIDs)
 	for _, state := range stateIDs {
 		buf.WriteString(fmt.Sprintf("\t%d: {\n", state))
-		keys := make([]string, 0, len(tables.Transitions[state]))
-		for key := range tables.Transitions[state] {
-			keys = append(keys, key)
-		}
-		sort.Strings(keys)
-		for _, key := range keys {
-			runes := []rune(key)
-			if len(runes) != 1 {
-				continue
+		ranges := tables.Transitions[state]
+		sort.Slice(ranges, func(i, j int) bool {
+			if ranges[i].From == ranges[j].From {
+				return ranges[i].To < ranges[j].To
 			}
-			buf.WriteString(fmt.Sprintf("\t\t%q: %d,\n", runes[0], tables.Transitions[state][key]))
+			return ranges[i].From < ranges[j].From
+		})
+		for _, tr := range ranges {
+			buf.WriteString(fmt.Sprintf("\t\t{from: %q, to: %q, next: %d},\n", tr.From, tr.To, tr.Next))
 		}
 		buf.WriteString("\t},\n")
 	}
