@@ -1,6 +1,7 @@
 package lexgen
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -26,6 +27,154 @@ type RangeTransition struct {
 	From rune `json:"from"`
 	To   rune `json:"to"`
 	Next int  `json:"next"`
+}
+
+// MarshalJSON ensures deterministic map ordering for stable output.
+func (tables *Tables) MarshalJSON() ([]byte, error) {
+	if tables == nil {
+		return []byte("null"), nil
+	}
+	var fields []jsonField
+
+	startStateBytes, err := json.Marshal(tables.StartState)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "start_state", value: startStateBytes})
+
+	transitionsBytes, err := marshalMapIntRangeTransitions(tables.Transitions)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "transitions", value: transitionsBytes})
+
+	actionsBytes, err := marshalMapIntString(tables.Actions)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "actions", value: actionsBytes})
+
+	if len(tables.Rules) > 0 {
+		rulesBytes, err := marshalMapStringString(tables.Rules)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, jsonField{name: "rules", value: rulesBytes})
+	}
+
+	if len(tables.Metadata) > 0 {
+		metadataBytes, err := marshalMapStringString(tables.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, jsonField{name: "metadata", value: metadataBytes})
+	}
+
+	return marshalOrderedFields(fields), nil
+}
+
+type jsonField struct {
+	name  string
+	value []byte
+}
+
+func marshalOrderedFields(fields []jsonField) []byte {
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, field := range fields {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(field.name))
+		buf.WriteByte(':')
+		buf.Write(field.value)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes()
+}
+
+func marshalMapIntRangeTransitions(m map[int][]RangeTransition) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]int, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
+		buf.WriteByte(':')
+		valueBytes, err := json.Marshal(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+func marshalMapIntString(m map[int]string) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]int, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
+		buf.WriteByte(':')
+		valueBytes, err := json.Marshal(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+func marshalMapStringString(m map[string]string) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(key))
+		buf.WriteByte(':')
+		valueBytes, err := json.Marshal(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
 }
 
 // GenerateTablesFromEBNF parses an EBNF grammar and produces lexer tables.
