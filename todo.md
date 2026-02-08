@@ -4,9 +4,11 @@
   * Impl-lang AST/arbitrary in `.bnf`.
   * DSL AST-building in `.bnf`.
   * Callbacks somehow ... .
-* Replace generated arith with pemdas, more closely to match the manual one.
-  Likewise with other manual grammars.
-* `trylex`/`tryparse` options to take command-line strings or filenames.
+* More BNF to match manual grammars.
+* Code neatens:
+  * Move types to tops of files
+  * Dedupe
+  * Etc.
 * See how the parsegen handles various conflicts.
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
 
