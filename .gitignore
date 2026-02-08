@@ -7,6 +7,8 @@ tags
 # Executables
 /generator/lexgen-code
 /generator/lexgen-tables
+/generator/parsegen-code
+/generator/parsegen-tables
 
 /runners/tryast
 /runners/trylex

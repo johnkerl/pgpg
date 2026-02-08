@@ -27,8 +27,8 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"m:vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":   lexerInfoT{lexers.NewEBNFLexer, "EBNF grammar with identifiers, literals, and operators."},
 	"g:arith":  lexerInfoT{generatedlexers.NewArithLexLexer, "Generated arithmetic lexer from generated/pkg/arith-lex.go."},
-	"g:arithw": lexerInfoT{generatedlexers.NewArithLexWhitespaceLexer, "Generated arithmetic lexer from generated/arith-lex-whitespace.go."},
-	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexLexer, "Generated sign/digit lexer from generated/pkg/sign-digit-lex.go."},
+	"g:arithw": lexerInfoT{generatedlexers.NewArithLexWhitespaceLexer, "Generated arithmetic lexer from generated/arithw.go."},
+	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexLexer, "Generated sign/digit lexer from generated/pkg/sign-digit.go."},
 }
 
 func usage() {
