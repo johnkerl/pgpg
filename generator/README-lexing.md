@@ -16,6 +16,7 @@ implemented in `generator/pkg/lexgen`.
 - Input grammar is EBNF parsed by `manual/pkg/parsers` (same as before).
 - Lexer rules are selected by name:
   - Names starting with `_` or a lowercase letter are treated as lexer rules.
+  - Names starting with `!` are treated as lexer rules that should be ignored.
   - All other rules are assumed to be parser rules (e.g., `Root`).
 - Identifiers used inside lexer rules must reference other lexer rules.
   - This avoids accidentally pulling parser rules into the lexer.
@@ -86,6 +87,7 @@ The generated lexer:
 - Uses a range-based transition lookup:
   - ranges are sorted by `From`
   - lookup stops early if `r < From`
+- Ignores tokens whose rule name starts with `!` (they are lexed but not emitted).
 
 ## Tables JSON Schema
 

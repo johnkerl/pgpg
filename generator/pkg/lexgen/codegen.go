@@ -29,10 +29,21 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 		return nil, fmt.Errorf("type name is required")
 	}
 
+	hasIgnoredActions := false
+	for _, action := range tables.Actions {
+		if strings.HasPrefix(action, "!") {
+			hasIgnoredActions = true
+			break
+		}
+	}
+
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "package %s\n\n", packageName)
 	buf.WriteString("import (\n")
 	buf.WriteString("\t\"fmt\"\n")
+	if hasIgnoredActions {
+		buf.WriteString("\t\"strings\"\n")
+	}
 	buf.WriteString("\t\"unicode/utf8\"\n\n")
 	buf.WriteString("\t\"github.com/johnkerl/pgpg/manual/pkg/tokens\"\n")
 	buf.WriteString(")\n\n")
@@ -52,38 +63,46 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("}\n\n")
 
 	buf.WriteString("func (lexer *" + typeName + ") Scan() *tokens.Token {\n")
-	buf.WriteString("\tif lexer.tokenLocation.ByteOffset >= lexer.inputLength {\n")
-	buf.WriteString("\t\treturn tokens.NewEOFToken(lexer.tokenLocation)\n")
-	buf.WriteString("\t}\n\n")
-	buf.WriteString("\tstartLocation := *lexer.tokenLocation\n")
-	buf.WriteString("\tscanLocation := *lexer.tokenLocation\n")
-	buf.WriteString("\tstate := startState\n")
-	buf.WriteString("\tlastAcceptState := -1\n")
-	buf.WriteString("\tlastAcceptLocation := scanLocation\n\n")
 	buf.WriteString("\tfor {\n")
-	buf.WriteString("\t\tif scanLocation.ByteOffset >= lexer.inputLength {\n")
-	buf.WriteString("\t\t\tbreak\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t\tr, width := lexer.peekRuneAt(scanLocation.ByteOffset)\n")
-	buf.WriteString("\t\tnextState, ok := lookupTransition(state, r)\n")
-	buf.WriteString("\t\tif !ok {\n")
-	buf.WriteString("\t\t\tbreak\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t\tscanLocation.LocateRune(r, width)\n")
-	buf.WriteString("\t\tstate = nextState\n")
-	buf.WriteString("\t\tif _, ok := actions[state]; ok {\n")
-	buf.WriteString("\t\t\tlastAcceptState = state\n")
-	buf.WriteString("\t\t\tlastAcceptLocation = scanLocation\n")
-	buf.WriteString("\t\t}\n")
-	buf.WriteString("\t}\n\n")
-	buf.WriteString("\tif lastAcceptState < 0 {\n")
-	buf.WriteString("\t\tr, _ := lexer.peekRuneAt(lexer.tokenLocation.ByteOffset)\n")
-	buf.WriteString("\t\treturn tokens.NewErrorToken(fmt.Sprintf(\"lexer: unrecognized input %q\", r), lexer.tokenLocation)\n")
-	buf.WriteString("\t}\n\n")
-	buf.WriteString("\tlexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]\n")
-	buf.WriteString("\tlexeme := []rune(lexemeText)\n")
-	buf.WriteString("\t*lexer.tokenLocation = lastAcceptLocation\n")
-	buf.WriteString("\treturn tokens.NewToken(lexeme, actions[lastAcceptState], &startLocation)\n")
+	buf.WriteString("\t\tif lexer.tokenLocation.ByteOffset >= lexer.inputLength {\n")
+	buf.WriteString("\t\t\treturn tokens.NewEOFToken(lexer.tokenLocation)\n")
+	buf.WriteString("\t\t}\n\n")
+	buf.WriteString("\t\tstartLocation := *lexer.tokenLocation\n")
+	buf.WriteString("\t\tscanLocation := *lexer.tokenLocation\n")
+	buf.WriteString("\t\tstate := startState\n")
+	buf.WriteString("\t\tlastAcceptState := -1\n")
+	buf.WriteString("\t\tlastAcceptLocation := scanLocation\n\n")
+	buf.WriteString("\t\tfor {\n")
+	buf.WriteString("\t\t\tif scanLocation.ByteOffset >= lexer.inputLength {\n")
+	buf.WriteString("\t\t\t\tbreak\n")
+	buf.WriteString("\t\t\t}\n")
+	buf.WriteString("\t\t\tr, width := lexer.peekRuneAt(scanLocation.ByteOffset)\n")
+	buf.WriteString("\t\t\tnextState, ok := lookupTransition(state, r)\n")
+	buf.WriteString("\t\t\tif !ok {\n")
+	buf.WriteString("\t\t\t\tbreak\n")
+	buf.WriteString("\t\t\t}\n")
+	buf.WriteString("\t\t\tscanLocation.LocateRune(r, width)\n")
+	buf.WriteString("\t\t\tstate = nextState\n")
+	buf.WriteString("\t\t\tif _, ok := actions[state]; ok {\n")
+	buf.WriteString("\t\t\t\tlastAcceptState = state\n")
+	buf.WriteString("\t\t\t\tlastAcceptLocation = scanLocation\n")
+	buf.WriteString("\t\t\t}\n")
+	buf.WriteString("\t\t}\n\n")
+	buf.WriteString("\t\tif lastAcceptState < 0 {\n")
+	buf.WriteString("\t\t\tr, _ := lexer.peekRuneAt(lexer.tokenLocation.ByteOffset)\n")
+	buf.WriteString("\t\t\treturn tokens.NewErrorToken(fmt.Sprintf(\"lexer: unrecognized input %q\", r), lexer.tokenLocation)\n")
+	buf.WriteString("\t\t}\n\n")
+	buf.WriteString("\t\tlexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]\n")
+	buf.WriteString("\t\tlexeme := []rune(lexemeText)\n")
+	buf.WriteString("\t\t*lexer.tokenLocation = lastAcceptLocation\n")
+	buf.WriteString("\t\ttokenType := actions[lastAcceptState]\n")
+	if hasIgnoredActions {
+		buf.WriteString("\t\tif isIgnoredToken(tokenType) {\n")
+		buf.WriteString("\t\t\tcontinue\n")
+		buf.WriteString("\t\t}\n")
+	}
+	buf.WriteString("\t\treturn tokens.NewToken(lexeme, tokenType, &startLocation)\n")
+	buf.WriteString("\t}\n")
 	buf.WriteString("}\n\n")
 
 	buf.WriteString("func (lexer *" + typeName + ") peekRuneAt(byteOffset int) (rune, int) {\n")
@@ -106,6 +125,12 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	buf.WriteString("\t}\n")
 	buf.WriteString("\treturn 0, false\n")
 	buf.WriteString("}\n\n")
+
+	if hasIgnoredActions {
+		buf.WriteString("func isIgnoredToken(tokenType tokens.TokenType) bool {\n")
+		buf.WriteString("\treturn strings.HasPrefix(string(tokenType), \"!\")\n")
+		buf.WriteString("}\n\n")
+	}
 
 	buf.WriteString("const startState = ")
 	buf.WriteString(fmt.Sprintf("%d\n\n", tables.StartState))
