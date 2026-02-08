@@ -18,9 +18,11 @@ func main() {
 	var outputPath string
 	var packageName string
 	var typeName string
+	var debug bool
 	flag.StringVar(&outputPath, "o", "", "Output Go file (default stdout)")
 	flag.StringVar(&packageName, "package", "parsers", "Package name for generated parser")
 	flag.StringVar(&typeName, "type", "GeneratedParser", "Parser type name")
+	flag.BoolVar(&debug, "debug", false, "Write unformatted code to stderr")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -39,6 +41,16 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
+	}
+
+	if debug {
+		raw, err := parsegen.GenerateGoParserCodeRaw(tables, packageName, typeName)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		_, _ = os.Stderr.Write(raw)
+		_, _ = os.Stderr.Write([]byte("\n"))
 	}
 
 	code, err := parsegen.GenerateGoParserCode(tables, packageName, typeName)

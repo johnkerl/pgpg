@@ -1,30 +1,33 @@
-package lexers
+package {{.PackageName}}
 
 import (
 	"fmt"
+{{- if .HasIgnored }}
+	"strings"
+{{- end }}
 	"unicode/utf8"
 
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type SignDigitLexer struct {
+type {{.TypeName}} struct {
 	inputText     string
 	inputLength   int
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*SignDigitLexer)(nil)
+var _ manuallexers.AbstractLexer = (*{{.TypeName}})(nil)
 
-func NewSignDigitLexer(inputText string) manuallexers.AbstractLexer {
-	return &SignDigitLexer{
+func New{{.TypeName}}(inputText string) manuallexers.AbstractLexer {
+	return &{{.TypeName}}{
 		inputText:     inputText,
 		inputLength:   len(inputText),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
-func (lexer *SignDigitLexer) Scan() *tokens.Token {
+func (lexer *{{.TypeName}}) Scan() *tokens.Token {
 	for {
 		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 			return tokens.NewEOFToken(lexer.tokenLocation)
@@ -32,7 +35,7 @@ func (lexer *SignDigitLexer) Scan() *tokens.Token {
 
 		startLocation := *lexer.tokenLocation
 		scanLocation := *lexer.tokenLocation
-		state := SignDigitLexerStartState
+		state := {{.TypeName}}StartState
 		lastAcceptState := -1
 		lastAcceptLocation := scanLocation
 
@@ -41,13 +44,13 @@ func (lexer *SignDigitLexer) Scan() *tokens.Token {
 				break
 			}
 			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-			nextState, ok := SignDigitLexerLookupTransition(state, r)
+			nextState, ok := {{.TypeName}}LookupTransition(state, r)
 			if !ok {
 				break
 			}
 			scanLocation.LocateRune(r, width)
 			state = nextState
-			if _, ok := SignDigitLexerActions[state]; ok {
+			if _, ok := {{.TypeName}}Actions[state]; ok {
 				lastAcceptState = state
 				lastAcceptLocation = scanLocation
 			}
@@ -61,18 +64,23 @@ func (lexer *SignDigitLexer) Scan() *tokens.Token {
 		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
 		lexeme := []rune(lexemeText)
 		*lexer.tokenLocation = lastAcceptLocation
-		tokenType := SignDigitLexerActions[lastAcceptState]
+		tokenType := {{.TypeName}}Actions[lastAcceptState]
+{{- if .HasIgnored }}
+		if {{.TypeName}}IsIgnoredToken(tokenType) {
+			continue
+		}
+{{- end }}
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
 
-func (lexer *SignDigitLexer) peekRuneAt(byteOffset int) (rune, int) {
+func (lexer *{{.TypeName}}) peekRuneAt(byteOffset int) (rune, int) {
 	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
 	return r, width
 }
 
-func SignDigitLexerLookupTransition(state int, r rune) (int, bool) {
-	transitionsForState, ok := SignDigitLexerTransitions[state]
+func {{.TypeName}}LookupTransition(state int, r rune) (int, bool) {
+	transitionsForState, ok := {{.TypeName}}Transitions[state]
 	if !ok {
 		return 0, false
 	}
@@ -87,42 +95,32 @@ func SignDigitLexerLookupTransition(state int, r rune) (int, bool) {
 	return 0, false
 }
 
-const SignDigitLexerStartState = 0
+{{- if .HasIgnored }}
+func {{.TypeName}}IsIgnoredToken(tokenType tokens.TokenType) bool {
+	return strings.HasPrefix(string(tokenType), "!")
+}
 
-type SignDigitLexerRangeTransition struct {
+{{- end }}
+const {{.TypeName}}StartState = {{.StartState}}
+
+type {{.TypeName}}RangeTransition struct {
 	from rune
 	to   rune
 	next int
 }
 
-var SignDigitLexerTransitions = map[int][]SignDigitLexerRangeTransition{
-	0: {
-		{from: '+', to: '+', next: 1},
-		{from: '-', to: '-', next: 2},
-		{from: '0', to: '0', next: 3},
-		{from: '1', to: '1', next: 4},
-		{from: '2', to: '2', next: 5},
-		{from: '3', to: '3', next: 6},
-		{from: '4', to: '4', next: 7},
-		{from: '5', to: '5', next: 8},
-		{from: '6', to: '6', next: 9},
-		{from: '7', to: '7', next: 10},
-		{from: '8', to: '8', next: 11},
-		{from: '9', to: '9', next: 12},
+var {{.TypeName}}Transitions = map[int][]{{.TypeName}}RangeTransition{
+{{- range .Transitions }}
+	{{.State}}: {
+{{- range .Ranges }}
+		{from: {{printf "%q" .From}}, to: {{printf "%q" .To}}, next: {{.Next}}},
+{{- end }}
 	},
+{{- end }}
 }
 
-var SignDigitLexerActions = map[int]tokens.TokenType{
-	1:  "sign",
-	2:  "sign",
-	3:  "digit",
-	4:  "digit",
-	5:  "digit",
-	6:  "digit",
-	7:  "digit",
-	8:  "digit",
-	9:  "digit",
-	10: "digit",
-	11: "digit",
-	12: "digit",
+var {{.TypeName}}Actions = map[int]tokens.TokenType{
+{{- range .Actions }}
+	{{.State}}: {{quote .TokenType}},
+{{- end }}
 }

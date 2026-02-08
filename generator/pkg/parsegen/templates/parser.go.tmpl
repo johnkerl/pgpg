@@ -1,0 +1,111 @@
+package {{.PackageName}}
+
+import (
+	"fmt"
+
+	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
+	"github.com/johnkerl/pgpg/manual/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/pkg/tokens"
+)
+
+type {{.TypeName}} struct {}
+
+func New{{.TypeName}}() *{{.TypeName}} { return &{{.TypeName}}{} }
+
+func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, error) {
+	if lexer == nil {
+		return nil, fmt.Errorf("parser: nil lexer")
+	}
+	stateStack := []int{0}
+	nodeStack := []*asts.ASTNode{}
+	lookahead := lexer.Scan()
+	for {
+		if lookahead == nil {
+			return nil, fmt.Errorf("parser: lexer returned nil token")
+		}
+		if lookahead.Type == tokens.TokenTypeError {
+			return nil, fmt.Errorf("lexer error: %s", string(lookahead.Lexeme))
+		}
+		state := stateStack[len(stateStack)-1]
+		action, ok := {{.TypeName}}Actions[state][lookahead.Type]
+		if !ok {
+			return nil, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
+		}
+		switch action.kind {
+		case {{.TypeName}}ActionShift:
+			nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			stateStack = append(stateStack, action.target)
+			lookahead = lexer.Scan()
+		case {{.TypeName}}ActionReduce:
+			prod := {{.TypeName}}Productions[action.target]
+			children := make([]*asts.ASTNode, prod.rhsCount)
+			for i := prod.rhsCount - 1; i >= 0; i-- {
+				stateStack = stateStack[:len(stateStack)-1]
+				children[i] = nodeStack[len(nodeStack)-1]
+				nodeStack = nodeStack[:len(nodeStack)-1]
+			}
+			if prod.rhsCount == 0 {
+				children = []*asts.ASTNode{}
+			}
+			node := asts.NewASTNode(nil, prod.lhs, children)
+			nodeStack = append(nodeStack, node)
+			state = stateStack[len(stateStack)-1]
+			nextState, ok := {{.TypeName}}Gotos[state][prod.lhs]
+			if !ok {
+				return nil, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
+			}
+			stateStack = append(stateStack, nextState)
+		case {{.TypeName}}ActionAccept:
+			if len(nodeStack) != 1 {
+				return nil, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			return asts.NewAST(nodeStack[0]), nil
+		default:
+			return nil, fmt.Errorf("parse error: no action")
+		}
+	}
+}
+
+type {{.TypeName}}ActionKind int
+
+const (
+	{{.TypeName}}ActionShift {{.TypeName}}ActionKind = iota
+	{{.TypeName}}ActionReduce
+	{{.TypeName}}ActionAccept
+)
+
+type {{.TypeName}}Action struct {
+	kind   {{.TypeName}}ActionKind
+	target int
+}
+
+type {{.TypeName}}Production struct {
+	lhs      asts.NodeType
+	rhsCount int
+}
+
+var {{.TypeName}}Actions = map[int]map[tokens.TokenType]{{.TypeName}}Action{
+{{- range .Actions }}
+	{{.State}}: {
+{{- range .Entries }}
+		{{.TerminalLiteral}}: {kind: {{.KindLiteral}}{{if .HasTarget}}, target: {{.Target}}{{end}}},
+{{- end }}
+	},
+{{- end }}
+}
+
+var {{.TypeName}}Gotos = map[int]map[asts.NodeType]int{
+{{- range .Gotos }}
+	{{.State}}: {
+{{- range .Entries }}
+		{{.NontermLiteral}}: {{.Target}},
+{{- end }}
+	},
+{{- end }}
+}
+
+var {{.TypeName}}Productions = []{{.TypeName}}Production{
+{{- range .Productions }}
+	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}},
+{{- end }}
+}

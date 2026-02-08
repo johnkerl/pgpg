@@ -90,7 +90,6 @@ func ArithLexerLookupTransition(state int, r rune) (int, bool) {
 	}
 	return 0, false
 }
-
 func ArithLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
 	return strings.HasPrefix(string(tokenType), "!")
 }
@@ -368,15 +367,15 @@ var ArithLexerTransitions = map[int][]ArithLexerRangeTransition{
 }
 
 var ArithLexerActions = map[int]tokens.TokenType{
-	1: "!whitespace",
-	2: "!whitespace",
-	3: "!whitespace",
-	4: "!whitespace",
-	5: "modulo",
-	6: "times",
-	7: "plus",
-	8: "minus",
-	9: "divide",
+	1:  "!whitespace",
+	2:  "!whitespace",
+	3:  "!whitespace",
+	4:  "!whitespace",
+	5:  "modulo",
+	6:  "times",
+	7:  "plus",
+	8:  "minus",
+	9:  "divide",
 	10: "int_literal",
 	11: "int_literal",
 	12: "int_literal",

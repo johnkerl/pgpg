@@ -18,13 +18,13 @@ type parserInfoT struct {
 }
 
 var parserMakerTable = map[string]parserInfoT{
-	"m:ame": {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
-	"m:amne": {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
+	"m:ame":    {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
+	"m:amne":   {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
 	"m:pemdas": {run: runManualParser(parsers.NewPEMDASParser), help: "Arithmetic with parentheses and PEMDAS precedence."},
-	"m:vic": {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
-	"m:vbc": {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
-	"m:ebnf": {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
-	"g:arith": {run: runGeneratedArithParser, help: "Generated arithmetic parser from generated/pkg/arith-parse.go."},
+	"m:vic":    {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
+	"m:vbc":    {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
+	"m:ebnf":   {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
+	"g:arith":  {run: runGeneratedArithParser, help: "Generated arithmetic parser from generated/pkg/arith-parse.go."},
 	"g:arithw": {run: runGeneratedArithWhitespaceParser, help: "Generated arithmetic parser from generated/pkg/arithw-parse.go."},
 }
 
