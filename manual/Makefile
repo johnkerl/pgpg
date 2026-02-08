@@ -1,14 +1,19 @@
 # This must remain the first target in this file, which is what 'make' with no
 # arguments will run.
 build:
-	go build github.com/johnkerl/pgpg/cmd/tryast
-	go build github.com/johnkerl/pgpg/cmd/trylex
-	go build github.com/johnkerl/pgpg/cmd/tryparse
+	go build ./cmd/tryast
+	go build ./cmd/trylex
+	go build ./cmd/tryparse
 
 check:
 	#go test github.com/johnkerl/pgpg/...
 	go test ./...
-	
+
+clean:
+	rm -f ./tryast
+	rm -f ./trylex
+	rm -f ./tryparse
+
 # ----------------------------------------------------------------
 # Formatting
 # go fmt ./... finds Python files which we want to ignore.
