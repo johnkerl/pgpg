@@ -155,6 +155,9 @@ func isLexerRuleName(name string) bool {
 		return false
 	}
 	first := []rune(name)[0]
+	if first == '!' {
+		return true
+	}
 	return first == '_' || unicode.IsLower(first)
 }
 

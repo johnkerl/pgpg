@@ -113,14 +113,14 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 	} else if r == '"' || r == '\'' {
 		return lexer.scanStringLiteral(r, runeWidth, &startLocation)
 
-	} else if isVICIdentifierStart(r) {
+	} else if isEBNFIdentifierStart(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		runes := make([]rune, 0, ebnfLexerInitialCapacity)
 		runes = append(runes, r)
 
 		for {
 			r, runeWidth := lexer.peekRune()
-			if isVICIdentifierContinue(r) {
+			if isEBNFIdentifierContinue(r) {
 				lexer.tokenLocation.LocateRune(r, runeWidth)
 				runes = append(runes, r)
 			} else {
@@ -204,4 +204,12 @@ func (lexer *EBNFLexer) readRune() rune {
 	r, runeWidth := lexer.peekRune()
 	lexer.tokenLocation.LocateRune(r, runeWidth)
 	return r
+}
+
+func isEBNFIdentifierStart(r rune) bool {
+	return r == '!' || isVICIdentifierStart(r)
+}
+
+func isEBNFIdentifierContinue(r rune) bool {
+	return isVICIdentifierContinue(r)
 }
