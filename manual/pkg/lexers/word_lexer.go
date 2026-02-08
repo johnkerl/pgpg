@@ -1,7 +1,7 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 	"unicode"
 	"unicode/utf8"
 )

@@ -5,7 +5,7 @@ import (
 	"os"
 	"sort"
 
-	"github.com/johnkerl/pgpg/pkg/lexers"
+	"github.com/johnkerl/pgpg/manual/pkg/lexers"
 )
 
 type lexerMaker func(string) lexers.AbstractLexer
