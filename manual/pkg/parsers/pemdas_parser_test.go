@@ -35,7 +35,6 @@ func assertNumberLeaf(
 	}
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASParserPowerRightAssociative(t *testing.T) {
 	parser := NewPEMDASParser()
 	ast, err := parser.Parse("2**3**4")
@@ -51,7 +50,6 @@ func TestPEMDASParserPowerRightAssociative(t *testing.T) {
 	assertNumberLeaf(t, right.Children[1], "4")
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASParserPrecedenceTimesOverPlus(t *testing.T) {
 	parser := NewPEMDASParser()
 	ast, err := parser.Parse("2+3*4")
@@ -67,7 +65,6 @@ func TestPEMDASParserPrecedenceTimesOverPlus(t *testing.T) {
 	assertNumberLeaf(t, right.Children[1], "4")
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASParserParentheses(t *testing.T) {
 	parser := NewPEMDASParser()
 	ast, err := parser.Parse("2*(3+4)")
@@ -83,7 +80,6 @@ func TestPEMDASParserParentheses(t *testing.T) {
 	assertNumberLeaf(t, right.Children[1], "4")
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASParserUnaryMinus(t *testing.T) {
 	parser := NewPEMDASParser()
 	ast, err := parser.Parse("-2**3")

@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestPEMDASLexer1(t *testing.T) {
 	lexer := NewPEMDASLexer("")
 
@@ -14,7 +13,6 @@ func TestPEMDASLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASLexer2(t *testing.T) {
 	lexer := NewPEMDASLexer("123")
 
@@ -28,7 +26,6 @@ func TestPEMDASLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASLexer3(t *testing.T) {
 	lexer := NewPEMDASLexer("+-*/**()8888")
 
@@ -84,7 +81,6 @@ func TestPEMDASLexer3(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestPEMDASLexer4(t *testing.T) {
 	lexer := NewPEMDASLexer("123&456")
 

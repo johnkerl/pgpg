@@ -9,8 +9,6 @@
   * Move types to tops of files
   * Dedupe
   * Etc.
-* See how the parsegen handles various conflicts.
-  * See how much helpful information can be shown to the user.
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
 
 # [x] Markdown defs of simple grammars

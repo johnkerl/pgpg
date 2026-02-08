@@ -14,7 +14,6 @@ func assertEBNFNodeType(t *testing.T, node *asts.ASTNode, nodeType asts.NodeType
 	}
 }
 
-// ----------------------------------------------------------------
 func TestEBNFParserSimpleGrammar(t *testing.T) {
 	parser := NewEBNFParser()
 	ast, err := parser.Parse("rule = \"a\" | \"b\";")
@@ -29,7 +28,6 @@ func TestEBNFParserSimpleGrammar(t *testing.T) {
 	assert.Len(t, rule.Children, 2)
 }
 
-// ----------------------------------------------------------------
 func TestEBNFParserGroupingOptionalRepeat(t *testing.T) {
 	parser := NewEBNFParser()
 	ast, err := parser.Parse("expr ::= term { ( \"+\" | \"-\" ) term } [ \";\" ]")
@@ -40,7 +38,6 @@ func TestEBNFParserGroupingOptionalRepeat(t *testing.T) {
 	assert.Len(t, root.Children, 1)
 }
 
-// ----------------------------------------------------------------
 func TestEBNFParserMultipleRules(t *testing.T) {
 	parser := NewEBNFParser()
 	ast, err := parser.Parse("a = \"x\"; b = \"y\";")
@@ -48,7 +45,6 @@ func TestEBNFParserMultipleRules(t *testing.T) {
 	assert.Len(t, ast.RootNode.Children, 2)
 }
 
-// ----------------------------------------------------------------
 func TestEBNFParserMissingRuleName(t *testing.T) {
 	parser := NewEBNFParser()
 	_, err := parser.Parse("= \"x\";")

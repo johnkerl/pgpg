@@ -48,7 +48,6 @@ func assertVICIdentifierLeaf(
 	}
 }
 
-// ----------------------------------------------------------------
 func TestVICParserPowerRightAssociative(t *testing.T) {
 	parser := NewVICParser()
 	ast, err := parser.Parse("2**3**4")
@@ -64,7 +63,6 @@ func TestVICParserPowerRightAssociative(t *testing.T) {
 	assertVICNumberLeaf(t, right.Children[1], "4")
 }
 
-// ----------------------------------------------------------------
 func TestVICParserPrecedenceTimesOverPlus(t *testing.T) {
 	parser := NewVICParser()
 	ast, err := parser.Parse("2+3*4")
@@ -80,7 +78,6 @@ func TestVICParserPrecedenceTimesOverPlus(t *testing.T) {
 	assertVICNumberLeaf(t, right.Children[1], "4")
 }
 
-// ----------------------------------------------------------------
 func TestVICParserParentheses(t *testing.T) {
 	parser := NewVICParser()
 	ast, err := parser.Parse("2*(3+4)")
@@ -96,7 +93,6 @@ func TestVICParserParentheses(t *testing.T) {
 	assertVICNumberLeaf(t, right.Children[1], "4")
 }
 
-// ----------------------------------------------------------------
 func TestVICParserUnaryMinus(t *testing.T) {
 	parser := NewVICParser()
 	ast, err := parser.Parse("-2**3")
@@ -112,7 +108,6 @@ func TestVICParserUnaryMinus(t *testing.T) {
 	assertVICNumberLeaf(t, root.Children[1], "3")
 }
 
-// ----------------------------------------------------------------
 func TestVICParserIdentifiers(t *testing.T) {
 	parser := NewVICParser()
 	ast, err := parser.Parse("x+1")
@@ -124,7 +119,6 @@ func TestVICParserIdentifiers(t *testing.T) {
 	assertVICNumberLeaf(t, root.Children[1], "1")
 }
 
-// ----------------------------------------------------------------
 func TestVICParserAssignment(t *testing.T) {
 	parser := NewVICParser()
 	ast, err := parser.Parse("x = x + 1")
@@ -142,7 +136,6 @@ func TestVICParserAssignment(t *testing.T) {
 	assertVICNumberLeaf(t, right.Children[1], "1")
 }
 
-// ----------------------------------------------------------------
 func TestVICParserAssignmentRequiresIdentifier(t *testing.T) {
 	parser := NewVICParser()
 	_, err := parser.Parse("1 = 1 + 2")

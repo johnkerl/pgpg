@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestAMLexer1(t *testing.T) {
 	lexer := NewAMLexer("")
 
@@ -14,7 +13,6 @@ func TestAMLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestAMLexer2(t *testing.T) {
 	lexer := NewAMLexer("123")
 
@@ -28,7 +26,6 @@ func TestAMLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestAMLexer3(t *testing.T) {
 	lexer := NewAMLexer("++*8888")
 
@@ -60,7 +57,6 @@ func TestAMLexer3(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestAMLexer4(t *testing.T) {
 	lexer := NewAMLexer("123&456")
 

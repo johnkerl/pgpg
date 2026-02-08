@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestVBCLexer1(t *testing.T) {
 	lexer := NewVBCLexer("")
 
@@ -14,7 +13,6 @@ func TestVBCLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestVBCLexer2(t *testing.T) {
 	lexer := NewVBCLexer("and OR Not foo9 (_bar)")
 
@@ -50,7 +48,6 @@ func TestVBCLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestVBCLexer3(t *testing.T) {
 	lexer := NewVBCLexer("x&y")
 

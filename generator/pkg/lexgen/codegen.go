@@ -13,6 +13,25 @@ import (
 	_ "embed"
 )
 
+type lexerTemplateData struct {
+	PackageName string
+	TypeName    string
+	StartState  int
+	HasIgnored  bool
+	Transitions []lexerTransitionState
+	Actions     []lexerActionState
+}
+
+type lexerTransitionState struct {
+	State  int
+	Ranges []RangeTransition
+}
+
+type lexerActionState struct {
+	State     int
+	TokenType string
+}
+
 //go:embed templates/lexer.go.tmpl
 var lexerTemplateText string
 
@@ -78,25 +97,6 @@ func GenerateGoLexerCodeRaw(tables *Tables, packageName string, typeName string)
 		return nil, fmt.Errorf("render lexer template: %w", err)
 	}
 	return buf.Bytes(), nil
-}
-
-type lexerTemplateData struct {
-	PackageName string
-	TypeName    string
-	StartState  int
-	HasIgnored  bool
-	Transitions []lexerTransitionState
-	Actions     []lexerActionState
-}
-
-type lexerTransitionState struct {
-	State  int
-	Ranges []RangeTransition
-}
-
-type lexerActionState struct {
-	State     int
-	TokenType string
 }
 
 func buildLexerTransitions(tables *Tables) []lexerTransitionState {

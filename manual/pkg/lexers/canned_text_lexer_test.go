@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestCannedTextLexer1(t *testing.T) {
 	lexer := NewCannedTextLexer("")
 
@@ -15,7 +14,6 @@ func TestCannedTextLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestCannedTextLexer2(t *testing.T) {
 	lexer := NewCannedTextLexer("a b c")
 

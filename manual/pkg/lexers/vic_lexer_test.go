@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestVICLexer1(t *testing.T) {
 	lexer := NewVICLexer("")
 
@@ -14,7 +13,6 @@ func TestVICLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestVICLexer2(t *testing.T) {
 	lexer := NewVICLexer("123")
 
@@ -28,7 +26,6 @@ func TestVICLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestVICLexer3(t *testing.T) {
 	lexer := NewVICLexer("+-*/**()=foo9")
 
@@ -90,7 +87,6 @@ func TestVICLexer3(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestVICLexerIdentifiers(t *testing.T) {
 	lexer := NewVICLexer("_aZ9 __x0")
 
@@ -106,7 +102,6 @@ func TestVICLexerIdentifiers(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestVICLexer4(t *testing.T) {
 	lexer := NewVICLexer("123&456")
 

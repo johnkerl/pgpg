@@ -35,7 +35,6 @@ func assertVBCIdentifierLeaf(
 	}
 }
 
-// ----------------------------------------------------------------
 func TestVBCParserPrecedenceAndOverOr(t *testing.T) {
 	parser := NewVBCParser()
 	ast, err := parser.Parse("a OR b AND c")
@@ -51,7 +50,6 @@ func TestVBCParserPrecedenceAndOverOr(t *testing.T) {
 	assertVBCIdentifierLeaf(t, right.Children[1], "c")
 }
 
-// ----------------------------------------------------------------
 func TestVBCParserNotPrecedence(t *testing.T) {
 	parser := NewVBCParser()
 	ast, err := parser.Parse("NOT a AND b")
@@ -67,7 +65,6 @@ func TestVBCParserNotPrecedence(t *testing.T) {
 	assertVBCIdentifierLeaf(t, root.Children[1], "b")
 }
 
-// ----------------------------------------------------------------
 func TestVBCParserParentheses(t *testing.T) {
 	parser := NewVBCParser()
 	ast, err := parser.Parse("(a OR b) AND c")
@@ -84,7 +81,6 @@ func TestVBCParserParentheses(t *testing.T) {
 	assertVBCIdentifierLeaf(t, root.Children[1], "c")
 }
 
-// ----------------------------------------------------------------
 func TestVBCParserIdentifierOnly(t *testing.T) {
 	parser := NewVBCParser()
 	ast, err := parser.Parse("_flag1")

@@ -6,7 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// ----------------------------------------------------------------
 func TestEBNFLexer1(t *testing.T) {
 	lexer := NewEBNFLexer("")
 
@@ -14,7 +13,6 @@ func TestEBNFLexer1(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestEBNFLexer2(t *testing.T) {
 	lexer := NewEBNFLexer("rule ::= \"a\" | 'b' ;")
 
@@ -46,7 +44,6 @@ func TestEBNFLexer2(t *testing.T) {
 	assert.True(t, token.IsEOF())
 }
 
-// ----------------------------------------------------------------
 func TestEBNFLexer3(t *testing.T) {
 	lexer := NewEBNFLexer("[ { ( ) } ] =")
 
@@ -79,7 +76,6 @@ func TestEBNFLexer3(t *testing.T) {
 	assert.Equal(t, EBNFLexerTypeAssign, token.Type)
 }
 
-// ----------------------------------------------------------------
 func TestEBNFLexer4(t *testing.T) {
 	lexer := NewEBNFLexer("x :=")
 
