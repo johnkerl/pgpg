@@ -26,6 +26,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:ebnf":   {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
 	"g:arith":  {run: runGeneratedArithParser, help: "Generated arithmetic parser from generated/pkg/arith-parse.go."},
 	"g:arithw": {run: runGeneratedArithWhitespaceParser, help: "Generated arithmetic parser from generated/pkg/arithw-parse.go."},
+	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/pkg/parsers/statements-parse.go."},
 }
 
 func usage() {
@@ -83,5 +84,11 @@ func runGeneratedArithParser(input string) (*asts.AST, error) {
 func runGeneratedArithWhitespaceParser(input string) (*asts.AST, error) {
 	lexer := generatedlexers.NewArithWhitespaceLexer(input)
 	parser := generatedparsers.NewArithWhitespaceParser()
+	return parser.Parse(lexer)
+}
+
+func runGeneratedStatementsParser(input string) (*asts.AST, error) {
+	lexer := generatedlexers.NewStatementsLexer(input)
+	parser := generatedparsers.NewStatementsParser()
 	return parser.Parse(lexer)
 }

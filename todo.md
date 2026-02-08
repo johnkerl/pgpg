@@ -7,7 +7,9 @@
 * Replace generated arith with pemdas, more closely to match the manual one.
   Likewise with other manual grammars.
 * Allow comments in grammars
+* Trace mode for debugging ...
 * Some multi-statement grammars.
+* `trylex`/`tryparse` options to take command-line strings or filenames.
 * See how the parsegen handles various conflicts.
 
 # [x] Markdown defs of simple grammars
