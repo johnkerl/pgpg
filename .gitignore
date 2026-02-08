@@ -1,4 +1,14 @@
+# Editor temporaries
 .sw?
 .*.sw?
 tags
 *~
+
+# Executables
+/generator/lexgen-code
+/generator/lexgen-tables
+
+/runners/tryast
+/runners/trylex
+/runners/tryparse
+

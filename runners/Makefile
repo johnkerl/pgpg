@@ -1,12 +1,26 @@
 # ----------------------------------------------------------------
+# This must remain the first target in this file, which is what 'make' with no
+# arguments will run.
+build:
+	@set -e; \
+	for d in ./cmd/*; do \
+		go build "$$d"; \
+	done
+
 check test:
-	#go test github.com/johnkerl/pgpg/manual/...
 	go test ./...
+
+clean:
+	@set -e; \
+	for d in ./cmd/*; do \
+		rm -f "./$$(basename "$$d")"; \
+	done
 
 # ----------------------------------------------------------------
 # Formatting
 # go fmt ./... finds Python files which we want to ignore.
 fmt:
+	-go fmt ./cmd/...
 	-go fmt ./pkg/...
 
 # ----------------------------------------------------------------
@@ -21,6 +35,7 @@ staticcheck:
 # For developers before pushing a commit.
 dev:
 	-make fmt
+	make build
 	make check
 	@echo DONE
 
