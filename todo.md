@@ -1,3 +1,7 @@
+# Structure
+
+* Use `go:embed` rather than extensive `buf.WriteString` for codgen templates
+
 # [x] Markdown defs of simple grammars
 
 # Lexer
@@ -30,6 +34,14 @@
   * [ ] ... or, there should be a "produce ignore-tokens" option
 * [ ] Config-driven autogen
 * [ ] Make sure grammar -> lexer build can be done either offline or online (the latter without need for process restart)
+
+# Lexer-generator
+
+* Maybe: auto‑include operator literals from parser rules:
+  * Scan all grammar rules
+  * Collect any literal terminals (e.g., "+", "-", "(", ")", "==", etc.).
+  * Add those literals into the lexer rule set automatically, even if no explicit lexer rule exists
+* DFA minimization
 
 # AST
 
