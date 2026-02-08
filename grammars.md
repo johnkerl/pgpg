@@ -28,6 +28,10 @@ Variables-and-booleans calculator.
 
 Variable names, `AND`, `OR`, `NOT`, parentheses, assignments, evaluations.
 
+## STATEMENTS
+
+Simple statements like `x=1; if (y=3) z=4;`.
+
 ## SENG
 
 Simple English statements:

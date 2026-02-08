@@ -34,8 +34,8 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:vic":    {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
 	"m:vbc":    {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":   {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
-	"g:arith":  {run: runGeneratedArithParser, help: "Generated arithmetic parser from generated/pkg/arith-parse.go."},
-	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/pkg/parsers/statements-parse.go."},
+	"g:pemdas":  {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser from generated/bnfs/pemdas.bnf."},
+	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
 }
 
 func usage() {
@@ -108,10 +108,10 @@ func runManualParser(maker func() parsers.AbstractParser) func(string, traceOpti
 	}
 }
 
-func runGeneratedArithParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewArithLexer(input)
-	parser := generatedparsers.NewArithParser()
-	attachArithTrace(parser, opts)
+func runGeneratedPEMDASParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewPEMDASLexer(input)
+	parser := generatedparsers.NewPEMDASParser()
+	attachPEMDASTrace(parser, opts)
 	return parser.Parse(lexer)
 }
 
@@ -157,22 +157,22 @@ func runParserOnFiles(run func(string, traceOptions) (*asts.AST, error), filenam
 	return nil
 }
 
-func attachArithTrace(parser *generatedparsers.ArithParser, opts traceOptions) {
+func attachPEMDASTrace(parser *generatedparsers.PEMDASParser, opts traceOptions) {
 	if !opts.tokens && !opts.states && !opts.stack {
 		return
 	}
-	parser.Trace = &generatedparsers.ArithParserTraceHooks{
+	parser.Trace = &generatedparsers.PEMDASParserTraceHooks{
 		OnToken: func(tok *tokens.Token) {
 			if !opts.tokens {
 				return
 			}
 			fmt.Fprintln(os.Stderr, formatToken(tok))
 		},
-		OnAction: func(state int, action generatedparsers.ArithParserAction, lookahead *tokens.Token) {
+		OnAction: func(state int, action generatedparsers.PEMDASParserAction, lookahead *tokens.Token) {
 			if !opts.states {
 				return
 			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatArithAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatPEMDASAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
 		},
 		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
 			if !opts.stack {
@@ -250,13 +250,13 @@ func formatNodeStack(stack []*asts.ASTNode) string {
 	return "[" + strings.Join(parts, " ") + "]"
 }
 
-func formatArithAction(action generatedparsers.ArithParserAction) string {
+func formatPEMDASAction(action generatedparsers.PEMDASParserAction) string {
 	switch action.Kind {
-	case generatedparsers.ArithParserActionShift:
+	case generatedparsers.PEMDASParserActionShift:
 		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.ArithParserActionReduce:
+	case generatedparsers.PEMDASParserActionReduce:
 		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.ArithParserActionAccept:
+	case generatedparsers.PEMDASParserActionAccept:
 		return "accept"
 	default:
 		return "unknown"

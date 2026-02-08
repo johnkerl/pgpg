@@ -9,23 +9,23 @@ import (
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type ArithLexer struct {
+type PEMDASLexer struct {
 	inputText     string
 	inputLength   int
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*ArithLexer)(nil)
+var _ manuallexers.AbstractLexer = (*PEMDASLexer)(nil)
 
-func NewArithLexer(inputText string) manuallexers.AbstractLexer {
-	return &ArithLexer{
+func NewPEMDASLexer(inputText string) manuallexers.AbstractLexer {
+	return &PEMDASLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
-func (lexer *ArithLexer) Scan() *tokens.Token {
+func (lexer *PEMDASLexer) Scan() *tokens.Token {
 	for {
 		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 			return tokens.NewEOFToken(lexer.tokenLocation)
@@ -33,7 +33,7 @@ func (lexer *ArithLexer) Scan() *tokens.Token {
 
 		startLocation := *lexer.tokenLocation
 		scanLocation := *lexer.tokenLocation
-		state := ArithLexerStartState
+		state := PEMDASLexerStartState
 		lastAcceptState := -1
 		lastAcceptLocation := scanLocation
 
@@ -42,13 +42,13 @@ func (lexer *ArithLexer) Scan() *tokens.Token {
 				break
 			}
 			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-			nextState, ok := ArithLexerLookupTransition(state, r)
+			nextState, ok := PEMDASLexerLookupTransition(state, r)
 			if !ok {
 				break
 			}
 			scanLocation.LocateRune(r, width)
 			state = nextState
-			if _, ok := ArithLexerActions[state]; ok {
+			if _, ok := PEMDASLexerActions[state]; ok {
 				lastAcceptState = state
 				lastAcceptLocation = scanLocation
 			}
@@ -62,21 +62,21 @@ func (lexer *ArithLexer) Scan() *tokens.Token {
 		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
 		lexeme := []rune(lexemeText)
 		*lexer.tokenLocation = lastAcceptLocation
-		tokenType := ArithLexerActions[lastAcceptState]
-		if ArithLexerIsIgnoredToken(tokenType) {
+		tokenType := PEMDASLexerActions[lastAcceptState]
+		if PEMDASLexerIsIgnoredToken(tokenType) {
 			continue
 		}
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
 
-func (lexer *ArithLexer) peekRuneAt(byteOffset int) (rune, int) {
+func (lexer *PEMDASLexer) peekRuneAt(byteOffset int) (rune, int) {
 	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
 	return r, width
 }
 
-func ArithLexerLookupTransition(state int, r rune) (int, bool) {
-	transitionsForState, ok := ArithLexerTransitions[state]
+func PEMDASLexerLookupTransition(state int, r rune) (int, bool) {
+	transitionsForState, ok := PEMDASLexerTransitions[state]
 	if !ok {
 		return 0, false
 	}
@@ -90,19 +90,19 @@ func ArithLexerLookupTransition(state int, r rune) (int, bool) {
 	}
 	return 0, false
 }
-func ArithLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
+func PEMDASLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
 	return strings.HasPrefix(string(tokenType), "!")
 }
 
-const ArithLexerStartState = 0
+const PEMDASLexerStartState = 0
 
-type ArithLexerRangeTransition struct {
+type PEMDASLexerRangeTransition struct {
 	from rune
 	to   rune
 	next int
 }
 
-var ArithLexerTransitions = map[int][]ArithLexerRangeTransition{
+var PEMDASLexerTransitions = map[int][]PEMDASLexerRangeTransition{
 	0: {
 		{from: '\t', to: '\t', next: 1},
 		{from: '\n', to: '\n', next: 2},
@@ -366,7 +366,7 @@ var ArithLexerTransitions = map[int][]ArithLexerRangeTransition{
 	},
 }
 
-var ArithLexerActions = map[int]tokens.TokenType{
+var PEMDASLexerActions = map[int]tokens.TokenType{
 	1:  "!whitespace",
 	2:  "!whitespace",
 	3:  "!whitespace",
