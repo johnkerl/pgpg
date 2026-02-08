@@ -10,26 +10,26 @@
     "1": {
       "EOF": {
         "type": "reduce",
-        "target": 6
+        "target": 10
       },
       "divide": {
-        "type": "shift",
-        "target": 9
+        "type": "reduce",
+        "target": 10
       },
       "minus": {
         "type": "reduce",
-        "target": 6
+        "target": 10
       },
       "modulo": {
-        "type": "shift",
-        "target": 8
+        "type": "reduce",
+        "target": 10
       },
       "plus": {
         "type": "reduce",
-        "target": 6
+        "target": 10
       },
       "times": {
-        "type": "shift",
+        "type": "reduce",
         "target": 10
       }
     },
@@ -54,53 +54,53 @@
     "13": {
       "EOF": {
         "type": "reduce",
-        "target": 9
+        "target": 4
       },
       "divide": {
-        "type": "reduce",
-        "target": 9
+        "type": "shift",
+        "target": 12
       },
       "minus": {
         "type": "reduce",
-        "target": 9
+        "target": 4
       },
       "modulo": {
-        "type": "reduce",
-        "target": 9
+        "type": "shift",
+        "target": 11
       },
       "plus": {
         "type": "reduce",
-        "target": 9
+        "target": 4
       },
       "times": {
-        "type": "reduce",
-        "target": 9
+        "type": "shift",
+        "target": 10
       }
     },
     "14": {
       "EOF": {
         "type": "reduce",
-        "target": 8
+        "target": 5
       },
       "divide": {
-        "type": "reduce",
-        "target": 8
+        "type": "shift",
+        "target": 12
       },
       "minus": {
         "type": "reduce",
-        "target": 8
+        "target": 5
       },
       "modulo": {
-        "type": "reduce",
-        "target": 8
+        "type": "shift",
+        "target": 11
       },
       "plus": {
         "type": "reduce",
-        "target": 8
+        "target": 5
       },
       "times": {
-        "type": "reduce",
-        "target": 8
+        "type": "shift",
+        "target": 10
       }
     },
     "15": {
@@ -132,53 +132,53 @@
     "16": {
       "EOF": {
         "type": "reduce",
-        "target": 5
+        "target": 9
       },
       "divide": {
-        "type": "shift",
+        "type": "reduce",
         "target": 9
       },
       "minus": {
         "type": "reduce",
-        "target": 5
+        "target": 9
       },
       "modulo": {
-        "type": "shift",
-        "target": 8
+        "type": "reduce",
+        "target": 9
       },
       "plus": {
         "type": "reduce",
-        "target": 5
+        "target": 9
       },
       "times": {
-        "type": "shift",
-        "target": 10
+        "type": "reduce",
+        "target": 9
       }
     },
     "17": {
       "EOF": {
         "type": "reduce",
-        "target": 4
+        "target": 8
       },
       "divide": {
-        "type": "shift",
-        "target": 9
+        "type": "reduce",
+        "target": 8
       },
       "minus": {
         "type": "reduce",
-        "target": 4
+        "target": 8
       },
       "modulo": {
-        "type": "shift",
+        "type": "reduce",
         "target": 8
       },
       "plus": {
         "type": "reduce",
-        "target": 4
+        "target": 8
       },
       "times": {
-        "type": "shift",
-        "target": 10
+        "type": "reduce",
+        "target": 8
       }
     },
     "2": {
@@ -210,58 +210,58 @@
     "3": {
       "EOF": {
         "type": "reduce",
-        "target": 10
-      },
-      "divide": {
-        "type": "reduce",
-        "target": 10
-      },
-      "minus": {
-        "type": "reduce",
-        "target": 10
-      },
-      "modulo": {
-        "type": "reduce",
-        "target": 10
-      },
-      "plus": {
-        "type": "reduce",
-        "target": 10
-      },
-      "times": {
-        "type": "reduce",
-        "target": 10
-      }
-    },
-    "4": {
-      "EOF": {
-        "type": "accept"
-      }
-    },
-    "5": {
-      "EOF": {
-        "type": "reduce",
         "target": 2
       }
     },
-    "6": {
+    "4": {
       "EOF": {
         "type": "reduce",
         "target": 1
       }
     },
-    "7": {
+    "5": {
+      "EOF": {
+        "type": "accept"
+      }
+    },
+    "6": {
       "EOF": {
         "type": "reduce",
         "target": 3
       },
       "minus": {
         "type": "shift",
-        "target": 11
+        "target": 9
       },
       "plus": {
         "type": "shift",
+        "target": 8
+      }
+    },
+    "7": {
+      "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "divide": {
+        "type": "shift",
         "target": 12
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 6
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 11
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 6
+      },
+      "times": {
+        "type": "shift",
+        "target": 10
       }
     },
     "8": {
@@ -279,29 +279,29 @@
   },
   "gotos": {
     "0": {
-      "AddSubTerm": 7,
-      "MulDivTerm": 1,
-      "PrecedenceChainStart": 5,
-      "RHSValue": 3,
-      "Root": 4,
-      "Rvalue": 6
+      "AddSubTerm": 6,
+      "MulDivTerm": 7,
+      "PrecedenceChainStart": 3,
+      "RHSValue": 1,
+      "Root": 5,
+      "Rvalue": 4
     },
     "10": {
       "RHSValue": 15
     },
     "11": {
-      "MulDivTerm": 16,
-      "RHSValue": 3
+      "RHSValue": 16
     },
     "12": {
-      "MulDivTerm": 17,
-      "RHSValue": 3
+      "RHSValue": 17
     },
     "8": {
-      "RHSValue": 13
+      "MulDivTerm": 13,
+      "RHSValue": 1
     },
     "9": {
-      "RHSValue": 14
+      "MulDivTerm": 14,
+      "RHSValue": 1
     }
   },
   "productions": [
