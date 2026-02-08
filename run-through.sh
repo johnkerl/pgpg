@@ -25,6 +25,9 @@ sep
 
 cd ../runners
 make
-echo; ./tryparse m:vic   'x = x + 1'
-echo; ./tryparse m:vbc   'a AND b OR c AND d'
-echo; ./tryparse g:arith '1 + 2'
+echo; ./tryparse m:vic    'x = x + 1'
+echo; ./tryparse m:vbc    'a AND b OR c AND d'
+echo; ./tryparse m:pemdas '1*2+3'
+echo; ./tryparse m:pemdas '1+2*3'
+echo; ./tryparse g:arith  '1*2+3'
+echo; ./tryparse g:arith  '1+2*3'
