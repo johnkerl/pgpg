@@ -1,6 +1,7 @@
 package parsegen
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -36,6 +37,48 @@ type Production struct {
 type Symbol struct {
 	Name     string `json:"name"`
 	Terminal bool   `json:"terminal"`
+}
+
+// MarshalJSON ensures deterministic map ordering for stable output.
+func (tables *Tables) MarshalJSON() ([]byte, error) {
+	if tables == nil {
+		return []byte("null"), nil
+	}
+	var fields []jsonField
+
+	startSymbolBytes, err := json.Marshal(tables.StartSymbol)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "start_symbol", value: startSymbolBytes})
+
+	actionsBytes, err := marshalMapIntActionMap(tables.Actions)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "actions", value: actionsBytes})
+
+	gotosBytes, err := marshalMapIntIntMap(tables.Gotos)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "gotos", value: gotosBytes})
+
+	productionsBytes, err := json.Marshal(tables.Productions)
+	if err != nil {
+		return nil, err
+	}
+	fields = append(fields, jsonField{name: "productions", value: productionsBytes})
+
+	if len(tables.Metadata) > 0 {
+		metadataBytes, err := marshalMapStringString(tables.Metadata)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, jsonField{name: "metadata", value: metadataBytes})
+	}
+
+	return marshalOrderedFields(fields), nil
 }
 
 // GenerateTablesFromEBNF parses an EBNF grammar and produces LR(1) parser tables.
@@ -94,6 +137,166 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 // EncodeTables returns pretty-printed JSON for tables.
 func EncodeTables(tables *Tables) ([]byte, error) {
 	return json.MarshalIndent(tables, "", "  ")
+}
+
+type jsonField struct {
+	name  string
+	value []byte
+}
+
+func marshalOrderedFields(fields []jsonField) []byte {
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, field := range fields {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(field.name))
+		buf.WriteByte(':')
+		buf.Write(field.value)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes()
+}
+
+func marshalMapIntActionMap(m map[int]map[string]Action) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]int, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
+		buf.WriteByte(':')
+		valueBytes, err := marshalMapStringAction(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+func marshalMapStringAction(m map[string]Action) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(key))
+		buf.WriteByte(':')
+		valueBytes, err := json.Marshal(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+func marshalMapIntIntMap(m map[int]map[string]int) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]int, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Ints(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
+		buf.WriteByte(':')
+		valueBytes, err := marshalMapStringInt(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+func marshalMapStringInt(m map[string]int) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(key))
+		buf.WriteByte(':')
+		valueBytes, err := json.Marshal(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
+}
+
+func marshalMapStringString(m map[string]string) ([]byte, error) {
+	if m == nil {
+		return []byte("null"), nil
+	}
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	var buf bytes.Buffer
+	buf.WriteByte('{')
+	for i, key := range keys {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		buf.WriteString(strconv.Quote(key))
+		buf.WriteByte(':')
+		valueBytes, err := json.Marshal(m[key])
+		if err != nil {
+			return nil, err
+		}
+		buf.Write(valueBytes)
+	}
+	buf.WriteByte('}')
+	return buf.Bytes(), nil
 }
 
 type ruleDef struct {
@@ -403,7 +606,8 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 		itemSet := states[stateID]
 
 		transitions := map[Symbol]map[string]item{}
-		for _, it := range itemSet {
+		orderedItems := sortedItems(itemSet)
+		for _, it := range orderedItems {
 			prod := grammar.productions[it.prod]
 			if it.dot >= len(prod.RHS) {
 				continue
@@ -418,7 +622,8 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 			set[itemKey(nextItem)] = nextItem
 		}
 
-		for sym, seedSet := range transitions {
+		for _, sym := range sortedSymbols(transitions) {
+			seedSet := transitions[sym]
 			gotoSet := closure(grammar, first, seedSet)
 			key := itemSetKey(gotoSet)
 			target, ok := stateMap[key]
@@ -443,7 +648,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 			}
 		}
 
-		for _, it := range itemSet {
+		for _, it := range orderedItems {
 			prod := grammar.productions[it.prod]
 			if it.dot < len(prod.RHS) {
 				continue
@@ -479,7 +684,7 @@ func setAction(actions map[int]map[string]Action, state int, terminal string, ac
 
 func closure(grammar *grammar, first *firstSets, items map[string]item) map[string]item {
 	queue := make([]item, 0, len(items))
-	for _, it := range items {
+	for _, it := range sortedItems(items) {
 		queue = append(queue, it)
 	}
 
@@ -509,6 +714,36 @@ func closure(grammar *grammar, first *firstSets, items map[string]item) map[stri
 		}
 	}
 	return items
+}
+
+func sortedItems(items map[string]item) []item {
+	keys := make([]string, 0, len(items))
+	for key := range items {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	out := make([]item, 0, len(keys))
+	for _, key := range keys {
+		out = append(out, items[key])
+	}
+	return out
+}
+
+func sortedSymbols(transitions map[Symbol]map[string]item) []Symbol {
+	syms := make([]Symbol, 0, len(transitions))
+	for sym := range transitions {
+		syms = append(syms, sym)
+	}
+	sort.Slice(syms, func(i, j int) bool {
+		if syms[i].Terminal != syms[j].Terminal {
+			return !syms[i].Terminal && syms[j].Terminal
+		}
+		if syms[i].Name != syms[j].Name {
+			return syms[i].Name < syms[j].Name
+		}
+		return false
+	})
+	return syms
 }
 
 func itemSetKey(items map[string]item) string {
