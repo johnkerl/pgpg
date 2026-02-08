@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/johnkerl/pgpg/pkg/lexers"
 )
@@ -29,9 +30,13 @@ var lexerMakerTable = map[string]lexerInfoT{
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} {one or more strings to lex ...}\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "Lexer names:\n")
-	// TODO: this prints in random hashmap order :(
-	// Use sort-keys to determinize.
-	for name, maker := range lexerMakerTable {
+	names := make([]string, 0, len(lexerMakerTable))
+	for name := range lexerMakerTable {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		maker := lexerMakerTable[name]
 		fmt.Fprintf(os.Stderr, "  %-10s %s\n", name, maker.help)
 	}
 	os.Exit(1)
