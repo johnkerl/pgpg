@@ -1,36 +1,12 @@
-package main
+package lexers
 
 import (
 	"fmt"
-	"os"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
-
-func main() {
-	for _, arg := range os.Args[1:] {
-		lexer := NewGeneratedLexer(arg)
-		_ = lexer.Run()
-	}
-}
-
-func (lexer *GeneratedLexer) Run() error {
-    for {
-        token := lexer.Scan()
-        fmt.Printf(
-            "Line %4d column %4d type %-16s token <<%s>>\n",
-            token.Location.LineNumber,
-            token.Location.ColumnNumber,
-            token.Type,
-            string(token.Lexeme),
-        )
-        if token.IsEOF() || token.IsError() {
-            break
-        }
-    }
-    return nil
-}
 
 type GeneratedLexer struct {
 	inputText     string
@@ -47,42 +23,48 @@ func NewGeneratedLexer(inputText string) *GeneratedLexer {
 }
 
 func (lexer *GeneratedLexer) Scan() *tokens.Token {
-	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-		return tokens.NewEOFToken(lexer.tokenLocation)
-	}
-
-	startLocation := *lexer.tokenLocation
-	scanLocation := *lexer.tokenLocation
-	state := startState
-	lastAcceptState := -1
-	lastAcceptLocation := scanLocation
-
 	for {
-		if scanLocation.ByteOffset >= lexer.inputLength {
-			break
+		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
+			return tokens.NewEOFToken(lexer.tokenLocation)
 		}
-		r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-		nextState, ok := lookupTransition(state, r)
-		if !ok {
-			break
-		}
-		scanLocation.LocateRune(r, width)
-		state = nextState
-		if _, ok := actions[state]; ok {
-			lastAcceptState = state
-			lastAcceptLocation = scanLocation
-		}
-	}
 
-	if lastAcceptState < 0 {
-		r, _ := lexer.peekRuneAt(lexer.tokenLocation.ByteOffset)
-		return tokens.NewErrorToken(fmt.Sprintf("lexer: unrecognized input %q", r), lexer.tokenLocation)
-	}
+		startLocation := *lexer.tokenLocation
+		scanLocation := *lexer.tokenLocation
+		state := startState
+		lastAcceptState := -1
+		lastAcceptLocation := scanLocation
 
-	lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
-	lexeme := []rune(lexemeText)
-	*lexer.tokenLocation = lastAcceptLocation
-	return tokens.NewToken(lexeme, actions[lastAcceptState], &startLocation)
+		for {
+			if scanLocation.ByteOffset >= lexer.inputLength {
+				break
+			}
+			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
+			nextState, ok := lookupTransition(state, r)
+			if !ok {
+				break
+			}
+			scanLocation.LocateRune(r, width)
+			state = nextState
+			if _, ok := actions[state]; ok {
+				lastAcceptState = state
+				lastAcceptLocation = scanLocation
+			}
+		}
+
+		if lastAcceptState < 0 {
+			r, _ := lexer.peekRuneAt(lexer.tokenLocation.ByteOffset)
+			return tokens.NewErrorToken(fmt.Sprintf("lexer: unrecognized input %q", r), lexer.tokenLocation)
+		}
+
+		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
+		lexeme := []rune(lexemeText)
+		*lexer.tokenLocation = lastAcceptLocation
+		tokenType := actions[lastAcceptState]
+		if isIgnoredToken(tokenType) {
+			continue
+		}
+		return tokens.NewToken(lexeme, tokenType, &startLocation)
+	}
 }
 
 func (lexer *GeneratedLexer) peekRuneAt(byteOffset int) (rune, int) {
@@ -104,6 +86,10 @@ func lookupTransition(state int, r rune) (int, bool) {
 		}
 	}
 	return 0, false
+}
+
+func isIgnoredToken(tokenType tokens.TokenType) bool {
+	return strings.HasPrefix(string(tokenType), "!")
 }
 
 const startState = 0
@@ -379,10 +365,10 @@ var transitions = map[int][]rangeTransition{
 }
 
 var actions = map[int]tokens.TokenType{
-	1: "_whitespace",
-	2: "_whitespace",
-	3: "_whitespace",
-	4: "_whitespace",
+	1: "!whitespace",
+	2: "!whitespace",
+	3: "!whitespace",
+	4: "!whitespace",
 	5: "modulo",
 	6: "times",
 	7: "plus",
