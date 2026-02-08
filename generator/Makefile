@@ -4,6 +4,8 @@
 build:
 	go build ./cmd/lexgen-tables
 	go build ./cmd/lexgen-code
+	go build ./cmd/parsegen-tables
+	go build ./cmd/parsegen-code
 
 check test:
 	#go test github.com/johnkerl/pgpg/...
@@ -12,6 +14,8 @@ check test:
 clean:
 	rm -f ./lexgen-tables
 	rm -f ./lexgen-code
+	rm -f ./parsegen-tables
+	rm -f ./parsegen-code
 
 # ----------------------------------------------------------------
 # Formatting

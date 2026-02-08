@@ -8,23 +8,23 @@ import (
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type ArithLexWhitespaceLexer struct {
+type ArithWhitespaceLexer struct {
 	inputText     string
 	inputLength   int
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*ArithLexWhitespaceLexer)(nil)
+var _ manuallexers.AbstractLexer = (*ArithWhitespaceLexer)(nil)
 
-func NewArithLexWhitespaceLexer(inputText string) manuallexers.AbstractLexer {
-	return &ArithLexWhitespaceLexer{
+func NewArithWhitespaceLexer(inputText string) manuallexers.AbstractLexer {
+	return &ArithWhitespaceLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
-func (lexer *ArithLexWhitespaceLexer) Scan() *tokens.Token {
+func (lexer *ArithWhitespaceLexer) Scan() *tokens.Token {
 	for {
 		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 			return tokens.NewEOFToken(lexer.tokenLocation)
@@ -32,7 +32,7 @@ func (lexer *ArithLexWhitespaceLexer) Scan() *tokens.Token {
 
 		startLocation := *lexer.tokenLocation
 		scanLocation := *lexer.tokenLocation
-		state := ArithLexWhitespaceLexerStartState
+		state := ArithWhitespaceLexerStartState
 		lastAcceptState := -1
 		lastAcceptLocation := scanLocation
 
@@ -41,13 +41,13 @@ func (lexer *ArithLexWhitespaceLexer) Scan() *tokens.Token {
 				break
 			}
 			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-			nextState, ok := ArithLexWhitespaceLexerLookupTransition(state, r)
+			nextState, ok := ArithWhitespaceLexerLookupTransition(state, r)
 			if !ok {
 				break
 			}
 			scanLocation.LocateRune(r, width)
 			state = nextState
-			if _, ok := ArithLexWhitespaceLexerActions[state]; ok {
+			if _, ok := ArithWhitespaceLexerActions[state]; ok {
 				lastAcceptState = state
 				lastAcceptLocation = scanLocation
 			}
@@ -61,18 +61,18 @@ func (lexer *ArithLexWhitespaceLexer) Scan() *tokens.Token {
 		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
 		lexeme := []rune(lexemeText)
 		*lexer.tokenLocation = lastAcceptLocation
-		tokenType := ArithLexWhitespaceLexerActions[lastAcceptState]
+		tokenType := ArithWhitespaceLexerActions[lastAcceptState]
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
 
-func (lexer *ArithLexWhitespaceLexer) peekRuneAt(byteOffset int) (rune, int) {
+func (lexer *ArithWhitespaceLexer) peekRuneAt(byteOffset int) (rune, int) {
 	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
 	return r, width
 }
 
-func ArithLexWhitespaceLexerLookupTransition(state int, r rune) (int, bool) {
-	transitionsForState, ok := ArithLexWhitespaceLexerTransitions[state]
+func ArithWhitespaceLexerLookupTransition(state int, r rune) (int, bool) {
+	transitionsForState, ok := ArithWhitespaceLexerTransitions[state]
 	if !ok {
 		return 0, false
 	}
@@ -87,15 +87,15 @@ func ArithLexWhitespaceLexerLookupTransition(state int, r rune) (int, bool) {
 	return 0, false
 }
 
-const ArithLexWhitespaceLexerStartState = 0
+const ArithWhitespaceLexerStartState = 0
 
-type ArithLexWhitespaceLexerRangeTransition struct {
+type ArithWhitespaceLexerRangeTransition struct {
 	from rune
 	to   rune
 	next int
 }
 
-var ArithLexWhitespaceLexerTransitions = map[int][]ArithLexWhitespaceLexerRangeTransition{
+var ArithWhitespaceLexerTransitions = map[int][]ArithWhitespaceLexerRangeTransition{
 	0: {
 		{from: '\t', to: '\t', next: 1},
 		{from: '\n', to: '\n', next: 2},
@@ -359,26 +359,26 @@ var ArithLexWhitespaceLexerTransitions = map[int][]ArithLexWhitespaceLexerRangeT
 	},
 }
 
-var ArithLexWhitespaceLexerActions = map[int]tokens.TokenType{
-	1: "_whitespace",
-	2: "_whitespace",
-	3: "_whitespace",
-	4: "_whitespace",
+var ArithWhitespaceLexerActions = map[int]tokens.TokenType{
+	1: "whitespace",
+	2: "whitespace",
+	3: "whitespace",
+	4: "whitespace",
 	5: "modulo",
 	6: "times",
 	7: "plus",
 	8: "minus",
 	9: "divide",
-	10: "_decdig",
-	11: "_decdig",
-	12: "_decdig",
-	13: "_decdig",
-	14: "_decdig",
-	15: "_decdig",
-	16: "_decdig",
-	17: "_decdig",
-	18: "_decdig",
-	19: "_decdig",
+	10: "int_literal",
+	11: "int_literal",
+	12: "int_literal",
+	13: "int_literal",
+	14: "int_literal",
+	15: "int_literal",
+	16: "int_literal",
+	17: "int_literal",
+	18: "int_literal",
+	19: "int_literal",
 	20: "int_literal",
 	21: "int_literal",
 	22: "int_literal",
