@@ -1,3 +1,3 @@
-module github.com/johnkerl/pgpg/v2
+module github.com/johnkerl/pgpg/tmp
 
 go 1.22

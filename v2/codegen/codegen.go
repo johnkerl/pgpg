@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/johnkerl/pgpg/v2/ir"
+	"github.com/johnkerl/pgpg/tmp/ir"
 )
 
 // Generator converts IR into language-specific code.

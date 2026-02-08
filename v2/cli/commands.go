@@ -7,9 +7,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/johnkerl/pgpg/v2/codegen"
-	"github.com/johnkerl/pgpg/v2/grammar"
-	"github.com/johnkerl/pgpg/v2/ir"
+	"github.com/johnkerl/pgpg/tmp/codegen"
+	"github.com/johnkerl/pgpg/tmp/grammar"
+	"github.com/johnkerl/pgpg/tmp/ir"
 )
 
 func runBNFToIR(args []string, out io.Writer, errOut io.Writer) int {

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/johnkerl/pgpg/v2/cli"
+	"github.com/johnkerl/pgpg/tmp/cli"
 )
 
 func main() {

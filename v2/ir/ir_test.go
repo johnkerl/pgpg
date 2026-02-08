@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/johnkerl/pgpg/v2/grammar"
+	"github.com/johnkerl/pgpg/tmp/grammar"
 )
 
 func TestIRRoundTrip(t *testing.T) {

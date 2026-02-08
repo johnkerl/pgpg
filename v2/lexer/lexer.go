@@ -1,6 +1,6 @@
 package lexer
 
-import "github.com/johnkerl/pgpg/v2/internal/errutil"
+import "github.com/johnkerl/pgpg/tmp/internal/errutil"
 
 // TokenType distinguishes lexeme categories.
 type TokenType struct {
