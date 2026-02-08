@@ -22,6 +22,7 @@ const (
 	EBNFLexerTypeLBrace     tokens.TokenType = "{"
 	EBNFLexerTypeRBrace     tokens.TokenType = "}"
 	EBNFLexerTypeSemicolon  tokens.TokenType = ";"
+	EBNFLexerTypeDash       tokens.TokenType = "-"
 )
 
 // EBNFLexer tokenizes a common EBNF dialect with identifiers, string literals,
@@ -59,7 +60,12 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 		nextRune, nextWidth := lexer.peekRune()
 		if nextRune != ':' {
 			return tokens.NewErrorToken(
-				fmt.Sprintf("EBNF lexer: expected '::=' but found ':%c'", nextRune),
+				fmt.Sprintf(
+					"EBNF lexer: expected '::=' but found ':%c' at line %d, column %d",
+					nextRune,
+					startLocation.LineNumber,
+					startLocation.ColumnNumber,
+				),
 				lexer.tokenLocation,
 			)
 		}
@@ -67,7 +73,12 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 		nextRune, nextWidth = lexer.peekRune()
 		if nextRune != '=' {
 			return tokens.NewErrorToken(
-				fmt.Sprintf("EBNF lexer: expected '::=' but found '::%c'", nextRune),
+				fmt.Sprintf(
+					"EBNF lexer: expected '::=' but found '::%c' at line %d, column %d",
+					nextRune,
+					startLocation.LineNumber,
+					startLocation.ColumnNumber,
+				),
 				lexer.tokenLocation,
 			)
 		}
@@ -109,6 +120,10 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 	} else if r == ';' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return tokens.NewToken([]rune{r}, EBNFLexerTypeSemicolon, &startLocation)
+
+	} else if r == '-' {
+		lexer.tokenLocation.LocateRune(r, runeWidth)
+		return tokens.NewToken([]rune{r}, EBNFLexerTypeDash, &startLocation)
 
 	} else if r == '"' || r == '\'' {
 		return lexer.scanStringLiteral(r, runeWidth, &startLocation)

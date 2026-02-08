@@ -389,6 +389,46 @@ func regexFromAST(
 			return nil, fmt.Errorf("invalid literal %q: %w", text, err)
 		}
 		return &regexNode{kind: regexLiteral, literal: unquoted}, nil
+	case parsers.EBNFParserNodeTypeRange:
+		if err := node.CheckArity(2); err != nil {
+			return nil, err
+		}
+		startNode := node.Children[0]
+		endNode := node.Children[1]
+		if startNode.Type != parsers.EBNFParserNodeTypeLiteral || endNode.Type != parsers.EBNFParserNodeTypeLiteral {
+			return nil, fmt.Errorf("range bounds must be string literals")
+		}
+		if startNode.Token == nil || endNode.Token == nil {
+			return nil, fmt.Errorf("range bounds missing tokens")
+		}
+		startText := string(startNode.Token.Lexeme)
+		endText := string(endNode.Token.Lexeme)
+		startValue, err := strconv.Unquote(startText)
+		if err != nil {
+			return nil, fmt.Errorf("invalid range start %q: %w", startText, err)
+		}
+		endValue, err := strconv.Unquote(endText)
+		if err != nil {
+			return nil, fmt.Errorf("invalid range end %q: %w", endText, err)
+		}
+		startRunes := []rune(startValue)
+		endRunes := []rune(endValue)
+		if len(startRunes) != 1 || len(endRunes) != 1 {
+			return nil, fmt.Errorf("range bounds must be single-rune string literals")
+		}
+		startRune := startRunes[0]
+		endRune := endRunes[0]
+		if startRune > endRune {
+			return nil, fmt.Errorf("range start %q must be <= range end %q", startRune, endRune)
+		}
+		if startRune == endRune {
+			return &regexNode{kind: regexLiteral, literal: string(startRune)}, nil
+		}
+		children := make([]*regexNode, 0, int(endRune-startRune)+1)
+		for r := startRune; r <= endRune; r++ {
+			children = append(children, &regexNode{kind: regexLiteral, literal: string(r)})
+		}
+		return &regexNode{kind: regexAlternate, children: children}, nil
 	case parsers.EBNFParserNodeTypeSequence:
 		if len(node.Children) == 0 {
 			return &regexNode{kind: regexLiteral, literal: ""}, nil

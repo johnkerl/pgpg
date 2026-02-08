@@ -23,6 +23,7 @@ const (
 	EBNFParserNodeTypeRepeat     asts.NodeType = "repeat"
 	EBNFParserNodeTypeIdentifier asts.NodeType = "identifier"
 	EBNFParserNodeTypeLiteral    asts.NodeType = "literal"
+	EBNFParserNodeTypeRange      asts.NodeType = "range"
 )
 
 func NewEBNFParser() AbstractParser {
@@ -163,7 +164,23 @@ func (parser *EBNFParser) parseTermIfPresent() (*asts.ASTNode, bool, error) {
 		return nil, false, err
 	}
 	if accepted {
-		return asts.NewASTNode(token, EBNFParserNodeTypeLiteral, nil), true, nil
+		literalNode := asts.NewASTNode(token, EBNFParserNodeTypeLiteral, nil)
+		acceptedDash, _, err := parser.accept(lexers.EBNFLexerTypeDash)
+		if err != nil {
+			return nil, false, err
+		}
+		if !acceptedDash {
+			return literalNode, true, nil
+		}
+		acceptedEnd, endToken, err := parser.accept(lexers.EBNFLexerTypeString)
+		if err != nil {
+			return nil, false, err
+		}
+		if !acceptedEnd {
+			return nil, false, fmt.Errorf("syntax error: expected string literal after '-' at %s", parser.formatTokenLocation(parser.lexer.LookAhead()))
+		}
+		endNode := asts.NewASTNode(endToken, EBNFParserNodeTypeLiteral, nil)
+		return asts.NewASTNode(nil, EBNFParserNodeTypeRange, []*asts.ASTNode{literalNode, endNode}), true, nil
 	}
 
 	accepted, _, err = parser.accept(lexers.EBNFLexerTypeLParen)
