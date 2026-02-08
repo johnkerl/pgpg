@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------
 !whitespace ::= ' ' | '\t' | '\n' | '\r' ;
-# TODO: !comment ::= '#'  {.} '\n' ;
+!comment ::= '#'  {.} '\n' ;
 
 noun                       ::= "dog"     | "cat"    | "mouse" | "fox"    | "food"   | "book" ;
 adjective                  ::= "red"     | "green"  | "brown" | "quick"  | "lazy";

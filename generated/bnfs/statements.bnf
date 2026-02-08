@@ -2,6 +2,7 @@
 # Lexing rules
 
 !whitespace  ::= ' ' | '\t' | '\n' | '\r' ;
+!comment ::= '#'  {.} '\n' ;
 
 _decdig      ::= "0"-"9";
 int_literal  ::= _decdig { _decdig };
