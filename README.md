@@ -34,3 +34,5 @@ As of February 2026 I'm picking this back up again, making significant use of Cu
 * Self-education and experimentation
 * Promotion of parser-generation knowledge
 * I would like to ultimately use this in [Miller](https://github.com/johnkerl/miller)
+* I'd love to get the latency lowered and flexibility increased to the point where I can
+  simply play around with language design at will.

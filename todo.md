@@ -1,8 +1,12 @@
-# Structure
+# Top of list
 
-* Use `go:embed` rather than extensive `buf.WriteString` for codgen templates
-* Try to get the generated code the same from run to run---there appears to be some
-  non-determinism with regard to hashmap ordering or somesuch.
+* Look into custom-AST/custom-traversal options:
+  * Impl-lang AST/arbitrary in `.bnf`.
+  * DSL AST-building in `.bnf`.
+  * Callbacks somehow ... .
+* Replace generated arith with pemdas, more closely to match the manual one.
+  Likewise with other manual grammars.
+* See how the parsegen handles various conflicts.
 
 # [x] Markdown defs of simple grammars
 
@@ -34,7 +38,7 @@
 * [ ] Make sure impls can do _full_ faithful reconstruct of source -- including retention of intervening whitespace
   * [ ] Note that either `Token` struct will have two strings -- payload, and payload+whitespace ...
   * [ ] ... or, there should be a "produce ignore-tokens" option
-* [ ] Config-driven autogen
+* [x] Config-driven autogen
 * [ ] Make sure grammar -> lexer build can be done either offline or online (the latter without need for process restart)
 
 # Lexer-generator
@@ -58,10 +62,10 @@
 * [x] Connect to AST populate
 * [ ] CLIs for:
   * [x] Online grammar + string -> AST + pass/fail
-  * [ ] Offline grammar -> intermediate representation
+  * [x] Offline grammar -> intermediate representation
   * [ ] Precomputed grammar + string -> AST + pass/fail
   * [ ] Linked-in grammar + string -> AST + pass/fail
-* [ ] Iterate on PGs per se
+* [x] Iterate on PGs per se
 
 # Infra:
 
@@ -69,7 +73,7 @@
   * [ ] Use for UT
 * ame/amne UT
 * Wrap lexers in LA1 and LA2 etc for lookahead level:
-  * Hide direct calls to Scan
+  * Hide direct calls to Scan``
   * `.First()`
   * `.Second()`
   * `.Advance()`
