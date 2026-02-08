@@ -16,17 +16,19 @@ type lexerInfoT struct {
 }
 
 var lexerMakerTable = map[string]lexerInfoT{
-	"canned": lexerInfoT{lexers.NewCannedTextLexer, "Does string-split on the input at startup."},
-	"rune":   lexerInfoT{lexers.NewRuneLexer, "Each UTF-8 character is its own token."},
-	"line":   lexerInfoT{lexers.NewLineLexer, "Each line of text is its own token. Carriage returns are not delivered."},
-	"word":   lexerInfoT{lexers.NewWordLexer, "Each run of non-whitespace text is its own token. Whitespace is not delivered."},
-	"seng":   lexerInfoT{lexers.NewSENGLexer, "SENG lexicon."},
-	"am":     lexerInfoT{lexers.NewAMLexer, "Integers with + and *."},
-	"pemdas": lexerInfoT{lexers.NewPEMDASLexer, "Arithmetic with parentheses and PEMDAS operators."},
-	"vic":    lexerInfoT{lexers.NewVICLexer, "Arithmetic with identifiers, assignments, and PEMDAS operators."},
-	"vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
-	"ebnf":   lexerInfoT{lexers.NewEBNFLexer, "EBNF grammar with identifiers, literals, and operators."},
-	"arith":  lexerInfoT{generatedlexers.NewArithLexLexer, "Generated arithmetic lexer from ../generated/pkg/arith-lex.go."},
+	"m:canned": lexerInfoT{lexers.NewCannedTextLexer, "Does string-split on the input at startup."},
+	"m:rune":   lexerInfoT{lexers.NewRuneLexer, "Each UTF-8 character is its own token."},
+	"m:line":   lexerInfoT{lexers.NewLineLexer, "Each line of text is its own token. Carriage returns are not delivered."},
+	"m:word":   lexerInfoT{lexers.NewWordLexer, "Each run of non-whitespace text is its own token. Whitespace is not delivered."},
+	"m:seng":   lexerInfoT{lexers.NewSENGLexer, "SENG lexicon."},
+	"m:am":     lexerInfoT{lexers.NewAMLexer, "Integers with + and *."},
+	"m:pemdas": lexerInfoT{lexers.NewPEMDASLexer, "Arithmetic with parentheses and PEMDAS operators."},
+	"m:vic":    lexerInfoT{lexers.NewVICLexer, "Arithmetic with identifiers, assignments, and PEMDAS operators."},
+	"m:vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
+	"m:ebnf":   lexerInfoT{lexers.NewEBNFLexer, "EBNF grammar with identifiers, literals, and operators."},
+	"g:arith":  lexerInfoT{generatedlexers.NewArithLexLexer, "Generated arithmetic lexer from generated/pkg/arith-lex.go."},
+	"g:arithw": lexerInfoT{generatedlexers.NewArithLexWhitespaceLexer, "Generated arithmetic lexer from generated/arith-lex-whitespace.go."},
+	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexLexer, "Generated sign/digit lexer from generated/pkg/sign-digit-lex.go."},
 }
 
 func usage() {
