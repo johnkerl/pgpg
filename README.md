@@ -1,6 +1,10 @@
 # pgpg
 
-PGPG is the Pretty Good Parser Generator. As of Feburary 2023 it is very much a sketch and a work in progress.
+PGPG is the Pretty Good Parser Generator.
+
+As of Feburary 2023 it is very much a sketch and a work in progress.
+
+As of February 2026 I'm picking this back up again, making significant use of Cursor.
 
 ## Goals
 
@@ -31,9 +35,3 @@ PGPG is the Pretty Good Parser Generator. As of Feburary 2023 it is very much a 
 * Promotion of parser-generation knowledge
 * I would like to ultimately use this in [Miller](https://github.com/johnkerl/miller)
 * I'd love to get some code of ad-hoc code-sed/code-grep/etc functionality going for, say, Go, Python, JS, etc. wherein program text would be treated as a stream where the "sedding" and "grepping" would be done at the abstract-syntax-tree level. Do note however that Python and JavaScript offer library access to their own parsers, with tree-walk-visitor callbacks which are simply splendid.
-
-## Versions
-
-`manual` is a started-then-paused attempt from 2023, restarted in 2026---this time, with help from Cursor.
-
-`tmp` is an attempt from 2026, making significant use of Cursor.

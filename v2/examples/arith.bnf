@@ -1,3 +1,0 @@
-expr   ::= term | expr '+' term
-term   ::= factor | term '*' factor
-factor ::= 'NUMBER' | '(' expr ')'
