@@ -22,11 +22,11 @@ As of February 2026 I'm picking this back up again, making significant use of Cu
 ## Languages
 
 * Implementation initially in Go
-  * Maybe Python and/or Rust later
+  * Maybe Python and/or JavaScript and/or Rust later
   * Aim for non-clever abstraction and concept reuse
   * Try to use language-independent data structures when possible
 * Generator target initially Go
-  * Maybe Python and/or Rust later
+  * Maybe Python and/or JavaScript and/or Rust later
   * Try to use language-independent data structures when possible
 
 ## Applications
@@ -34,4 +34,3 @@ As of February 2026 I'm picking this back up again, making significant use of Cu
 * Self-education and experimentation
 * Promotion of parser-generation knowledge
 * I would like to ultimately use this in [Miller](https://github.com/johnkerl/miller)
-* I'd love to get some code of ad-hoc code-sed/code-grep/etc functionality going for, say, Go, Python, JS, etc. wherein program text would be treated as a stream where the "sedding" and "grepping" would be done at the abstract-syntax-tree level. Do note however that Python and JavaScript offer library access to their own parsers, with tree-walk-visitor callbacks which are simply splendid.
