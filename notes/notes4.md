@@ -1,6 +1,8 @@
 -----
 
-_I'm building a parser generator and intending to make AST construction a crucla part of it. What are some examples of use cases in which someone might want a parser generator but might not want any AST construction?_
+_I'm building a parser generator and intending to make AST construction a crucial part of it. What
+are some examples of use cases in which someone might want a parser generator but might not want any
+AST construction?_
 
 -----
 
@@ -42,17 +44,25 @@ Some applications parse repeatedly on small changes:
 - Live syntax checkers
 - Diff tools that only need structural awareness
 
-For your parser generator, you might consider making AST construction optional or pluggable, allowing users to register callbacks/actions at parse points instead. This gives flexibility for both worlds.
+For your parser generator, you might consider making AST construction optional or pluggable,
+allowing users to register callbacks/actions at parse points instead. This gives flexibility for
+both worlds.
 
 -----
 
-_Thanks! I'm trying to make something that's language-independent, where the lexer-generator and parser-generator can be done at one point in time, and have all the productions tables etc. saved off as, say, JSON. Then another tool in another language could pick those up and use them to do parsing._
+_Thanks! I'm trying to make something that's language-independent, where the lexer-generator and
+parser-generator can be done at one point in time, and have all the productions tables etc. saved
+off as, say, JSON. Then another tool in another language could pick those up and use them to do
+parsing._
 
-_What I'm still trying to get my head around is how callback registration -- which seems inherently language-specific -- would fit in with kind of data-driven, multi-language vision._
+_What I'm still trying to get my head around is how callback registration---which seems inherently
+language-specific---would fit in with this kind of data-driven, multi-language vision._
 
 -----
 
-This is a really interesting design challenge! You're hitting on a fundamental tension: the parsing tables are pure data and language-agnostic, but *actions* are inherently code. Here are some approaches people have taken:
+This is a really interesting design challenge! You're hitting on a fundamental tension: the parsing
+tables are pure data and language-agnostic, but *actions* are inherently code. Here are some
+approaches people have taken:
 
 ## 1. **Deferred Actions (Your AST Approach)**
 Build a generic, language-agnostic AST structure in your JSON output. Each runtime implementation then traverses this AST with language-specific visitors/transformers. This is what you're already leaning toward and it cleanly separates concerns.
