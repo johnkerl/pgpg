@@ -5,9 +5,11 @@ import (
 	"os"
 	"sort"
 
-	generatedpkg "github.com/johnkerl/pgpg/generated/pkg"
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	"github.com/johnkerl/pgpg/manual/pkg/parsers"
+
+	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
+	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
 )
 
 type parserInfoT struct {
@@ -23,6 +25,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:vbc": {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf": {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
 	"g:arith": {run: runGeneratedArithParser, help: "Generated arithmetic parser from generated/pkg/arith-parse.go."},
+	"g:arithw": {run: runGeneratedArithWhitespaceParser, help: "Generated arithmetic parser from generated/pkg/arithw-parse.go."},
 }
 
 func usage() {
@@ -72,7 +75,13 @@ func runManualParser(maker func() parsers.AbstractParser) func(string) (*asts.AS
 }
 
 func runGeneratedArithParser(input string) (*asts.AST, error) {
-	lexer := generatedpkg.NewArithLexLexer(input)
-	parser := generatedpkg.NewArithParseParser()
+	lexer := generatedlexers.NewArithLexer(input)
+	parser := generatedparsers.NewArithParser()
+	return parser.Parse(lexer)
+}
+
+func runGeneratedArithWhitespaceParser(input string) (*asts.AST, error) {
+	lexer := generatedlexers.NewArithWhitespaceLexer(input)
+	parser := generatedparsers.NewArithWhitespaceParser()
 	return parser.Parse(lexer)
 }

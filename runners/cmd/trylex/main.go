@@ -5,8 +5,9 @@ import (
 	"os"
 	"sort"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/pkg"
 	"github.com/johnkerl/pgpg/manual/pkg/lexers"
+
+	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
 )
 
 type lexerMaker func(string) lexers.AbstractLexer
@@ -26,9 +27,9 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"m:vic":    lexerInfoT{lexers.NewVICLexer, "Arithmetic with identifiers, assignments, and PEMDAS operators."},
 	"m:vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":   lexerInfoT{lexers.NewEBNFLexer, "EBNF grammar with identifiers, literals, and operators."},
-	"g:arith":  lexerInfoT{generatedlexers.NewArithLexLexer, "Generated arithmetic lexer from generated/pkg/arith-lex.go."},
-	"g:arithw": lexerInfoT{generatedlexers.NewArithLexWhitespaceLexer, "Generated arithmetic lexer from generated/arithw.go."},
-	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexLexer, "Generated sign/digit lexer from generated/pkg/sign-digit.go."},
+	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexer, "Generated sign/digit lexer from generated/pkg/sign-digit.go."},
+	"g:arith":  lexerInfoT{generatedlexers.NewArithLexer, "Generated arithmetic lexer from generated/pkg/arith-lex.go."},
+	"g:arithw": lexerInfoT{generatedlexers.NewArithWhitespaceLexer, "Generated arithmetic lexer from generated/arithw.go."},
 }
 
 func usage() {
