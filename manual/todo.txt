@@ -1,3 +1,0 @@
-* VIC   manual parser
-* VBOOL manual parser
-* SENG  manual parser

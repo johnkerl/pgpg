@@ -2,18 +2,16 @@
 # This must remain the first target in this file, which is what 'make' with no
 # arguments will run.
 build:
-	go build ./cmd/tryast
-	go build ./cmd/trylex
-	go build ./cmd/tryparse
+	go build ./cmd/lexgen-tables
+	go build ./cmd/lexgen-code
 
 check test:
-	#go test github.com/johnkerl/pgpg/manual/...
+	#go test github.com/johnkerl/pgpg/...
 	go test ./...
 
 clean:
-	rm -f ./tryast
-	rm -f ./trylex
-	rm -f ./tryparse
+	rm -f ./lexgen-tables
+	rm -f ./lexgen-code
 
 # ----------------------------------------------------------------
 # Formatting

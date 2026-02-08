@@ -7,7 +7,7 @@ package asts
 import (
 	"fmt"
 
-	"github.com/johnkerl/pgpg/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
 // NewAST constructs a new root for the abstract syntax tree.

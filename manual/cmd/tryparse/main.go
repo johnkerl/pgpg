@@ -5,7 +5,7 @@ import (
 	"os"
 	"sort"
 
-	"github.com/johnkerl/pgpg/pkg/parsers"
+	"github.com/johnkerl/pgpg/manual/pkg/parsers"
 )
 
 type parserMaker func() parsers.AbstractParser

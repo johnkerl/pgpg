@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/johnkerl/pgpg/pkg/asts"
-	"github.com/johnkerl/pgpg/pkg/lexers"
-	"github.com/johnkerl/pgpg/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/pkg/lexers"
+	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
 // Grammar:
