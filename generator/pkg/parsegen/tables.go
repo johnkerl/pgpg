@@ -590,6 +590,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 	first := computeFirstSets(grammar)
 	stateMap := map[string]int{}
 	var states []map[string]item
+	stateLabels := map[int]string{}
 	var queue []int
 
 	startItem := item{prod: 0, dot: 0, lookahead: eofSymbol}
@@ -597,6 +598,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 	startKey := itemSetKey(startSet)
 	stateMap[startKey] = 0
 	states = append(states, startSet)
+	stateLabels[0] = stateLabel(startSet, grammar)
 	queue = append(queue, 0)
 
 	actions := map[int]map[string]Action{}
@@ -633,10 +635,11 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 				target = len(states)
 				stateMap[key] = target
 				states = append(states, gotoSet)
+				stateLabels[target] = stateLabel(gotoSet, grammar)
 				queue = append(queue, target)
 			}
 			if sym.Terminal {
-				if err := setAction(actions, stateID, sym.Name, Action{Type: "shift", Target: target}); err != nil {
+				if err := setAction(actions, stateID, sym.Name, Action{Type: "shift", Target: target}, itemSet, grammar, stateLabels); err != nil {
 					return nil, nil, err
 				}
 			} else {
@@ -656,12 +659,12 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 				continue
 			}
 			if it.prod == 0 && it.lookahead == eofSymbol {
-				if err := setAction(actions, stateID, eofSymbol, Action{Type: "accept"}); err != nil {
+				if err := setAction(actions, stateID, eofSymbol, Action{Type: "accept"}, itemSet, grammar, stateLabels); err != nil {
 					return nil, nil, err
 				}
 				continue
 			}
-			if err := setAction(actions, stateID, it.lookahead, Action{Type: "reduce", Target: it.prod}); err != nil {
+			if err := setAction(actions, stateID, it.lookahead, Action{Type: "reduce", Target: it.prod}, itemSet, grammar, stateLabels); err != nil {
 				return nil, nil, err
 			}
 		}
@@ -670,18 +673,168 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 	return actions, gotos, nil
 }
 
-func setAction(actions map[int]map[string]Action, state int, terminal string, action Action) error {
+func setAction(actions map[int]map[string]Action, state int, terminal string, action Action, itemSet map[string]item, grammar *grammar, stateLabels map[int]string) error {
 	if actions[state] == nil {
 		actions[state] = map[string]Action{}
 	}
 	if existing, ok := actions[state][terminal]; ok {
 		if existing.Type != action.Type || existing.Target != action.Target {
-			return fmt.Errorf("action conflict in state %d on %q", state, terminal)
+			return conflictError(state, terminal, existing, action, itemSet, grammar, stateLabels)
 		}
 		return nil
 	}
 	actions[state][terminal] = action
 	return nil
+}
+
+func conflictError(state int, terminal string, existing Action, next Action, itemSet map[string]item, grammar *grammar, stateLabels map[int]string) error {
+	var b strings.Builder
+	fmt.Fprintf(&b, "action conflict\n  state: %s\n  lookahead: %q\n\n", formatStateLabel(state, stateLabels), terminal)
+	b.WriteString(formatAction("existing", existing, grammar, stateLabels))
+	b.WriteString(formatAction("new", next, grammar, stateLabels))
+	if grammar != nil && itemSet != nil {
+		b.WriteString("\n  items in state:\n")
+		for _, it := range sortedItems(itemSet) {
+			b.WriteString("    ")
+			b.WriteString(formatItem(it, grammar))
+			b.WriteByte('\n')
+		}
+	}
+	if hint := buildConflictHint(existing, next, grammar); hint != "" {
+		b.WriteString("\n  hint:\n")
+		b.WriteString(hint)
+	}
+	return fmt.Errorf(b.String())
+}
+
+func formatAction(label string, action Action, grammar *grammar, stateLabels map[int]string) string {
+	switch action.Type {
+	case "shift":
+		return fmt.Sprintf("  %s action: shift to state %s\n", label, formatStateLabel(action.Target, stateLabels))
+	case "reduce":
+		prod := formatProduction(action.Target, grammar)
+		return fmt.Sprintf("  %s action: reduce by production %d: %s\n", label, action.Target, prod)
+	case "accept":
+		return fmt.Sprintf("  %s action: accept\n", label)
+	default:
+		return fmt.Sprintf("  %s action: %s\n", label, action.Type)
+	}
+}
+
+func formatProduction(prodIndex int, grammar *grammar) string {
+	if grammar == nil || prodIndex < 0 || prodIndex >= len(grammar.productions) {
+		return "<unknown production>"
+	}
+	prod := grammar.productions[prodIndex]
+	var rhs []string
+	for _, sym := range prod.RHS {
+		rhs = append(rhs, sym.Name)
+	}
+	return fmt.Sprintf("%s ::= %s", prod.LHS, strings.Join(rhs, " "))
+}
+
+func formatItem(it item, grammar *grammar) string {
+	if grammar == nil || it.prod < 0 || it.prod >= len(grammar.productions) {
+		return fmt.Sprintf("<?> (prod=%d dot=%d), lookahead=%s", it.prod, it.dot, it.lookahead)
+	}
+	prod := grammar.productions[it.prod]
+	var rhs []string
+	for i, sym := range prod.RHS {
+		if i == it.dot {
+			rhs = append(rhs, ".")
+		}
+		rhs = append(rhs, sym.Name)
+	}
+	if it.dot >= len(prod.RHS) {
+		rhs = append(rhs, ".")
+	}
+	return fmt.Sprintf("%s ::= %s , lookahead=%s", prod.LHS, strings.Join(rhs, " "), it.lookahead)
+}
+
+func stateLabel(itemSet map[string]item, grammar *grammar) string {
+	if grammar == nil || itemSet == nil {
+		return ""
+	}
+	items := sortedItems(itemSet)
+	for _, it := range items {
+		if it.dot > 0 {
+			return formatItem(it, grammar)
+		}
+	}
+	if len(items) > 0 {
+		return formatItem(items[0], grammar)
+	}
+	return ""
+}
+
+func formatStateLabel(state int, stateLabels map[int]string) string {
+	if stateLabels == nil {
+		return fmt.Sprintf("%d", state)
+	}
+	label := stateLabels[state]
+	if label == "" {
+		return fmt.Sprintf("%d", state)
+	}
+	return fmt.Sprintf("%d (%s)", state, label)
+}
+
+func buildConflictHint(existing Action, next Action, grammar *grammar) string {
+	if grammar == nil {
+		return ""
+	}
+	var hints []string
+	if existing.Type == "reduce" {
+		hints = append(hints, reduceHint(existing.Target, grammar)...)
+	}
+	if next.Type == "reduce" {
+		hints = append(hints, reduceHint(next.Target, grammar)...)
+	}
+	if existing.Type == "shift" || next.Type == "shift" {
+		hints = append(hints, "- shift/reduce conflicts often come from ambiguous operator precedence or unintended recursion")
+	}
+	if len(hints) == 0 {
+		return ""
+	}
+	return strings.Join(hints, "\n") + "\n"
+}
+
+func reduceHint(prodIndex int, grammar *grammar) []string {
+	prod, ok := productionAt(prodIndex, grammar)
+	if !ok {
+		return nil
+	}
+	var hints []string
+	userStart := userStartSymbol(grammar)
+	if userStart != "" && containsSymbol(prod.RHS, userStart) {
+		hints = append(hints, fmt.Sprintf("- production reduces to %s via %s; check for cycles involving the start symbol", prod.LHS, userStart))
+	}
+	if containsSymbol(prod.RHS, prod.LHS) {
+		hints = append(hints, fmt.Sprintf("- production %s ::= ... %s ... is directly recursive; verify it appears only where intended", prod.LHS, prod.LHS))
+	}
+	return hints
+}
+
+func productionAt(index int, grammar *grammar) (Production, bool) {
+	if grammar == nil || index < 0 || index >= len(grammar.productions) {
+		return Production{}, false
+	}
+	return grammar.productions[index], true
+}
+
+func userStartSymbol(grammar *grammar) string {
+	if grammar == nil || len(grammar.productions) == 0 || len(grammar.productions[0].RHS) == 0 {
+		return ""
+	}
+	return grammar.productions[0].RHS[0].Name
+}
+
+func containsSymbol(symbols []Symbol, name string) bool {
+	for _, sym := range symbols {
+		if sym.Name == name {
+			return true
+		}
+	}
+	return false
 }
 
 func closure(grammar *grammar, first *firstSets, items map[string]item) map[string]item {
