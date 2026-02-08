@@ -2,6 +2,7 @@
 
 set -xeuo pipefail
 
+make -C ../manual
 make -C ../generator
 
 mkdir -p jsons
