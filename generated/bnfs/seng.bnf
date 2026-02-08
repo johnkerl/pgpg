@@ -1,0 +1,59 @@
+# ----------------------------------------------------------------
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+# TODO: !comment ::= '#'  {.} '\n' ;
+
+noun                       ::= "dog"     | "cat"    | "mouse" | "fox"    | "food"   | "book" ;
+adjective                  ::= "red"     | "green"  | "brown" | "quick"  | "lazy";
+article                    ::= "the"     | "a"      ;
+transitiveVerb             ::= "puts"    | "eats"   ;
+intransitiveVerb           ::= "goes"    | "walks"  | "runs"  | "sleeps" | "jumps";
+transitiveImperativeVerb   ::= "put"     | "read"   | "eat"   ;
+intransitiveImperativeVerb ::= "go"      | "jump";
+adverb                     ::= "quickly" | "slowly" ;
+preposition                ::= "under"   | "over"   ;
+
+# ----------------------------------------------------------------
+Root
+  ::= NounPhrase TransitiveVerbPhrase NounPhrase
+    | NounPhrase IntransitiveVerbPhrase
+    | TransitiveImperativeVerbPhrase NounPhrase
+    | IntransitiveImperativeVerbPhrase
+;
+
+NounPhrase
+  ::= NounPhraseWithoutArticle
+    | article NounPhraseWithoutArticle
+;
+
+NounPhraseWithoutArticle
+  ::= noun
+    | adjective NounPhraseWithoutArticle
+;
+
+TransitiveVerbPhrase
+  ::= transitiveVerb
+    | adverb TransitiveVerbPhrase
+    # Shift-reduce conflicts, alas :)
+    # | adverb TransitiveVerbPhrase preposition NounPhrase
+    # | TransitiveVerbPhrase preposition NounPhrase
+;
+
+IntransitiveVerbPhrase
+  ::= intransitiveVerb
+    | adverb IntransitiveVerbPhrase
+    | intransitiveVerb preposition NounPhrase
+;
+
+TransitiveImperativeVerbPhrase
+  ::= transitiveImperativeVerb
+    | adverb TransitiveImperativeVerbPhrase
+    # Shift-reduce conflicts, alas :)
+    # | adverb TransitiveImperativeVerbPhrase preposition NounPhrase
+    # | TransitiveImperativeVerbPhrase preposition NounPhrase
+;
+
+IntransitiveImperativeVerbPhrase
+  ::= intransitiveImperativeVerb
+    | adverb IntransitiveImperativeVerbPhrase
+    | intransitiveImperativeVerb preposition NounPhrase
+;

@@ -35,7 +35,7 @@ func NewEBNFParserWithSourceName(sourceName string) AbstractParser {
 }
 
 func (parser *EBNFParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = lexers.NewLookaheadLexer(lexers.NewEBNFLexer(inputText))
+	parser.lexer = lexers.NewLookaheadLexer(lexers.NewEBNFLexerWithSourceName(inputText, parser.sourceName))
 
 	rootNode, err := parser.parseGrammar()
 	if err != nil {

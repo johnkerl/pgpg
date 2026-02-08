@@ -36,6 +36,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:ebnf":   {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
 	"g:pemdas":  {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser from generated/bnfs/pemdas.bnf."},
 	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
+	"g:seng":  {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
 }
 
 func usage() {
@@ -119,6 +120,13 @@ func runGeneratedStatementsParser(input string, opts traceOptions) (*asts.AST, e
 	lexer := generatedlexers.NewStatementsLexer(input)
 	parser := generatedparsers.NewStatementsParser()
 	attachStatementsTrace(parser, opts)
+	return parser.Parse(lexer)
+}
+
+func runGeneratedSENGParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewSENGLexer(input)
+	parser := generatedparsers.NewSENGParser()
+	attachSENGTrace(parser, opts)
 	return parser.Parse(lexer)
 }
 
@@ -209,6 +217,32 @@ func attachStatementsTrace(parser *generatedparsers.StatementsParser, opts trace
 	}
 }
 
+func attachSENGTrace(parser *generatedparsers.SENGParser, opts traceOptions) {
+	if !opts.tokens && !opts.states && !opts.stack {
+		return
+	}
+	parser.Trace = &generatedparsers.SENGParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !opts.tokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatToken(tok))
+		},
+		OnAction: func(state int, action generatedparsers.SENGParserAction, lookahead *tokens.Token) {
+			if !opts.states {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatSENGAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !opts.stack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
+		},
+	}
+}
+
 func formatToken(tok *tokens.Token) string {
 	if tok == nil {
 		return "TOK <nil>"
@@ -270,6 +304,19 @@ func formatStatementsAction(action generatedparsers.StatementsParserAction) stri
 	case generatedparsers.StatementsParserActionReduce:
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case generatedparsers.StatementsParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
+}
+
+func formatSENGAction(action generatedparsers.SENGParserAction) string {
+	switch action.Kind {
+	case generatedparsers.SENGParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case generatedparsers.SENGParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case generatedparsers.SENGParserActionAccept:
 		return "accept"
 	default:
 		return "unknown"
