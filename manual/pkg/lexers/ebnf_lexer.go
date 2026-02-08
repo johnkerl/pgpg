@@ -46,7 +46,27 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
 
-	lexer.ignoreNextRunesIf(unicode.IsSpace)
+	for {
+		lexer.ignoreNextRunesIf(unicode.IsSpace)
+		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
+			return tokens.NewEOFToken(lexer.tokenLocation)
+		}
+		r, runeWidth := lexer.peekRune()
+		if r != '#' {
+			break
+		}
+		lexer.tokenLocation.LocateRune(r, runeWidth)
+		for {
+			if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
+				return tokens.NewEOFToken(lexer.tokenLocation)
+			}
+			r, runeWidth = lexer.peekRune()
+			lexer.tokenLocation.LocateRune(r, runeWidth)
+			if r == '\n' {
+				break
+			}
+		}
+	}
 	if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 		return tokens.NewEOFToken(lexer.tokenLocation)
 	}
