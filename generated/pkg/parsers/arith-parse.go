@@ -86,20 +86,20 @@ type ArithParserProduction struct {
 
 var ArithParserActions = map[int]map[tokens.TokenType]ArithParserAction{
 	0: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 4},
 	},
 	1: {
 		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 2},
 	},
 	2: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 3},
-		tokens.TokenType("minus"): {kind: ArithParserActionShift, target: 8},
-		tokens.TokenType("plus"): {kind: ArithParserActionShift, target: 9},
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 6},
+		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
+		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 6},
+		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 8},
+		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 6},
+		tokens.TokenType("times"): {kind: ArithParserActionShift, target: 9},
 	},
 	3: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionAccept},
-	},
-	4: {
 		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 10},
 		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 10},
 		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 10},
@@ -107,18 +107,7 @@ var ArithParserActions = map[int]map[tokens.TokenType]ArithParserAction{
 		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 10},
 		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 10},
 	},
-	5: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 1},
-	},
-	6: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 6},
-		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
-		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 6},
-		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 12},
-		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 6},
-		tokens.TokenType("times"): {kind: ArithParserActionShift, target: 11},
-	},
-	7: {
+	4: {
 		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 11},
 		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 11},
 		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 11},
@@ -126,36 +115,47 @@ var ArithParserActions = map[int]map[tokens.TokenType]ArithParserAction{
 		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 11},
 		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 11},
 	},
+	5: {
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 3},
+		tokens.TokenType("minus"): {kind: ArithParserActionShift, target: 11},
+		tokens.TokenType("plus"): {kind: ArithParserActionShift, target: 12},
+	},
+	6: {
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 1},
+	},
+	7: {
+		tokens.TokenTypeEOF: {kind: ArithParserActionAccept},
+	},
 	8: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 4},
 	},
 	9: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 4},
 	},
 	10: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 4},
 	},
 	11: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 4},
 	},
 	12: {
-		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 7},
+		tokens.TokenType("int_literal"): {kind: ArithParserActionShift, target: 4},
 	},
 	13: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 5},
-		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
-		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 5},
-		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 12},
-		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 5},
-		tokens.TokenType("times"): {kind: ArithParserActionShift, target: 11},
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 9},
 	},
 	14: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 4},
-		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
-		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 4},
-		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 12},
-		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 4},
-		tokens.TokenType("times"): {kind: ArithParserActionShift, target: 11},
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 7},
 	},
 	15: {
 		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 8},
@@ -166,48 +166,48 @@ var ArithParserActions = map[int]map[tokens.TokenType]ArithParserAction{
 		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 8},
 	},
 	16: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 7},
-		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 7},
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 5},
+		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
+		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 5},
+		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 8},
+		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 5},
+		tokens.TokenType("times"): {kind: ArithParserActionShift, target: 9},
 	},
 	17: {
-		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("divide"): {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("modulo"): {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 9},
-		tokens.TokenType("times"): {kind: ArithParserActionReduce, target: 9},
+		tokens.TokenTypeEOF: {kind: ArithParserActionReduce, target: 4},
+		tokens.TokenType("divide"): {kind: ArithParserActionShift, target: 10},
+		tokens.TokenType("minus"): {kind: ArithParserActionReduce, target: 4},
+		tokens.TokenType("modulo"): {kind: ArithParserActionShift, target: 8},
+		tokens.TokenType("plus"): {kind: ArithParserActionReduce, target: 4},
+		tokens.TokenType("times"): {kind: ArithParserActionShift, target: 9},
 	},
 }
 
 var ArithParserGotos = map[int]map[asts.NodeType]int{
 	0: {
-		asts.NodeType("AddSubTerm"): 2,
-		asts.NodeType("MulDivTerm"): 6,
+		asts.NodeType("AddSubTerm"): 5,
+		asts.NodeType("MulDivTerm"): 2,
 		asts.NodeType("PrecedenceChainStart"): 1,
-		asts.NodeType("RHSValue"): 4,
-		asts.NodeType("Root"): 3,
-		asts.NodeType("Rvalue"): 5,
+		asts.NodeType("RHSValue"): 3,
+		asts.NodeType("Root"): 7,
+		asts.NodeType("Rvalue"): 6,
 	},
 	8: {
-		asts.NodeType("MulDivTerm"): 13,
-		asts.NodeType("RHSValue"): 4,
+		asts.NodeType("RHSValue"): 13,
 	},
 	9: {
-		asts.NodeType("MulDivTerm"): 14,
-		asts.NodeType("RHSValue"): 4,
+		asts.NodeType("RHSValue"): 14,
 	},
 	10: {
 		asts.NodeType("RHSValue"): 15,
 	},
 	11: {
-		asts.NodeType("RHSValue"): 16,
+		asts.NodeType("MulDivTerm"): 16,
+		asts.NodeType("RHSValue"): 3,
 	},
 	12: {
-		asts.NodeType("RHSValue"): 17,
+		asts.NodeType("MulDivTerm"): 17,
+		asts.NodeType("RHSValue"): 3,
 	},
 }
 

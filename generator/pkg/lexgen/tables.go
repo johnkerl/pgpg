@@ -14,11 +14,11 @@ import (
 
 // Tables captures DFA transitions and accepting actions for a lexer.
 type Tables struct {
-	StartState  int                          `json:"start_state"`
-	Transitions map[int][]RangeTransition    `json:"transitions"`
-	Actions     map[int]string               `json:"actions"`
-	Rules       map[string]string            `json:"rules,omitempty"`
-	Metadata    map[string]string            `json:"metadata,omitempty"`
+	StartState  int                       `json:"start_state"`
+	Transitions map[int][]RangeTransition `json:"transitions"`
+	Actions     map[int]string            `json:"actions"`
+	Rules       map[string]string         `json:"rules,omitempty"`
+	Metadata    map[string]string         `json:"metadata,omitempty"`
 }
 
 // RangeTransition is a DFA transition on an inclusive rune range.
@@ -50,6 +50,10 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 	if len(lexerRuleNames) == 0 {
 		return nil, fmt.Errorf("no lexer rules found")
 	}
+	tokenRuleNames := selectTokenRuleNames(ruleDefs)
+	if len(tokenRuleNames) == 0 {
+		return nil, fmt.Errorf("no lexer token rules found")
+	}
 	lexerRuleSet := map[string]bool{}
 	for _, name := range lexerRuleNames {
 		lexerRuleSet[name] = true
@@ -75,7 +79,7 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 
 	nfaBuilder := &nfaBuilder{}
 	globalStart := nfaBuilder.newState()
-	for i, ruleName := range lexerRuleNames {
+	for i, ruleName := range tokenRuleNames {
 		node := regexRules[ruleName]
 		fragment, err := nfaBuilder.build(node)
 		if err != nil {
@@ -150,6 +154,16 @@ func selectLexerRuleNames(ruleDefs []ruleDef) []string {
 	return names
 }
 
+func selectTokenRuleNames(ruleDefs []ruleDef) []string {
+	var names []string
+	for _, rule := range ruleDefs {
+		if isTokenRuleName(rule.name) {
+			names = append(names, rule.name)
+		}
+	}
+	return names
+}
+
 func isLexerRuleName(name string) bool {
 	if name == "" {
 		return false
@@ -159,6 +173,10 @@ func isLexerRuleName(name string) bool {
 		return true
 	}
 	return first == '_' || unicode.IsLower(first)
+}
+
+func isTokenRuleName(name string) bool {
+	return isLexerRuleName(name) && !strings.HasPrefix(name, "_")
 }
 
 type regexKind int
