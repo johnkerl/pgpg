@@ -5,7 +5,7 @@ build:
 	go build ./cmd/trylex
 	go build ./cmd/tryparse
 
-check:
+check test:
 	#go test github.com/johnkerl/pgpg/...
 	go test ./...
 

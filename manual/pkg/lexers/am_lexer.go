@@ -84,7 +84,7 @@ func (lexer *AMLexer) Scan() (token *tokens.Token) {
 
 	} else {
 		return tokens.NewErrorToken(
-			fmt.Sprintf("AM lexer: unrecognized token %c (%d)", r, r),
+			fmt.Sprintf("AM lexer: unrecognized token %q (%U)", r, r),
 			lexer.tokenLocation,
 		)
 	}

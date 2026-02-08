@@ -159,14 +159,5 @@ func (node *ASTNode) Text() string {
 		tokenText = node.Token.LexemeText()
 	}
 
-	// TODO
-	//	switch node.Type {
-	//
-	//	case NodeTypeStringLiteral:
-	//		return "\"" + strings.ReplaceAll(tokenText, "\"", "\\\"") + "\""
-	//	case NodeTypeIntLiteral:
-	//		return tokenText
-	//	}
-
 	return tokenText
 }

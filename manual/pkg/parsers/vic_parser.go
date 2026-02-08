@@ -2,6 +2,7 @@ package parsers
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/johnkerl/pgpg/pkg/asts"
 	"github.com/johnkerl/pgpg/pkg/lexers"
@@ -254,7 +255,13 @@ func (parser *VICParser) expect(tokenType tokens.TokenType) error {
 	if !accepted {
 		// No lex error getting the next token, but the current
 		// token isn't of the expected type
-		return errors.New("expect: unexpected symbol") // TODO: describe it: expected & actual type and lexeme
+		lookaheadToken := parser.lexer.LookAhead()
+		return fmt.Errorf(
+			"expect: expected %s; got %s (%q)",
+			tokenType,
+			lookaheadToken.Type,
+			string(lookaheadToken.Lexeme),
+		)
 	}
 	return nil
 }
