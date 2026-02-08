@@ -4,6 +4,8 @@ build:
 	go build ./cmd/tryast
 	go build ./cmd/trylex
 	go build ./cmd/tryparse
+	go build ./cmd/lexgen-tables
+	go build ./cmd/lexgen-code
 
 check test:
 	#go test github.com/johnkerl/pgpg/...

@@ -10,7 +10,8 @@ import (
 )
 
 type EBNFParser struct {
-	lexer *lexers.LookaheadLexer
+	lexer      *lexers.LookaheadLexer
+	sourceName string
 }
 
 const (
@@ -26,6 +27,10 @@ const (
 
 func NewEBNFParser() AbstractParser {
 	return &EBNFParser{}
+}
+
+func NewEBNFParserWithSourceName(sourceName string) AbstractParser {
+	return &EBNFParser{sourceName: sourceName}
 }
 
 func (parser *EBNFParser) Parse(inputText string) (*asts.AST, error) {
@@ -67,7 +72,11 @@ func (parser *EBNFParser) parseRule() (*asts.ASTNode, error) {
 		return nil, err
 	}
 	if !accepted {
-		return nil, errors.New("syntax error: expected rule name")
+		lookaheadToken := parser.lexer.LookAhead()
+		return nil, fmt.Errorf(
+			"syntax error: expected rule name at \"%s\"",
+			parser.formatTokenLocation(lookaheadToken),
+		)
 	}
 
 	if err := parser.expect(lexers.EBNFLexerTypeAssign); err != nil {
@@ -228,10 +237,11 @@ func (parser *EBNFParser) expect(tokenType tokens.TokenType) error {
 		// token isn't of the expected type
 		lookaheadToken := parser.lexer.LookAhead()
 		return fmt.Errorf(
-			"expect: expected %s; got %s (%q)",
+			"expect: expected %s; got %s (%q) at %s",
 			tokenType,
 			lookaheadToken.Type,
 			string(lookaheadToken.Lexeme),
+			parser.formatTokenLocation(lookaheadToken),
 		)
 	}
 	return nil
@@ -245,4 +255,23 @@ func (parser *EBNFParser) getAndValidateLookaheadToken() error {
 	}
 
 	return nil
+}
+
+func (parser *EBNFParser) formatTokenLocation(token *tokens.Token) string {
+	if token == nil {
+		return "unknown location"
+	}
+	if parser.sourceName != "" {
+		return fmt.Sprintf(
+			"%s, line %d, position %d",
+			parser.sourceName,
+			token.Location.LineNumber,
+			token.Location.ColumnNumber,
+		)
+	}
+	return fmt.Sprintf(
+		"line %d, column %d",
+		token.Location.LineNumber,
+		token.Location.ColumnNumber,
+	)
 }
