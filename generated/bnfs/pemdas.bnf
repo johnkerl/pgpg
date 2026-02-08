@@ -5,16 +5,19 @@
 
 _decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
-plus ::= "+";
-minus ::= "-";
-times ::= "*";
-divide ::= "/";
-modulo ::= "%";
+plus           ::= "+";
+minus          ::= "-";
+exponentiation ::= "**"; # Before times, since first match wins
+times          ::= "*";
+divide         ::= "/";
+modulo         ::= "%";
+lparen         ::= "(";
+rparen         ::= ")";
 
 int_literal ::= _decdig { _decdig } ;
 
 # ----------------------------------------------------------------
-# Parsing rules rules
+# Parsing rules
 
 Root ::= Rvalue;
 
@@ -24,15 +27,32 @@ PrecedenceChainStart ::= AddSubTerm ;
 
 AddSubTerm ::=
     AddSubTerm plus  MulDivTerm
-  | AddSubTerm minus  MulDivTerm
+  | AddSubTerm minus MulDivTerm
   | MulDivTerm
 ;
 
 MulDivTerm ::=
-    MulDivTerm times    RHSValue
-  | MulDivTerm divide   RHSValue
-  | MulDivTerm modulo   RHSValue
-  | RHSValue
+    MulDivTerm times  UnaryTerm
+  | MulDivTerm divide UnaryTerm
+  | MulDivTerm modulo UnaryTerm
+  | UnaryTerm
 ;
 
-RHSValue ::= int_literal ;
+UnaryTerm ::=
+    plus  ExponentiationTerm
+  | minus UnaryTerm
+  | ExponentiationTerm
+;
+
+ExponentiationTerm ::=
+    ParenTerm exponentiation       ExponentiationTerm
+  | ParenTerm exponentiation minus ExponentiationTerm
+  | ParenTerm
+;
+
+ParenTerm ::=
+    lparen PrecedenceChainStart rparen
+  | PrecedenceChainEnd
+;
+
+PrecedenceChainEnd ::= int_literal;
