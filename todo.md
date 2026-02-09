@@ -10,14 +10,15 @@
   * Dedupe
   * Etc.
 * Desk-calculator grammar
-  * `kbc` basically
+  * `kbc` basically: int, float, hex, ibase/obase
   * Also a modular-arithmetic option perhaps
   * Assign to variables; print; target REPL
-* Manual JSON parser
-* Manual LISP parser
+* JSON, CSV, TSV, DKVP, XTAB grammars
+  * See what happens with repeated top-level blocks in the same input stream
+* Config-file grammar?
+* Manual LISP parser?
+* Manual JSON parser?
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
-
-# [x] Markdown defs of simple grammars
 
 # Lexer
 
