@@ -1,0 +1,1700 @@
+# ================================================================
+# This is a temporary copy for PGPG of Miller's GOCC mlf.bnf with all AST-node
+# rules taken out. At this point it's useful for profiling, and scale-testing.
+# It's not yet useful for idiomatic code generation.
+# ================================================================
+
+# ================================================================
+# GRAMMAR FOR THE MILLER DOMAIN-SPECIFIC LANGUAGE
+#
+# This is the Miller DSL's BNF grammar, using the awesome GOCC tool framework
+# from https://github.com/goccmack/gocc (forked at https://github.com/johnkerl/gocc).
+#
+# The first section is lexical elements and the second section is syntactical
+# elements. These are the analogs of lex and yacc, respectively, using a
+# classical C/lex/yacc framework -- although for lex/yacc one would have
+# separate .l and .y files, whereas here there is a single .bnf file.
+#
+# Notes:
+#
+# * This grammar is used to auto-generate Go code, using bin/gocc.
+#
+# * Lexical items are either literals inlined within the syntactical section,
+#   such as "/", or snake-cased named tokens within the lexical section, such
+#   as field_name.
+#
+# * Syntactical items are all camel-cased, such as MapLiteral.
+#
+# * Everything is delivered to the rest of Miller in the form of an abstract
+#   syntax tree (AST), via <<...>>> code segments within this file's
+#   syntactical section, to be processed by hand-written Go code. That code,
+#   in turn, turns the AST into a CST (concrete syntax tree) which is what the
+#   DSL runtime executes.
+#
+# * The <<...>> code called by the gocc framework must accept interface{} at
+#   all parameters, to be generic, but in practice all arguments end up being
+#   either token.Token (regcognizable here via string-literals or snake-cased
+#   namees) or *dsl.AstNode (recognizable here via camel-cased names).
+#
+# * Another pattern worth pointing out is that in the gocc framework,
+#   return-types from AST methods must be a pair of (interface{}, error),
+#   whereas arguments going into those same methods are interface{} only.
+#   Hence a few methods in the Miller AST API which don't return a pair of
+#   interface{}/error since they are meant for nesting as arguments here
+#   within this file.
+#
+# * Please see pkg/dsl/ast*.go for more about what the <<...>>
+#   code here is calling.
+# ================================================================
+
+# ================================================================
+# LEXICAL ELEMENTS
+# ================================================================
+
+# ----------------------------------------------------------------
+# CHARACTER CLASSES
+# ----------------------------------------------------------------
+
+_letter ::= 'a'-'z' | 'A'-'Z' | '\u00a0'-'\u00ff' | '\u0100'-'\U0010ffff';
+_decdig ::= '0'-'9' ;
+_hexdig ::= '0'-'9' | 'a'-'f' | 'A'-'F';
+_octdig ::= '0'-'7' ;
+_bindig ::= '0'-'1' ;
+_leading_idchar ::= _letter | '_' ;
+_idchar ::= _letter | _decdig | '_' ;
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+!comment ::= '#'  {.} '\n' ;
+
+# ----------------------------------------------------------------
+# STRING/INT/FLOAT/BOOLEAN LITERALS
+# ----------------------------------------------------------------
+
+# Notes on string literals:
+# * " isn't included here -- need \" handling to put that inside strings
+# * GOCC seems to lack a '[^"] notation ...
+# * \[ \] \n etc special cases are a bit tedious to keystroke out ...
+#   these are most important for put/filter print/emit/tee/etc with "|"
+#   to arbitrary shell commands. E.g. in
+#
+#     mlr put 'print | "tr \[a-z\] \[A-Z\]", $something'
+#
+#   the shell command is the 'tr ...' string and we need to spell out the
+#   escape sequence used by tr.
+# * See https://github.com/google/re2/wiki/Syntax
+
+_string_literal_element
+  ::= 'A'-'Z' | 'a'-'z' | '0'-'9'
+  | '\n'
+
+  | ' ' | '!' | '#' | '$' | '%' | '&' | '\'' | '\\'
+  | '(' | ')' | '*' | '+' | ',' | '-' | '.' | '/'
+  | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '['
+  | ']' | '^' | '_' | '`' | '{' | '|' | '}' | '~'
+
+  | ( '\\' '\\' ) | ( '\\' '"' ) | ( '\\' '[' ) | ( '\\' ']' )
+  | ( '\\' '.' ) | ( '\\' '*' ) | ( '\\' '%' )
+  | ( '\\' '^' ) | ( '\\' '$' ) | ( '\\' '+' )
+  | ( '\\' '(' ) | ( '\\' ')' ) | ( '\\' '&' )
+
+  | ( '\\' 'A') | ( '\\' 'B') | ( '\\' 'C') | ( '\\' 'D') | ( '\\' 'G') | ( '\\' 'H')
+  | ( '\\' 'K') | ( '\\' 'L') | ( '\\' 'N') | ( '\\' 'P') | ( '\\' 'R') | ( '\\' 'S')
+  | ( '\\' 'U') | ( '\\' 'V') | ( '\\' 'W') | ( '\\' 'X') | ( '\\' 'Z')
+  | ( '\\' 'a') | ( '\\' 'b') | ( '\\' 'c') | ( '\\' 'd') | ( '\\' 'f') | ( '\\' 'g')
+  | ( '\\' 'h') | ( '\\' 'k') | ( '\\' 'l') | ( '\\' 'n') | ( '\\' 'p') | ( '\\' 'r')
+  | ( '\\' 's') | ( '\\' 't') | ( '\\' 'u') | ( '\\' 'v') | ( '\\' 'w') | ( '\\' 'x')
+  | ( '\\' 'z')
+
+  | ( '\\' '0' ) | ( '\\' '1' ) | ( '\\' '2' ) | ( '\\' '3' ) | ( '\\' '4' )
+  | ( '\\' '5' ) | ( '\\' '6' ) | ( '\\' '7' ) | ( '\\' '8' ) | ( '\\' '9' )
+
+  | '\u00a0'-'\u00ff'
+  | '\u0100'-'\U0010ffff'
+;
+string_literal ::= '"' {_string_literal_element} '"' ;
+
+# Miller regexes are of the form "a.*b" for case-sensitive, or "a.*b"i for case-insensitive.
+regex_case_insensitive ::= '"' {_string_literal_element} '"' 'i';
+
+# Notes on int literals:
+# * Leading minus sign is handled via the unary-minus operator, not here.
+int_literal
+  ::= _decdig { _decdig }
+  | '0' 'x' _hexdig { _hexdig }
+  | '0' 'o' _octdig { _octdig }
+  | '0' 'b' _bindig { _bindig }
+;
+
+# Notes on float literals:
+# * Leading minus sign is handled via the unary-minus operator, not here.
+# * The various shapes are for scientific notation. Examples:
+#   123
+#   123.
+#   123.4
+#   .234
+#   1e2
+#   1e-2
+#   1.2e3 1.e3
+#   1.2e-3 1.e-3
+#   .2e3
+#   .2e-3 1.e-3
+_scinotE ::= 'e' | 'E' ;
+float_literal
+  ::= { _decdig} '.' { _decdig }
+  | _decdig { _decdig} '.' { _decdig }
+  | _decdig { _decdig}                        _scinotE     _decdig { _decdig}
+  | _decdig { _decdig}                        _scinotE '-' _decdig { _decdig}
+  | _decdig { _decdig}                        _scinotE '+' _decdig { _decdig}
+  | _decdig { _decdig} '.'         { _decdig} _scinotE     _decdig { _decdig}
+  | _decdig { _decdig} '.'         { _decdig} _scinotE '-' _decdig { _decdig}
+  | _decdig { _decdig} '.'         { _decdig} _scinotE '+' _decdig { _decdig}
+  |         { _decdig} '.' _decdig { _decdig} _scinotE     _decdig { _decdig}
+  |         { _decdig} '.' _decdig { _decdig} _scinotE '-' _decdig { _decdig}
+  |         { _decdig} '.' _decdig { _decdig} _scinotE '+' _decdig { _decdig}
+;
+
+const_M_PI ::= 'M' '_' 'P' 'I' ;
+const_M_E  ::= 'M' '_' 'E' ;
+
+# Notes on boolean literals:
+# * true and false should be defined here rather than as "true" / "false"
+#   within the grammar below -- this forces them to be keywords, not legal as
+#   variable names. We want them as keywords -- we don't want to allow things
+#   like 'true = 3'.
+_literal_true ::= 't' 'r' 'u' 'e' ;
+_literal_false ::= 'f' 'a' 'l' 's' 'e';
+boolean_literal ::= ( _literal_true | _literal_false );
+
+null_literal  ::= 'n' 'u' 'l' 'l';
+
+inf_literal   ::= 'I' 'n' 'f';
+nan_literal   ::= 'N' 'a' 'N';
+
+# ----------------------------------------------------------------
+# MILLER CONTEXT VARIABLES
+# ----------------------------------------------------------------
+
+# I want to call these simply "IPS" et al. but GOCC is has leading-case (and
+# leading-underscore) semantics for token names.
+
+ctx_IPS ::= 'I' 'P' 'S' ;
+ctx_IFS ::= 'I' 'F' 'S' ;
+ctx_IRS ::= 'I' 'R' 'S' ;
+
+ctx_OPS ::= 'O' 'P' 'S' ;
+ctx_OFS ::= 'O' 'F' 'S' ;
+ctx_ORS ::= 'O' 'R' 'S' ;
+ctx_FLATSEP ::= 'F' 'L' 'A' 'T' 'S' 'E' 'P';
+
+ctx_NF  ::= 'N' 'F' ;
+ctx_NR  ::= 'N' 'R' ;
+ctx_FNR ::= 'F' 'N' 'R' ;
+
+ctx_FILENAME ::= 'F' 'I' 'L' 'E' 'N' 'A' 'M' 'E' ;
+ctx_FILENUM  ::= 'F' 'I' 'L' 'E' 'N' 'U' 'M' ;
+
+env   ::= 'E' 'N' 'V' ;
+
+# ----------------------------------------------------------------
+# MILLER KEYWORDS
+# ----------------------------------------------------------------
+
+# Notes on keywords:
+# * Any new keywords defined here should also be documented
+#   in dsl/mlr_dsl_cst.c's mlr_dsl_keyword_usage() et al.
+# * true and false (boolean literals) are also keywords, defined above.
+
+begin    ::= 'b' 'e' 'g' 'i' 'n' ;
+do       ::= 'd' 'o' ;
+elif     ::= 'e' 'l' 'i' 'f' ;
+else     ::= 'e' 'l' 's' 'e' ;
+end      ::= 'e' 'n' 'd' ;
+filter   ::= 'f' 'i' 'l' 't' 'e' 'r' ;
+for      ::= 'f' 'o' 'r' ;
+if       ::= 'i' 'f' ;
+in       ::= 'i' 'n' ;
+while    ::= 'w' 'h' 'i' 'l' 'e' ;
+break    ::= 'b' 'r' 'e' 'a' 'k' ;
+continue ::= 'c' 'o' 'n' 't' 'i' 'n' 'u' 'e' ;
+
+return   ::= 'r' 'e' 't' 'u' 'r' 'n' ;
+func     ::= 'f' 'u' 'n' 'c' ;
+subr     ::= 's' 'u' 'b' 'r' ;
+call     ::= 'c' 'a' 'l' 'l' ;
+
+arr   ::= 'a' 'r' 'r' ;
+bool  ::= 'b' 'o' 'o' 'l' ;
+float ::= 'f' 'l' 'o' 'a' 't' ;
+int   ::= 'i' 'n' 't' ;
+map   ::= 'm' 'a' 'p' ;
+num   ::= 'n' 'u' 'm' ;
+str   ::= 's' 't' 'r' ;
+var   ::= 'v' 'a' 'r' ;
+funct    ::= 'f' 'u' 'n' 'c' 't';
+
+unset    ::= 'u' 'n' 's' 'e' 't' ;
+
+dump     ::= 'd' 'u' 'm' 'p' ;
+edump    ::= 'e' 'd' 'u' 'm' 'p' ;
+emit1    ::= 'e' 'm' 'i' 't' '1' ;
+emit     ::= 'e' 'm' 'i' 't' ;
+emitp    ::= 'e' 'm' 'i' 't' 'p' ;
+emitf    ::= 'e' 'm' 'i' 't' 'f' ;
+eprint   ::= 'e' 'p' 'r' 'i' 'n' 't' ;
+eprintn  ::= 'e' 'p' 'r' 'i' 'n' 't' 'n' ;
+print    ::= 'p' 'r' 'i' 'n' 't' ;
+printn   ::= 'p' 'r' 'i' 'n' 't' 'n' ;
+tee      ::= 't' 'e' 'e' ;
+
+stdout   ::= 's' 't' 'd' 'o' 'u' 't' ;
+stderr   ::= 's' 't' 'd' 'e' 'r' 'r' ;
+
+# ----------------------------------------------------------------
+# FIELD NAMES, OUT-OF-STREAM VARIABLES, LOCAL VARIABLES
+# ----------------------------------------------------------------
+
+# Note: the parser depends on the dollar sign being here. If this is changed,
+# that needs to be changed as well.
+#
+# Also note: if we omit the '$' here and include it in the parser section
+# below as "$", then we get an LR-1 conflict. So this must be dealt with at
+# the AST level.
+#
+# Also note $1 is a valid field name but @1 is not a valid oosvar name; hence
+# _leading_idchar vs _idchar.
+field_name ::= '$' _idchar { _idchar } ;
+
+# This is for literal strings but where the field name might have spaces in it
+# or somesuch.
+_braced_char
+  ::= 'A'-'Z' | 'a'-'z' | '0'-'9'
+  | ' ' | '!' | '#' | '$' | '%' | '&' | '\'' | '\\'
+  | '(' | ')' | '*' | '+' | ',' | '-' | '.' | '/'
+  | ':' | ';' | '<' | '=' | '>' | '?' | '@' | '['
+  | ']' | '^' | '_' | '`'       | '|'       | '~'
+  | ( '\\' '{' ) | ( '\\' '}' )
+  | '\u00a0'-'\u00ff'
+  | '\u0100'-'\U0010FFFF'
+;
+braced_field_name ::= '$' '{' _braced_char { _braced_char } '}' ;
+
+full_srec ::= '$' '*' ;
+
+oosvar_name ::= '@' _leading_idchar { _idchar } ;
+
+# This is for literal strings but where the oosvar name might have spaces in it
+# or somesuch.
+braced_oosvar_name ::= '@' '{' _braced_char { _braced_char } '}' ;
+
+full_oosvar ::= '@' '*' ;
+all         ::= 'a' 'l' 'l' ;
+
+# ----------------------------------------------------------------
+# FUNCTIONS AND LOCAL VARIABLES
+
+non_sigil_name ::= _leading_idchar { _idchar } ;
+
+# ----------------------------------------------------------------
+# PANIC TOKEN
+# ----------------------------------------------------------------
+
+# This is for testing short-circuiting of "&&", "||", etc in the CST.  The
+# sole job of the CST evaluator for this token is to panic the process -- so
+# we'll know if we're evaluating something we should not.
+panic ::= '%' '%' '%' 'p' 'a' 'n' 'i' 'c' '%' '%' '%' ;
+
+empty  ::= "@@@@@";
+
+# ================================================================
+# SYNTAX ELEMENTS
+# ================================================================
+
+# ================================================================
+# Parsing goes through three formats:
+#
+# (1) Source code which is a string of characters.
+#
+# (2) Abstract syntax tree (AST):
+#
+#    * Parentheses, commas, semicolons, line endings, whitespace are all stripped away
+#    * Variable names and literal values remain as leaf nodes of the AST
+#    * = + - * / ** {function names} remain as non-leaf nodes of the AST
+#
+# (3) Concrete syntax tree (CST): a reshaping of the AST with pre-processed
+#     setup of function pointers to handle each type of statement on a
+#     per-record basis. The if/else and/or switch statements to decide what to
+#     do with each AST node are done at CST-build time, so they don't need to
+#     be re-done when the syntax tree is executed once on every data record.
+#
+# The job of this parser is to turn (1) into (2).
+#
+# Note: This parser accepts many things that are invalid, e.g.
+# * begin{end{}} -- begin/end not at top level
+# * begin{$x=1} -- references to stream records at begin/end (there is no $x when
+#   there is no input record yet)
+# * break/continue outside of for/while/do-while
+# * return outside of a function definition
+# * $x=x -- boundvars outside of for-loop variable bindings
+#
+# All of the above are enforced by the CST builder's semantic-analysis logic,
+# which takes this parser's output AST as input.  This is done (a) to keep
+# this grammar from being overly complex, and (b) so we can get more
+# informative error messages.
+#
+# For clearer visuals on what the ASTs look like, you can do
+#
+#   mlr -n put -v 'your expression goes here'
+#
+# Also see reg_test/run's filter -v and put -v outputs, e.g. in
+# reg_test/expected/out.
+# ================================================================
+
+# Import the AST/ASTNode types and functions
+
+# ================================================================
+# TOP-LEVEL PRODUCTION RULE FOR THE MILLER DSL
+
+# ----------------------------------------------------------------
+Root  ::= StatementBlock ;
+
+# ----------------------------------------------------------------
+# A StatementBlock is a sequence of statements: either the stuff in between
+# (but not including) the curly braces in things like 'if (NR > 2) { $x = 1;
+# $y = 2 }', or, top-level Miller DSL statements like '$x = 1; $y = 2'.
+
+StatementBlock
+
+# Empty statement. This allows for 'mlr put ""', as well as repeated semicolons.
+  ::= empty
+
+  | NonEmptyStatementBlock
+
+;
+
+# ----------------------------------------------------------------
+# NonEmptyStatementBlock is split out from StatementBlock to avoid LR-1
+# conflicts in parsing things like 'begin {...} x=1; y=2; end{...}' wherein we
+# want to avoid forcing people to type a semicolon after the first closing
+# brace.
+
+NonEmptyStatementBlock
+# ---------------------- Terminal rules
+
+# Things not ending in a curly brace, like assignments -- and also do-while.
+  ::= BracelessStatement
+
+# Things ending in a curly brace, like for/do/while, begin/end, and pattern-acction blocks
+  | BracefulStatement
+
+# ---------------------- Recursive rules
+
+# So statements can start with a semicolon
+  | ";" StatementBlock
+
+# Normal case for sequential statements like '$x=1; $y=2'
+  | BracelessStatement ";" StatementBlock
+
+# For 'begin {...} ; $x=1'
+  | BracefulStatement ";" StatementBlock
+
+# These are for things like 'begin {...} begin {...} ...' -- where people
+# shouldn't have to put semicolons after the closing curly braces.
+#
+# We get LR-1 conflicts with the following, so we need a pair of more
+# explicit lookahead-by-more production rules instead. (By using two
+# Statement rules and a (recursive) StatementBlock rule, with
+# WithTwoChildrenPreprended, we are effectively getting lookahead-by-two.)
+#
+# | BracefulStatement StatementBlock
+#    <<dsl.WithChildPrepended($1, $0) >>
+
+# E.g. 'begin {...} begin {...} $x=1'
+  | BracefulStatement BracefulStatement StatementBlock
+
+# E.g. 'begin {...} $x=1'
+  | BracefulStatement BracelessStatement
+
+# E.g. 'begin {...} $x=1 ;'
+  | BracefulStatement BracelessStatement ";"
+
+  | BracefulStatement BracelessStatement ";" NonEmptyStatementBlock
+;
+
+# ----------------------------------------------------------------
+# Simply a keystroke-saver for all the various if/for/do/while/begin/end/etc
+# which use curly-braced bodies.
+StatementBlockInBraces
+  ::= "{" StatementBlock "}"
+;
+
+# ================================================================
+# ASSIGNMENT STATEMENTS
+
+BracelessStatement
+  ::= Assignment
+  | Unset
+  | BareBoolean
+  | FilterStatement
+
+  | PrintStatement
+  | PrintnStatement
+  | EprintStatement
+  | EprintnStatement
+
+  | DumpStatement
+  | EdumpStatement
+
+  | TeeStatement
+  | Emit1Statement
+  | EmitStatement
+  | EmitPStatement
+  | EmitFStatement
+
+# Has braces but does not *end* in braces -- so it requires semicolon after.
+  | DoWhileLoop
+  | BreakStatement
+  | ContinueStatement
+  | ReturnStatement
+  | SubroutineCallsite
+;
+
+Assignment
+  ::= Lvalue "=" Rvalue
+;
+
+Unset
+  ::= unset FcnArgs
+;
+
+# Semantically there are far fewer things which are valid lvalues than valid
+# rvalues. For example, in '1+2=3+4', the right-hand side is fine while the
+# left-hand side is not.
+#
+# We can limit the things expressible on the left-hand side here in the AST,
+# via Lvalue production rules much narrower than Rvalue production rules.
+# However, this results in LR-1 conflicts for bare-boolean and pattern-action
+# blocks which start with something of rvalue form -- the parser needs more
+# than one lookahead symbol to realize what's going on.
+#
+# Instead, we use the same production rule for lvalues and rvalues here in the
+# grammar, deferring lvalue restrictions to the CST builder where we have more
+# flexibility. As an added bonuys, we get more expressive ability in our error
+# messages.
+
+Lvalue
+  ::= Rvalue
+  | Typedecl LocalVariable
+;
+
+BareBoolean
+  ::= Rvalue
+;
+
+FilterStatement
+  ::= filter Rvalue
+;
+
+# ----------------------------------------------------------------
+# For dump, emit, tee, print
+
+Redirector
+  ::= ">"  RedirectTarget
+
+  | ">>" RedirectTarget
+
+  | "|"  RedirectTarget
+;
+
+RedirectTarget
+  ::= stdout
+
+  | stderr
+
+  | Rvalue
+;
+
+# ----------------------------------------------------------------
+PrintStatement
+  ::= print
+
+  | print Redirector
+
+  | print FcnArgs
+
+  | print Redirector "," FcnArgs
+;
+
+# ----------------------------------------------------------------
+PrintnStatement
+  ::= printn
+
+  | printn Redirector
+
+  | printn FcnArgs
+
+  | printn Redirector "," FcnArgs
+;
+
+# ----------------------------------------------------------------
+EprintStatement
+  ::= eprint
+
+  | eprint FcnArgs
+
+;
+
+# ----------------------------------------------------------------
+EprintnStatement
+  ::= eprintn
+
+  | eprintn FcnArgs
+
+;
+
+# ----------------------------------------------------------------
+DumpStatement
+  ::= dump
+
+  | dump Redirector
+
+  | dump FcnArgs
+
+  | dump Redirector "," FcnArgs
+
+;
+
+# ----------------------------------------------------------------
+EdumpStatement
+  ::= edump
+
+  | edump FcnArgs
+
+;
+
+# ----------------------------------------------------------------
+TeeStatement
+  ::= tee Redirector "," FullSrec
+
+;
+
+# ----------------------------------------------------------------
+# Examples:
+#   emitf @a
+#   emitf @a, b, $c
+# Each argument must be a non-indexed oosvar/localvar/fieldname, so we can use
+# their names as keys in the emitted record.
+
+EmitFStatement
+
+  ::= emitf EmittableList
+
+  | emitf Redirector "," EmittableList
+
+;
+
+# ----------------------------------------------------------------
+# The other emit variants need to take only oosvars, etc. -- not arbitrary
+# expressions which *evaluate* to map. Emit1, by contrast, takes any
+# expression which evaluates to a map. So you can do 'emit1 mapsum({"id":
+# $id}, $some_map_valued_field})'.
+#
+# The reason for this is LR1 shift-reduce conflicts. When I originally
+# implemented emit/emitp, I permitted a lot of options for lashing together
+# multiple oosvars, indexing, redirection, etc. When we try to let emit (not
+# emit1) take arbitrary Rvalue as argument, we get LR1 conflicts since the
+# parse can't disambiguate between all the possibilities for commas and
+# parentheses for emit-lashing and emit-indexing, and all the possibilities
+# for commas and parentheses for the Rvalue expression itself.
+#
+# So, we have emit/emitp which permit grammatical complexity in the
+# lashing/indexing, and emit1 which permits grammatical complexity in the
+# emittable.
+
+Emit1Statement
+  ::= emit1 Rvalue
+
+;
+
+# ----------------------------------------------------------------
+# Examples for emit:
+#   emit @a
+#   emit (@a, @b)
+#   emit @a, "x", "y"
+#   emit (@a, @b), "x", "y"
+#
+# Examples for emitp: syntactically identical to emit.
+#
+# First argument (single or in parentheses) must be non-indexed
+# oosvar/localvar/fieldname, so we can use their names as keys in the emitted
+# record.
+#
+# We use the Emittable production rule to limit the things being emitted.  It
+# might be fine to use more generally Rvalue -- anything *evaluating* to a
+# map, including function calls -- except that the legacy punctuation design
+# of 'emit (#, #), #, #' means that allowing parenthesized expressions within
+# the '(...)' results in shift-reduce conflicts at parser-gen time.
+#
+# One backward-compatible solution (used here) is to limit the types of
+# expression within the parentheses. Another (backward-incompatible) solution
+# would be to modify the punctuation, e.g. 'emit [#, #], # #' or
+# 'emit ([#, #], # #)' perhaps.
+#
+# However: we shouldn't bother. The reason is that emittables need names which
+# are known.
+# * emit @a -- the name is "a"
+# * emit (@a, @b) -- the names are ["a", "b"]
+# * emit @* -- the names are the map keys
+# * emit $* -- the names are the map keys
+# * emit {...} -- the names are the map keys
+# If we allow emit of arbitrary expressions, we open ourselves up to things
+# which are unnameable such as the return value from map-valued functions such
+# as mapdiff, etc. etc.
+
+EmitStatement
+
+  ::= emit EmittableAsList
+
+  | emit Redirector "," EmittableAsList
+
+  | emit "(" EmittableList ")"
+
+  | emit Redirector "," "(" EmittableList ")"
+
+  | emit EmittableAsList "," EmitKeys
+
+  | emit Redirector "," EmittableAsList "," EmitKeys
+
+  | emit "(" EmittableList ")" "," EmitKeys
+
+  | emit Redirector "," "(" EmittableList ")" "," EmitKeys
+
+;
+
+# ----------------------------------------------------------------
+EmitPStatement
+  ::= emitp EmittableAsList
+
+  | emitp Redirector "," EmittableAsList
+
+  | emitp "(" EmittableList ")"
+
+  | emitp Redirector "," "(" EmittableList ")"
+
+  | emitp EmittableAsList "," EmitKeys
+
+  | emitp Redirector "," EmittableAsList "," EmitKeys
+
+  | emitp "(" EmittableList ")" "," EmitKeys
+
+  | emitp Redirector "," "(" EmittableList ")" "," EmitKeys
+
+;
+
+# ----------------------------------------------------------------
+EmittableList
+  ::= Emittable
+
+# Allow trailing final comma, especially for multiline statements
+  | Emittable "," EmittableList
+
+;
+
+# Wraps a single emittable in a list-of-one node.
+EmittableAsList
+  ::= Emittable
+
+;
+
+Emittable
+  ::= LocalVariable
+
+  | DirectOosvarValue
+  | BracedOosvarValue
+  | IndirectOosvarValue
+
+  | DirectFieldValue
+  | BracedFieldValue
+  | IndirectFieldValue
+
+  | FullSrec
+  | FullOosvar
+  | MapLiteral
+  ;
+
+# ----------------------------------------------------------------
+EmitKeys
+
+  ::= Rvalue
+
+  | Rvalue "," EmitKeys
+
+;
+
+# ----------------------------------------------------------------
+FieldValue
+  ::= DirectFieldValue
+  | IndirectFieldValue
+  | BracedFieldValue
+  | PositionalFieldName
+  | PositionalFieldValue
+;
+
+# Note: the field name is "$name" not "name" since field_name
+# includes the '$'.  If we omit the '$' there and include it in the parser
+# section here as "$", then we get an LR-1 conflict. So this must be dealt
+# with at the AST level. Hence the NewASTNodeStripDollarOrAtSign.
+DirectFieldValue
+  ::= field_name
+
+;
+
+IndirectFieldValue
+  ::= "$[" Rvalue "]"
+
+;
+
+# * Direct is '$name'
+# * Indirect is '$["name"]'
+# * Braced is '${name}' -- note no double-quotes. This is for when the field
+#   name has spaces or somesuch in it.
+BracedFieldValue
+  ::= braced_field_name
+
+;
+
+PositionalFieldName
+  ::= "$[[" Rvalue "]" "]"# Not "]]" since that would define a token, making '$foo[bar[1]]' a syntax error
+
+;
+
+PositionalFieldValue
+  ::= "$[[[" Rvalue "]" "]" "]"# Not "]]]" since that would define a token, making '$foo[bar[baz[1]]]' a syntax error
+
+;
+
+FullSrec
+  ::= full_srec
+
+;
+
+# ----------------------------------------------------------------
+OosvarValue
+  ::= DirectOosvarValue
+  | IndirectOosvarValue
+  | BracedOosvarValue
+;
+
+# Note: the oosvar name is "@name" not "name" since oosvar_name
+# includes the '@'.  If we omit the '@' there and include it in the parser
+# section here as "$", then we get an LR-1 conflict. So this must be dealt
+# with at the AST level. Hence the NewASTNodeStripDollarOrAtSign.
+DirectOosvarValue
+  ::= oosvar_name
+
+;
+
+IndirectOosvarValue
+  ::= "@[" Rvalue "]"
+
+;
+
+# * Direct is '@name'
+# * Indirect is '@["name"]'
+# * Braced is '@{name}' -- note no double-quotes. This is for when the oosvar
+#   name has spaces or somesuch in it.
+BracedOosvarValue
+  ::= braced_oosvar_name
+
+;
+
+FullOosvar
+  ::= full_oosvar
+
+  | all
+
+;
+
+# ----------------------------------------------------------------
+LocalVariable
+  ::= non_sigil_name
+
+;
+
+Typedecl
+  ::= arr
+
+  | bool
+
+  | float
+
+  | int
+
+  | map
+
+  | num
+
+  | str
+
+  | var
+
+  | funct
+
+;
+
+# ----------------------------------------------------------------
+# REWRITE COMPOUND ASSIGNMENT OPERATORS
+#
+# Transform '$x += 1' which would have AST
+#
+#   +=
+#       $x
+#       1
+#
+# into '$x = $x + 1' with AST
+#
+#   =
+#       $x
+#       +
+#           $x
+#           1
+#
+# right here in the parser.
+#
+# Use the NewASTToken to clone the "||=" into "||" and so on.
+
+Assignment
+
+  ::= Lvalue "||=" Rvalue
+
+  | Lvalue "^^=" Rvalue
+
+  | Lvalue "&&=" Rvalue
+
+  | Lvalue "??=" Rvalue
+
+  | Lvalue "???=" Rvalue
+
+  | Lvalue "|=" Rvalue
+
+  | Lvalue "&=" Rvalue
+
+  | Lvalue "^=" Rvalue
+
+  | Lvalue "<<=" Rvalue
+
+  | Lvalue ">>=" Rvalue
+
+  | Lvalue ">>>=" Rvalue
+
+  | Lvalue "+=" Rvalue
+
+  | Lvalue ".=" Rvalue
+
+  | Lvalue "-=" Rvalue
+
+  | Lvalue "*=" Rvalue
+
+  | Lvalue "/=" Rvalue
+
+  | Lvalue "//=" Rvalue
+
+  | Lvalue "%=" Rvalue
+
+  | Lvalue "**=" Rvalue
+
+;
+
+# ================================================================
+# BEGIN RVALUE OPERATOR-PRECEDENCE CHAIN
+# ================================================================
+
+Rvalue ::= PrecedenceChainStart ;
+
+PrecedenceChainStart ::= TernaryTerm ;
+
+TernaryTerm
+  ::= LogicalOrTerm "?" TernaryTerm ":" TernaryTerm
+
+  | LogicalOrTerm
+;
+
+LogicalOrTerm
+  ::= LogicalOrTerm "||" LogicalXORTerm
+
+  | LogicalXORTerm
+;
+
+LogicalXORTerm
+  ::= LogicalXORTerm "^^" LogicalAndTerm
+
+  | LogicalAndTerm
+;
+
+LogicalAndTerm
+  ::= LogicalAndTerm "&&" EqneTerm
+
+  | EqneTerm
+;
+
+EqneTerm
+  ::= EqneTerm "=~"  CmpTerm
+
+  | EqneTerm "!=~" CmpTerm
+
+  | EqneTerm "=="  CmpTerm
+
+  | EqneTerm "!="  CmpTerm
+
+  | EqneTerm "<=>" CmpTerm
+
+  | CmpTerm
+;
+
+CmpTerm
+  ::= CmpTerm ">"  BitwiseORTerm
+
+  | CmpTerm ">=" BitwiseORTerm
+
+  | CmpTerm "<"  BitwiseORTerm
+
+  | CmpTerm "<=" BitwiseORTerm
+
+  | BitwiseORTerm
+;
+
+BitwiseORTerm
+  ::= BitwiseORTerm "|" BitwiseXORTerm
+
+  | BitwiseXORTerm
+;
+
+BitwiseXORTerm
+  ::= BitwiseXORTerm "^" BitwiseANDTerm
+
+  | BitwiseANDTerm
+;
+
+BitwiseANDTerm
+  ::= BitwiseANDTerm "&" BitwiseShiftTerm
+
+  | BitwiseShiftTerm
+;
+
+BitwiseShiftTerm
+  ::= BitwiseShiftTerm "<<"  AddsubdotTerm
+
+  | BitwiseShiftTerm ">>"  AddsubdotTerm
+
+  | BitwiseShiftTerm ">>>" AddsubdotTerm
+
+  | AddsubdotTerm
+;
+
+AddsubdotTerm
+  ::= AddsubdotTerm "+"  MuldivTerm
+
+  | AddsubdotTerm "-"  MuldivTerm
+
+  | AddsubdotTerm ".+" MuldivTerm
+
+  | AddsubdotTerm ".-" MuldivTerm
+
+  | MuldivTerm
+;
+
+MuldivTerm
+  ::= MuldivTerm "*"   DotTerm
+
+  | MuldivTerm "/"   DotTerm
+
+  | MuldivTerm "//"  DotTerm
+
+  | MuldivTerm "%"   DotTerm
+
+  | MuldivTerm ".*"  DotTerm
+
+  | MuldivTerm "./"  DotTerm
+
+  | MuldivTerm ".//" DotTerm
+
+  | DotTerm
+;
+
+DotTerm
+  ::= DotTerm "."  UnaryOpTerm
+
+  | UnaryOpTerm
+;
+
+UnaryOpTerm
+  ::= "+"  UnaryOpTerm
+
+  | "-"  UnaryOpTerm
+
+  | ".+" UnaryOpTerm
+
+  | ".-" UnaryOpTerm
+
+  | "!"  UnaryOpTerm
+
+  | "~"  UnaryOpTerm
+
+  | AbsentCoalesceTerm
+;
+
+AbsentCoalesceTerm
+  ::= AbsentCoalesceTerm "??" EmptyCoalesceTerm
+
+  | EmptyCoalesceTerm
+;
+
+EmptyCoalesceTerm
+  ::= EmptyCoalesceTerm "???" PowTerm
+
+  | PowTerm
+;
+
+PowTerm
+  ::= PrecedenceChainEnd "**"     PowTerm
+
+# In the Miller-DSL grammar, the leading -/+ isn't part of the int/float token -- it's treated as
+# a unary operator. (Making it part of the token leads to LR1 conflicts, and is also inelegant.)
+# However, this means things like '2 ** -3' result in mashup of two operators next to one
+# another. For '2 + -3' and '2 * -3', this happens fine down the precedence chain since
+# AddsubdotTerm and MuldivTerm are above UnaryOpTerm. Since PowTerm is below UnaryOpTerm, though,
+# we need to be explicit about '2 ** -3' in a way that we do not need to for '2 * -3'.  Also, we
+# can't use 'PrecedenceChainEnd "**" UnaryOpTerm', as this also results in LR1 conflicts.
+
+  | PrecedenceChainEnd "**" "-" PowTerm
+
+  | PrecedenceChainEnd "**" "+" PowTerm
+
+  | PrecedenceChainEnd
+;
+
+# Please Excuse My Dear Aunt Sally! :) We've gotten to the 'P' so we're done
+# with the operator-precedence chain. :)
+
+PrecedenceChainEnd
+  ::= "(" Rvalue ")"
+;
+
+PrecedenceChainEnd ::= MlrvalOrFunction ;
+
+# ================================================================
+# END RVALUE OPERATOR-PRECEDENCE CHAIN
+# ================================================================
+
+# ================================================================
+# Leaf-ish nodes, i.e. expressions without operators ... in things like '$y =
+# 3 * $x + 4', the Rvalue operator-parse separates out the '3', the '$x', and
+# the '4' ... but they could have as well been '$y = 3 * $x[7] + f($a,$b,$c)'.
+#
+# Grammar rules here have to do with nodes like '3', or '$x[7]', or
+# 'f($a,$b,$c)'.
+#
+# At the moment I call these MlrvalOrFunction.
+
+# ----------------------------------------------------------------
+MlrvalOrFunction
+  ::= FieldValue
+  | FullSrec
+  | OosvarValue
+  | FullOosvar
+  | LocalVariable
+  | UnnamedFunctionDefinition
+;
+
+# ----------------------------------------------------------------
+# STRING/INT/FLOAT/BOOL LITERALS
+
+# As with '$' on field_name, so too for string_literal we
+# get LR-1 conflicts if we attempt to put the double quotes here.  Hence the
+# quote-stripper AST method. Also, since string literals can have
+# backslash-escaped double-quotes like "...\"...\"...", we also unbackslash
+# in the same method.
+
+# For Miller-style case-insensitive regexes -- of the form "a.*b"i with the
+# trailing 'i' -- we don't strip the initial '"' or the final '"i'.
+
+MlrvalOrFunction
+  ::= string_literal
+
+  | regex_case_insensitive
+
+  | int_literal
+
+  | float_literal
+
+  | boolean_literal
+
+  | null_literal
+
+  | inf_literal
+
+  | nan_literal
+
+  | const_M_PI
+
+  | const_M_E
+
+  | panic
+;
+
+# ================================================================
+# Array literals in Miller are JSON-ish.
+
+MlrvalOrFunction ::= ArrayLiteral ;
+
+# ----------------------------------------------------------------
+ArrayLiteral
+
+  ::= "[" "]"
+
+  | "[" ArrayLiteralElements "]"
+# As parsed there's an intermediate node between ArrayLiteral
+# and the children. Now we can remove it.
+#
+# Before:
+# * ArrayLiteral "[]"
+#     * ArrayLiteral
+#         * StringLiteral "a"
+#         * StringLiteral "b"
+#
+# After:
+# * ArrayLiteral "[]"
+#     * StringLiteral "a"
+#     * StringLiteral "b"
+;
+
+# ----------------------------------------------------------------
+ArrayLiteralElements
+
+  ::= Rvalue
+
+# Allow trailing final comma, especially for multiline statements
+  | Rvalue ","
+
+# Allow trailing final comma, especially for multiline statements
+  | Rvalue "," ArrayLiteralElements
+
+;
+
+# ================================================================
+# Map literals in Miller are JSON-ish.
+
+MlrvalOrFunction ::= MapLiteral ;
+
+# ----------------------------------------------------------------
+MapLiteral
+
+  ::= "{" "}"
+
+  | "{" MapLiteralKeyValuePairs "}"
+# As parsed there's an intermediate node between MapLiteral
+# and the children. Now we can remove it.
+#
+# Before:
+# * MapLiteral "{}"
+#     * MapLiteral
+#         * MapLiteralKeyValuePair ":"
+#             * StringLiteral "a"
+#             * StringLiteral "1"
+#         * MapLiteralKeyValuePair ":"
+#             * StringLiteral "b"
+#             * IntLiteral "2"
+#
+# After:
+# * MapLiteral "{}"
+#     * MapLiteralKeyValuePair ":"
+#         * StringLiteral "a"
+#         * StringLiteral "1"
+#     * MapLiteralKeyValuePair ":"
+#         * StringLiteral "b"
+#         * IntLiteral "2"
+
+;
+
+# ----------------------------------------------------------------
+MapLiteralKeyValuePairs
+
+  ::= MapLiteralKeyValuePair
+
+# Allow trailing final comma, especially for multiline statements
+  | MapLiteralKeyValuePair ","
+
+# Allow trailing final comma, especially for multiline statements
+  | MapLiteralKeyValuePair "," MapLiteralKeyValuePairs
+
+;
+
+# ----------------------------------------------------------------
+MapLiteralKeyValuePair
+  ::= Rvalue ":" Rvalue
+
+;
+
+# ================================================================
+MlrvalOrFunction ::= ContextVariable ;
+
+ContextVariable
+  ::= ctx_IPS
+
+  | ctx_IFS
+
+  | ctx_IRS
+
+  | ctx_OPS
+
+  | ctx_OFS
+
+  | ctx_ORS
+
+  | ctx_FLATSEP
+
+  | ctx_NF
+
+  | ctx_NR
+
+  | ctx_FNR
+
+  | ctx_FILENAME
+
+  | ctx_FILENUM
+
+;
+
+# ----------------------------------------------------------------
+MlrvalOrFunction ::= ENV ;
+
+# Only ENV["FOO"]; not arbitrarily indexable like maps are.
+# Alternate syntax: ENV.FOO.
+
+ENV
+  ::= env "[" Rvalue "]"
+
+  | env "." non_sigil_name
+
+;
+
+# ================================================================
+# INDEXED ACCESS
+#
+# For Array or Map -- which one, to be determined at runtime.
+
+# ----------------------------------------------------------------
+MlrvalOrFunction
+  ::= ArrayOrMapIndexAccess
+  | ArrayOrMapPositionalNameAccess
+  | ArrayOrMapPositionalValueAccess
+  | ArraySliceAccess ;
+
+ArrayOrMapIndexAccess
+  ::= MlrvalOrFunction "[" Rvalue "]"
+
+;
+
+ArrayOrMapPositionalNameAccess
+  ::= MlrvalOrFunction "[[" Rvalue "]" "]"# Not "]]" since that would define a token, making '$foo[bar[1]]' a syntax error
+
+;
+
+ArrayOrMapPositionalValueAccess
+  ::= MlrvalOrFunction "[[[" Rvalue "]" "]" "]"# Not "]]]" since that would define a token, making '$foo[bar[baz[1]]]' a syntax error
+
+;
+
+ArraySliceAccess
+
+  ::= MlrvalOrFunction "[" Rvalue ":" Rvalue "]"
+
+  | MlrvalOrFunction "[" ":" Rvalue "]"
+
+  | MlrvalOrFunction "[" Rvalue ":" "]"
+
+  | MlrvalOrFunction "[" ":" "]"
+
+;
+
+# ================================================================
+# FUNCTION/SUBROUTINE CALLS
+
+MlrvalOrFunction
+  ::= FunctionCallsite
+;
+
+FunctionCallsite
+
+  ::= FunctionName "(" ")"
+
+  | FunctionName "(" FcnArgs ")"
+# As parsed there's an intermediate node between FunctionCallsite
+# and the children. Now we can remove it.
+#
+# Before:
+# * FunctionCallsite "[]"
+#     * FunctionCallsite
+#         * StringLiteral "a"
+#         * StringLiteral "b"
+#
+# After:
+# * FunctionCallsite "[]"
+#     * StringLiteral "a"
+#     * StringLiteral "b"
+
+;
+
+# For most functions it suffices to use the non_sigil_name pattern.
+# But int and float are keywords in the lexer so we need to spell those out
+# explicitly.  (They're type-decl keywords but they're also the names of
+# type-conversion functions.)
+FunctionName
+  ::= non_sigil_name
+  | int
+  | float
+;
+
+# ----------------------------------------------------------------
+FcnArgs
+
+  ::= Rvalue
+
+# Allow trailing final comma, especially for multiline statements
+  | Rvalue ","
+
+# Allow trailing final comma, especially for multiline statements
+  | Rvalue "," FcnArgs
+
+;
+
+# ----------------------------------------------------------------
+# Subroutine callsite
+
+SubroutineCallsite
+  ::= call SubroutineName "(" ")"
+
+  | call SubroutineName "(" FcnArgs ")"
+# As parsed there's an intermediate node between SubroutineCallsite
+# and the children. Now we can remove it.
+#
+# Before:
+# * SubroutineCallsite "[]"
+#     * SubroutineCallsite
+#         * StringLiteral "a"
+#         * StringLiteral "b"
+#
+# After:
+# * SubroutineCallsite "[]"
+#     * StringLiteral "a"
+#     * StringLiteral "b"
+
+;
+
+SubroutineName ::= non_sigil_name;
+
+# ================================================================
+# BEGIN/END BLOCKS
+
+BracefulStatement
+  ::= BeginBlock
+  | EndBlock
+  | CondBlock
+  | IfChain
+  | WhileLoop
+  | ForLoop
+  | NamedFunctionDefinition
+  | SubroutineDefinition
+;
+
+BeginBlock
+  ::= begin StatementBlockInBraces
+
+;
+EndBlock
+  ::= end StatementBlockInBraces
+
+;
+# ================================================================
+# PATTERN-ACTION BLOCKS (AWKISH)
+# E.g. mlr put 'NR > 10 { ... }'.
+# Just shorthand for mlr put 'if (NR > 10) { ... }' without any elif/else.
+
+CondBlock
+   ::= Rvalue StatementBlockInBraces
+
+;
+
+# ================================================================
+# IF-STATEMENTS
+
+# Cases:
+#   if elif*
+#   if elif* else
+
+IfChain
+  ::= IfElifStar
+  | IfElifStar ElseBlock
+
+;
+
+IfElifStar
+  ::= IfBlock
+
+  | IfElifStar ElifBlock
+
+;
+
+IfBlock
+  ::= if "(" Rvalue ")" StatementBlockInBraces
+
+;
+
+ElifBlock
+  ::= elif "(" Rvalue ")" StatementBlockInBraces
+
+;
+
+ElseBlock
+  ::= else StatementBlockInBraces
+
+;
+
+# ================================================================
+# WHILE AND DO-WHILE -LOOPS
+
+WhileLoop
+  ::= while "(" Rvalue ")" StatementBlockInBraces
+;
+
+DoWhileLoop
+  ::= do StatementBlockInBraces while "(" Rvalue ")"
+;
+
+# ================================================================
+# FOR-LOOPS
+
+# ----------------------------------------------------------------
+ForLoop
+  ::= ForLoopOneVariable
+  | ForLoopTwoVariable
+  | ForLoopMultivariable
+  | TripleForLoop
+;
+
+# ----------------------------------------------------------------
+# for(k in $*) { ... }
+ForLoopOneVariable
+  ::= for
+    "("
+      LocalVariable
+      in
+      Rvalue
+    ")"
+    StatementBlockInBraces
+;
+
+# ----------------------------------------------------------------
+# for(k, v in $*) { ... }
+ForLoopTwoVariable
+  ::= for
+    "("
+      LocalVariable
+      ","
+      LocalVariable
+      in
+      Rvalue
+    ")"
+    StatementBlockInBraces
+
+;
+
+# ----------------------------------------------------------------
+# for((k1, k2), v in $*) { ... }
+ForLoopMultivariable
+   ::=
+    for
+    "("
+      "("
+        MultiIndex
+      ")"
+      ","
+      LocalVariable
+      in
+      Rvalue
+    ")"
+    StatementBlockInBraces
+
+;
+
+MultiIndex
+
+  ::= LocalVariable "," LocalVariable
+
+  | MultiIndex "," LocalVariable
+
+;
+
+# ----------------------------------------------------------------
+TripleForLoop
+   ::=
+    for
+    "("
+      TripleForStart
+      ";"
+      TripleForContinuation
+      ";"
+      TripleForUpdate
+    ")"
+    StatementBlockInBraces
+
+;
+
+TripleForStart
+  ::= empty
+
+  | Assignment
+
+  | TripleForStart "," Assignment
+
+;
+
+# Enforced in the CST, not here: the last must be a bare boolean; the ones
+# before must be assignments.
+TripleForContinuation
+  ::= empty
+
+  | TripleForContinuationItem
+
+  | TripleForContinuation "," TripleForContinuationItem
+
+;
+
+TripleForContinuationItem
+  ::= Assignment
+  | BareBoolean
+;
+
+TripleForUpdate
+  ::= empty
+
+  | Assignment
+
+  | TripleForUpdate "," Assignment
+;
+
+# ----------------------------------------------------------------
+BreakStatement
+  ::= break
+;
+
+ContinueStatement
+  ::= continue
+;
+
+# ================================================================
+# FUNCTION AND SUBROUTINE DEFINITIONS
+
+# Example: 'func f(a, b) { return b - a }'
+NamedFunctionDefinition
+
+# Without return-type annotation
+  ::= func
+    non_sigil_name
+    "("
+    FuncOrSubrParameterList
+    ")"
+    StatementBlockInBraces
+
+# With return-type annotation
+  | func
+    non_sigil_name
+    "("
+    FuncOrSubrParameterList
+    ")"
+    ":"
+    Typedecl
+    StatementBlockInBraces
+;
+
+# Example: RHS of 'f = func (a, b) { return b - a }'
+UnnamedFunctionDefinition
+
+# Without return-type annotation
+  ::= func
+    "("
+    FuncOrSubrParameterList
+    ")"
+    StatementBlockInBraces
+
+# With return-type annotation
+  | func
+    "("
+    FuncOrSubrParameterList
+    ")"
+    ":"
+    Typedecl
+    StatementBlockInBraces
+
+;
+
+SubroutineDefinition
+  ::= subr
+    non_sigil_name
+    "("
+    FuncOrSubrParameterList
+    ")"
+    StatementBlockInBraces
+
+;
+
+# ----------------------------------------------------------------
+FuncOrSubrParameterList
+  ::= empty
+
+  | FuncOrSubrNonEmptyParameterList
+
+;
+
+FuncOrSubrNonEmptyParameterList
+  ::= FuncOrSubrParameter
+
+  | FuncOrSubrParameter ","
+
+  | FuncOrSubrParameter "," FuncOrSubrNonEmptyParameterList
+
+;
+
+FuncOrSubrParameter
+# Untyped parameter, e.g. "x". Produce this AST:
+# Parameter
+# -> ParameterName "x"
+  ::= UntypedFuncOrSubrParameterName
+
+# Typed parameter, e.g. "num x". Produce this AST:
+# Parameter
+# -> ParameterName "x"
+#   -> Typedecl "num"
+  | TypedFuncOrSubrParameterName
+
+;
+
+UntypedFuncOrSubrParameterName
+  ::= non_sigil_name
+
+;
+
+TypedFuncOrSubrParameterName
+  ::= Typedecl UntypedFuncOrSubrParameterName
+
+;
+
+# ----------------------------------------------------------------
+# Return statements for user-defined functions and subroutines
+
+ReturnStatement
+# For user-defined functions: return a value
+  ::= return Rvalue
+
+# For user-defined subroutines
+  | return
+
+;
