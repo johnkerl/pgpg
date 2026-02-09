@@ -9,6 +9,10 @@
   * Move types to tops of files
   * Dedupe
   * Etc.
+* Desk-calculator grammar
+  * `kbc` basically
+  * Also a modular-arithmetic option perhaps
+  * Assign to variables; print; target REPL
 * Manual JSON parser
 * Manual LISP parser
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
