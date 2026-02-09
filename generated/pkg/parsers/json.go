@@ -112,13 +112,13 @@ type JSONParserProduction struct {
 
 var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 	0: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 6},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 7},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 8},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 9},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 10},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 11},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 12},
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 5},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 6},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 7},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 8},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 9},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 10},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 11},
 	},
 	1: {
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 3},
@@ -130,251 +130,238 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 2},
 	},
 	4: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 4},
-	},
-	5: {
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 1},
 	},
-	6: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("]"):      {Kind: JSONParserActionReduce, Target: 15},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 21},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 22},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 23},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 24},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 25},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 26},
-	},
-	7: {
+	5: {
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 7},
 	},
-	8: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 30},
+	6: {
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 19},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 20},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 21},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
-	9: {
+	7: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 26},
+		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
+	},
+	8: {
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 8},
 	},
-	10: {
+	9: {
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 5},
 	},
-	11: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 9},
+	10: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 4},
 	},
-	12: {
+	11: {
 		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 6},
 	},
+	12: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 3},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 3},
+	},
 	13: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 3},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 28},
 	},
 	14: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 31},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 2},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 2},
 	},
 	15: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("]"):      {Kind: JSONParserActionReduce, Target: 15},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 21},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 22},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 23},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 24},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 25},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 26},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 30},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 17},
 	},
 	16: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 2},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 7},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 7},
 	},
 	17: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 4},
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 19},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 20},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 32},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
 	18: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 19},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 34},
+		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
 	},
 	19: {
-		tokens.TokenType("]"): {Kind: JSONParserActionShift, Target: 33},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 8},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 8},
 	},
 	20: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("]"):      {Kind: JSONParserActionReduce, Target: 15},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 21},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 22},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 23},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 24},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 25},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 26},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 5},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 5},
 	},
 	21: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 7},
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 16},
 	},
 	22: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 30},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 4},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 4},
 	},
 	23: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 8},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 6},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 6},
 	},
 	24: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 5},
-	},
-	25: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 9},
-	},
-	26: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 6},
-	},
-	27: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 36},
-	},
-	28: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 30},
-	},
-	29: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 38},
-	},
-	30: {
-		tokens.TokenType("colon"): {Kind: JSONParserActionShift, Target: 39},
-	},
-	31: {
-		tokens.TokenType("comma"): {Kind: JSONParserActionShift, Target: 40},
-	},
-	32: {
-		tokens.TokenType("]"): {Kind: JSONParserActionReduce, Target: 16},
-	},
-	33: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 17},
-	},
-	34: {
-		tokens.TokenType("]"): {Kind: JSONParserActionShift, Target: 41},
-	},
-	35: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 42},
-	},
-	36: {
-		tokens.TokenType("comma"): {Kind: JSONParserActionShift, Target: 43},
-	},
-	37: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 36},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 11},
 	},
+	25: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 37},
+	},
+	26: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 10},
+	},
+	27: {
+		tokens.TokenType("colon"): {Kind: JSONParserActionShift, Target: 38},
+	},
+	28: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 15},
+	},
+	29: {
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 19},
+	},
+	30: {
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 19},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 20},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
+	},
+	31: {
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 40},
+	},
+	32: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 16},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 16},
+	},
+	33: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 41},
+	},
+	34: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 10},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 10},
+	},
+	35: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 13},
+	},
+	36: {
+		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
+	},
+	37: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 9},
+	},
 	38: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 12},
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 46},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 47},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 48},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 49},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 50},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 51},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 52},
 	},
 	39: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 21},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 22},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 23},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 24},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 25},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 26},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 30},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 17},
 	},
 	40: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 50},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 51},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 52},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 53},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 54},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 55},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 56},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 15},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 15},
 	},
 	41: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 17},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 9},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 9},
 	},
 	42: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 12},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 36},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 11},
 	},
 	43: {
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 58},
-	},
-	44: {
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 14},
-	},
-	45: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 3},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 3},
 	},
-	46: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 59},
-	},
-	47: {
+	44: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 2},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 2},
 	},
-	48: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 4},
+	45: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 14},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 14},
 	},
-	49: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 19},
-	},
-	50: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("]"):      {Kind: JSONParserActionReduce, Target: 15},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 21},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 22},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 23},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 24},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 25},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 26},
-	},
-	51: {
+	46: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 7},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 7},
 	},
-	52: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 30},
+	47: {
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 19},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 20},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 56},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
-	53: {
+	48: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 58},
+		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
+	},
+	49: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 8},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 8},
 	},
-	54: {
+	50: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 5},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 5},
 	},
-	55: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 9},
+	51: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 4},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 4},
 	},
-	56: {
+	52: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 6},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 6},
 	},
-	57: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 62},
+	53: {
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 18},
 	},
-	58: {
-		tokens.TokenType("colon"): {Kind: JSONParserActionShift, Target: 63},
-	},
-	59: {
-		tokens.TokenType("["):      {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("]"):      {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("false"):  {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("null"):   {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("number"): {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("string"): {Kind: JSONParserActionReduce, Target: 18},
-		tokens.TokenType("true"):   {Kind: JSONParserActionReduce, Target: 18},
-	},
-	60: {
-		tokens.TokenType("]"): {Kind: JSONParserActionShift, Target: 64},
-	},
-	61: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 65},
-	},
-	62: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 13},
-		tokens.TokenType("string"): {Kind: JSONParserActionReduce, Target: 13},
-	},
-	63: {
-		tokens.TokenType("["):      {Kind: JSONParserActionShift, Target: 50},
-		tokens.TokenType("false"):  {Kind: JSONParserActionShift, Target: 51},
-		tokens.TokenType("lcurly"): {Kind: JSONParserActionShift, Target: 52},
-		tokens.TokenType("null"):   {Kind: JSONParserActionShift, Target: 53},
-		tokens.TokenType("number"): {Kind: JSONParserActionShift, Target: 54},
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 55},
-		tokens.TokenType("true"):   {Kind: JSONParserActionShift, Target: 56},
-	},
-	64: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 17},
-	},
-	65: {
+	54: {
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 12},
 	},
-	66: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 14},
+	55: {
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 59},
+	},
+	56: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 16},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 16},
+	},
+	57: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 60},
+	},
+	58: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 10},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
+	},
+	59: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 15},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 15},
+	},
+	60: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 9},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 9},
 	},
 }
 
@@ -383,86 +370,62 @@ var JSONParserGotos = map[int]map[asts.NodeType]int{
 		asts.NodeType("Array"):  1,
 		asts.NodeType("Json"):   2,
 		asts.NodeType("Object"): 3,
-		asts.NodeType("String"): 4,
-		asts.NodeType("Value"):  5,
+		asts.NodeType("Value"):  4,
 	},
 	6: {
-		asts.NodeType("Array"):           13,
-		asts.NodeType("Element"):         14,
-		asts.NodeType("Elements"):        15,
-		asts.NodeType("Object"):          16,
-		asts.NodeType("String"):          17,
-		asts.NodeType("Value"):           18,
-		asts.NodeType("__pgpg_repeat_2"): 19,
+		asts.NodeType("Array"):    12,
+		asts.NodeType("Elements"): 13,
+		asts.NodeType("Object"):   14,
+		asts.NodeType("Value"):    15,
 	},
-	8: {
-		asts.NodeType("Member"):          27,
-		asts.NodeType("Members"):         28,
-		asts.NodeType("__pgpg_repeat_1"): 29,
+	7: {
+		asts.NodeType("Member"):  24,
+		asts.NodeType("Members"): 25,
 	},
 	15: {
-		asts.NodeType("Array"):           13,
-		asts.NodeType("Element"):         14,
-		asts.NodeType("Elements"):        15,
-		asts.NodeType("Object"):          16,
-		asts.NodeType("String"):          17,
-		asts.NodeType("Value"):           18,
-		asts.NodeType("__pgpg_repeat_2"): 32,
+		asts.NodeType("__pgpg_repeat_2"): 29,
 	},
-	20: {
-		asts.NodeType("Array"):           13,
-		asts.NodeType("Element"):         14,
-		asts.NodeType("Elements"):        15,
-		asts.NodeType("Object"):          16,
-		asts.NodeType("String"):          17,
-		asts.NodeType("Value"):           18,
-		asts.NodeType("__pgpg_repeat_2"): 34,
+	17: {
+		asts.NodeType("Array"):    12,
+		asts.NodeType("Elements"): 31,
+		asts.NodeType("Object"):   14,
+		asts.NodeType("Value"):    15,
 	},
-	22: {
-		asts.NodeType("Member"):          27,
-		asts.NodeType("Members"):         28,
+	18: {
+		asts.NodeType("Member"):  24,
+		asts.NodeType("Members"): 33,
+	},
+	24: {
 		asts.NodeType("__pgpg_repeat_1"): 35,
 	},
-	28: {
-		asts.NodeType("Member"):          27,
-		asts.NodeType("Members"):         28,
-		asts.NodeType("__pgpg_repeat_1"): 37,
+	30: {
+		asts.NodeType("Array"):  12,
+		asts.NodeType("Object"): 14,
+		asts.NodeType("Value"):  39,
+	},
+	36: {
+		asts.NodeType("Member"): 42,
+	},
+	38: {
+		asts.NodeType("Array"):  43,
+		asts.NodeType("Object"): 44,
+		asts.NodeType("Value"):  45,
 	},
 	39: {
-		asts.NodeType("Array"):  13,
-		asts.NodeType("Object"): 16,
-		asts.NodeType("String"): 17,
-		asts.NodeType("Value"):  44,
+		asts.NodeType("__pgpg_repeat_2"): 53,
 	},
-	40: {
-		asts.NodeType("Array"):   45,
-		asts.NodeType("Element"): 46,
-		asts.NodeType("Object"):  47,
-		asts.NodeType("String"):  48,
-		asts.NodeType("Value"):   49,
+	42: {
+		asts.NodeType("__pgpg_repeat_1"): 54,
 	},
-	43: {
-		asts.NodeType("Member"): 57,
+	47: {
+		asts.NodeType("Array"):    12,
+		asts.NodeType("Elements"): 55,
+		asts.NodeType("Object"):   14,
+		asts.NodeType("Value"):    15,
 	},
-	50: {
-		asts.NodeType("Array"):           13,
-		asts.NodeType("Element"):         14,
-		asts.NodeType("Elements"):        15,
-		asts.NodeType("Object"):          16,
-		asts.NodeType("String"):          17,
-		asts.NodeType("Value"):           18,
-		asts.NodeType("__pgpg_repeat_2"): 60,
-	},
-	52: {
-		asts.NodeType("Member"):          27,
-		asts.NodeType("Members"):         28,
-		asts.NodeType("__pgpg_repeat_1"): 61,
-	},
-	63: {
-		asts.NodeType("Array"):  45,
-		asts.NodeType("Object"): 47,
-		asts.NodeType("String"): 48,
-		asts.NodeType("Value"):  66,
+	48: {
+		asts.NodeType("Member"):  24,
+		asts.NodeType("Members"): 57,
 	},
 }
 
@@ -476,15 +439,15 @@ var JSONParserProductions = []JSONParserProduction{
 	{lhs: asts.NodeType("Value"), rhsCount: 1},
 	{lhs: asts.NodeType("Value"), rhsCount: 1},
 	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("String"), rhsCount: 1},
-	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0},
-	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 2},
 	{lhs: asts.NodeType("Object"), rhsCount: 3},
-	{lhs: asts.NodeType("Members"), rhsCount: 5},
+	{lhs: asts.NodeType("Object"), rhsCount: 2},
+	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0},
+	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 3},
+	{lhs: asts.NodeType("Members"), rhsCount: 2},
 	{lhs: asts.NodeType("Member"), rhsCount: 3},
-	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 0},
-	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 2},
 	{lhs: asts.NodeType("Array"), rhsCount: 3},
-	{lhs: asts.NodeType("Elements"), rhsCount: 5},
-	{lhs: asts.NodeType("Element"), rhsCount: 1},
+	{lhs: asts.NodeType("Array"), rhsCount: 2},
+	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 0},
+	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 3},
+	{lhs: asts.NodeType("Elements"), rhsCount: 2},
 }

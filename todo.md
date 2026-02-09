@@ -9,6 +9,8 @@
   * Move types to tops of files
   * Dedupe
   * Etc.
+* Manual JSON parser
+* Manual LISP parser
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
 
 # [x] Markdown defs of simple grammars

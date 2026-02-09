@@ -2,33 +2,33 @@
   "start_symbol": "Json",
   "actions": {
     "0": {
-      "[": {
+      "false": {
+        "type": "shift",
+        "target": 5
+      },
+      "lbracket": {
         "type": "shift",
         "target": 6
       },
-      "false": {
+      "lcurly": {
         "type": "shift",
         "target": 7
       },
-      "lcurly": {
+      "null": {
         "type": "shift",
         "target": 8
       },
-      "null": {
+      "number": {
         "type": "shift",
         "target": 9
       },
-      "number": {
+      "string": {
         "type": "shift",
         "target": 10
       },
-      "string": {
-        "type": "shift",
-        "target": 11
-      },
       "true": {
         "type": "shift",
-        "target": 12
+        "target": 11
       }
     },
     "1": {
@@ -51,611 +51,595 @@
     "4": {
       "EOF": {
         "type": "reduce",
-        "target": 4
+        "target": 1
       }
     },
     "5": {
       "EOF": {
         "type": "reduce",
-        "target": 1
-      }
-    },
-    "6": {
-      "[": {
-        "type": "shift",
-        "target": 20
-      },
-      "]": {
-        "type": "reduce",
-        "target": 15
-      },
-      "false": {
-        "type": "shift",
-        "target": 21
-      },
-      "lcurly": {
-        "type": "shift",
-        "target": 22
-      },
-      "null": {
-        "type": "shift",
-        "target": 23
-      },
-      "number": {
-        "type": "shift",
-        "target": 24
-      },
-      "string": {
-        "type": "shift",
-        "target": 25
-      },
-      "true": {
-        "type": "shift",
-        "target": 26
-      }
-    },
-    "7": {
-      "EOF": {
-        "type": "reduce",
         "target": 7
       }
     },
-    "8": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 10
+    "6": {
+      "false": {
+        "type": "shift",
+        "target": 16
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 17
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 18
+      },
+      "null": {
+        "type": "shift",
+        "target": 19
+      },
+      "number": {
+        "type": "shift",
+        "target": 20
+      },
+      "rbracket": {
+        "type": "shift",
+        "target": 21
       },
       "string": {
         "type": "shift",
-        "target": 30
+        "target": 22
+      },
+      "true": {
+        "type": "shift",
+        "target": 23
+      }
+    },
+    "7": {
+      "rcurly": {
+        "type": "shift",
+        "target": 26
+      },
+      "string": {
+        "type": "shift",
+        "target": 27
+      }
+    },
+    "8": {
+      "EOF": {
+        "type": "reduce",
+        "target": 8
       }
     },
     "9": {
       "EOF": {
         "type": "reduce",
-        "target": 8
+        "target": 5
       }
     },
     "10": {
       "EOF": {
         "type": "reduce",
-        "target": 5
+        "target": 4
       }
     },
     "11": {
       "EOF": {
         "type": "reduce",
-        "target": 9
-      }
-    },
-    "12": {
-      "EOF": {
-        "type": "reduce",
         "target": 6
       }
     },
-    "13": {
-      "lcurly": {
+    "12": {
+      "comma": {
+        "type": "reduce",
+        "target": 3
+      },
+      "rbracket": {
         "type": "reduce",
         "target": 3
       }
     },
+    "13": {
+      "rbracket": {
+        "type": "shift",
+        "target": 28
+      }
+    },
     "14": {
-      "lcurly": {
-        "type": "shift",
-        "target": 31
-      }
-    },
-    "15": {
-      "[": {
-        "type": "shift",
-        "target": 20
-      },
-      "]": {
+      "comma": {
         "type": "reduce",
-        "target": 15
+        "target": 2
       },
-      "false": {
-        "type": "shift",
-        "target": 21
-      },
-      "lcurly": {
-        "type": "shift",
-        "target": 22
-      },
-      "null": {
-        "type": "shift",
-        "target": 23
-      },
-      "number": {
-        "type": "shift",
-        "target": 24
-      },
-      "string": {
-        "type": "shift",
-        "target": 25
-      },
-      "true": {
-        "type": "shift",
-        "target": 26
-      }
-    },
-    "16": {
-      "lcurly": {
+      "rbracket": {
         "type": "reduce",
         "target": 2
       }
     },
-    "17": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 4
-      }
-    },
-    "18": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 19
-      }
-    },
-    "19": {
-      "]": {
-        "type": "shift",
-        "target": 33
-      }
-    },
-    "20": {
-      "[": {
-        "type": "shift",
-        "target": 20
-      },
-      "]": {
-        "type": "reduce",
-        "target": 15
-      },
-      "false": {
-        "type": "shift",
-        "target": 21
-      },
-      "lcurly": {
-        "type": "shift",
-        "target": 22
-      },
-      "null": {
-        "type": "shift",
-        "target": 23
-      },
-      "number": {
-        "type": "shift",
-        "target": 24
-      },
-      "string": {
-        "type": "shift",
-        "target": 25
-      },
-      "true": {
-        "type": "shift",
-        "target": 26
-      }
-    },
-    "21": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 7
-      }
-    },
-    "22": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 10
-      },
-      "string": {
-        "type": "shift",
-        "target": 30
-      }
-    },
-    "23": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 8
-      }
-    },
-    "24": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 5
-      }
-    },
-    "25": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 9
-      }
-    },
-    "26": {
-      "lcurly": {
-        "type": "reduce",
-        "target": 6
-      }
-    },
-    "27": {
-      "lcurly": {
-        "type": "shift",
-        "target": 36
-      }
-    },
-    "28": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 10
-      },
-      "string": {
-        "type": "shift",
-        "target": 30
-      }
-    },
-    "29": {
-      "rcurly": {
-        "type": "shift",
-        "target": 38
-      }
-    },
-    "30": {
-      "colon": {
-        "type": "shift",
-        "target": 39
-      }
-    },
-    "31": {
+    "15": {
       "comma": {
         "type": "shift",
-        "target": 40
-      }
-    },
-    "32": {
-      "]": {
-        "type": "reduce",
-        "target": 16
-      }
-    },
-    "33": {
-      "EOF": {
+        "target": 30
+      },
+      "rbracket": {
         "type": "reduce",
         "target": 17
       }
     },
-    "34": {
-      "]": {
-        "type": "shift",
-        "target": 41
+    "16": {
+      "comma": {
+        "type": "reduce",
+        "target": 7
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 7
       }
     },
-    "35": {
+    "17": {
+      "false": {
+        "type": "shift",
+        "target": 16
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 17
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 18
+      },
+      "null": {
+        "type": "shift",
+        "target": 19
+      },
+      "number": {
+        "type": "shift",
+        "target": 20
+      },
+      "rbracket": {
+        "type": "shift",
+        "target": 32
+      },
+      "string": {
+        "type": "shift",
+        "target": 22
+      },
+      "true": {
+        "type": "shift",
+        "target": 23
+      }
+    },
+    "18": {
       "rcurly": {
         "type": "shift",
-        "target": 42
+        "target": 34
+      },
+      "string": {
+        "type": "shift",
+        "target": 27
       }
     },
-    "36": {
+    "19": {
+      "comma": {
+        "type": "reduce",
+        "target": 8
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "20": {
+      "comma": {
+        "type": "reduce",
+        "target": 5
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "21": {
+      "EOF": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "22": {
+      "comma": {
+        "type": "reduce",
+        "target": 4
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "23": {
+      "comma": {
+        "type": "reduce",
+        "target": 6
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "24": {
       "comma": {
         "type": "shift",
-        "target": 43
-      }
-    },
-    "37": {
+        "target": 36
+      },
       "rcurly": {
         "type": "reduce",
         "target": 11
       }
     },
-    "38": {
-      "EOF": {
-        "type": "reduce",
-        "target": 12
+    "25": {
+      "rcurly": {
+        "type": "shift",
+        "target": 37
       }
     },
-    "39": {
-      "[": {
+    "26": {
+      "EOF": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "27": {
+      "colon": {
+        "type": "shift",
+        "target": 38
+      }
+    },
+    "28": {
+      "EOF": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
+    "29": {
+      "rbracket": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "30": {
+      "false": {
+        "type": "shift",
+        "target": 16
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 17
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 18
+      },
+      "null": {
+        "type": "shift",
+        "target": 19
+      },
+      "number": {
         "type": "shift",
         "target": 20
       },
-      "false": {
-        "type": "shift",
-        "target": 21
-      },
-      "lcurly": {
+      "string": {
         "type": "shift",
         "target": 22
       },
-      "null": {
-        "type": "shift",
-        "target": 23
-      },
-      "number": {
-        "type": "shift",
-        "target": 24
-      },
-      "string": {
-        "type": "shift",
-        "target": 25
-      },
       "true": {
         "type": "shift",
-        "target": 26
+        "target": 23
       }
     },
-    "40": {
-      "[": {
+    "31": {
+      "rbracket": {
+        "type": "shift",
+        "target": 40
+      }
+    },
+    "32": {
+      "comma": {
+        "type": "reduce",
+        "target": 16
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "33": {
+      "rcurly": {
+        "type": "shift",
+        "target": 41
+      }
+    },
+    "34": {
+      "comma": {
+        "type": "reduce",
+        "target": 10
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "35": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 13
+      }
+    },
+    "36": {
+      "string": {
+        "type": "shift",
+        "target": 27
+      }
+    },
+    "37": {
+      "EOF": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "38": {
+      "false": {
+        "type": "shift",
+        "target": 46
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 47
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 48
+      },
+      "null": {
+        "type": "shift",
+        "target": 49
+      },
+      "number": {
         "type": "shift",
         "target": 50
       },
-      "false": {
+      "string": {
         "type": "shift",
         "target": 51
       },
-      "lcurly": {
-        "type": "shift",
-        "target": 52
-      },
-      "null": {
-        "type": "shift",
-        "target": 53
-      },
-      "number": {
-        "type": "shift",
-        "target": 54
-      },
-      "string": {
-        "type": "shift",
-        "target": 55
-      },
       "true": {
         "type": "shift",
-        "target": 56
+        "target": 52
       }
     },
-    "41": {
-      "lcurly": {
+    "39": {
+      "comma": {
+        "type": "shift",
+        "target": 30
+      },
+      "rbracket": {
         "type": "reduce",
         "target": 17
       }
     },
-    "42": {
-      "lcurly": {
+    "40": {
+      "comma": {
         "type": "reduce",
-        "target": 12
+        "target": 15
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
+    "41": {
+      "comma": {
+        "type": "reduce",
+        "target": 9
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "42": {
+      "comma": {
+        "type": "shift",
+        "target": 36
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 11
       }
     },
     "43": {
-      "string": {
-        "type": "shift",
-        "target": 58
-      }
-    },
-    "44": {
-      "lcurly": {
+      "comma": {
         "type": "reduce",
-        "target": 14
-      }
-    },
-    "45": {
+        "target": 3
+      },
       "rcurly": {
         "type": "reduce",
         "target": 3
       }
     },
-    "46": {
-      "rcurly": {
-        "type": "shift",
-        "target": 59
-      }
-    },
-    "47": {
+    "44": {
+      "comma": {
+        "type": "reduce",
+        "target": 2
+      },
       "rcurly": {
         "type": "reduce",
         "target": 2
       }
     },
-    "48": {
+    "45": {
+      "comma": {
+        "type": "reduce",
+        "target": 14
+      },
       "rcurly": {
         "type": "reduce",
-        "target": 4
+        "target": 14
       }
     },
-    "49": {
-      "rcurly": {
+    "46": {
+      "comma": {
         "type": "reduce",
-        "target": 19
-      }
-    },
-    "50": {
-      "[": {
-        "type": "shift",
-        "target": 20
+        "target": 7
       },
-      "]": {
-        "type": "reduce",
-        "target": 15
-      },
-      "false": {
-        "type": "shift",
-        "target": 21
-      },
-      "lcurly": {
-        "type": "shift",
-        "target": 22
-      },
-      "null": {
-        "type": "shift",
-        "target": 23
-      },
-      "number": {
-        "type": "shift",
-        "target": 24
-      },
-      "string": {
-        "type": "shift",
-        "target": 25
-      },
-      "true": {
-        "type": "shift",
-        "target": 26
-      }
-    },
-    "51": {
       "rcurly": {
         "type": "reduce",
         "target": 7
       }
     },
-    "52": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 10
+    "47": {
+      "false": {
+        "type": "shift",
+        "target": 16
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 17
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 18
+      },
+      "null": {
+        "type": "shift",
+        "target": 19
+      },
+      "number": {
+        "type": "shift",
+        "target": 20
+      },
+      "rbracket": {
+        "type": "shift",
+        "target": 56
       },
       "string": {
         "type": "shift",
-        "target": 30
+        "target": 22
+      },
+      "true": {
+        "type": "shift",
+        "target": 23
       }
     },
-    "53": {
+    "48": {
+      "rcurly": {
+        "type": "shift",
+        "target": 58
+      },
+      "string": {
+        "type": "shift",
+        "target": 27
+      }
+    },
+    "49": {
+      "comma": {
+        "type": "reduce",
+        "target": 8
+      },
       "rcurly": {
         "type": "reduce",
         "target": 8
       }
     },
-    "54": {
+    "50": {
+      "comma": {
+        "type": "reduce",
+        "target": 5
+      },
       "rcurly": {
         "type": "reduce",
         "target": 5
       }
     },
-    "55": {
+    "51": {
+      "comma": {
+        "type": "reduce",
+        "target": 4
+      },
       "rcurly": {
         "type": "reduce",
-        "target": 9
+        "target": 4
       }
     },
-    "56": {
+    "52": {
+      "comma": {
+        "type": "reduce",
+        "target": 6
+      },
       "rcurly": {
         "type": "reduce",
         "target": 6
       }
     },
-    "57": {
-      "rcurly": {
-        "type": "shift",
-        "target": 62
-      }
-    },
-    "58": {
-      "colon": {
-        "type": "shift",
-        "target": 63
-      }
-    },
-    "59": {
-      "[": {
-        "type": "reduce",
-        "target": 18
-      },
-      "]": {
-        "type": "reduce",
-        "target": 18
-      },
-      "false": {
-        "type": "reduce",
-        "target": 18
-      },
-      "lcurly": {
-        "type": "reduce",
-        "target": 18
-      },
-      "null": {
-        "type": "reduce",
-        "target": 18
-      },
-      "number": {
-        "type": "reduce",
-        "target": 18
-      },
-      "string": {
-        "type": "reduce",
-        "target": 18
-      },
-      "true": {
+    "53": {
+      "rbracket": {
         "type": "reduce",
         "target": 18
       }
     },
-    "60": {
-      "]": {
-        "type": "shift",
-        "target": 64
-      }
-    },
-    "61": {
-      "rcurly": {
-        "type": "shift",
-        "target": 65
-      }
-    },
-    "62": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 13
-      },
-      "string": {
-        "type": "reduce",
-        "target": 13
-      }
-    },
-    "63": {
-      "[": {
-        "type": "shift",
-        "target": 50
-      },
-      "false": {
-        "type": "shift",
-        "target": 51
-      },
-      "lcurly": {
-        "type": "shift",
-        "target": 52
-      },
-      "null": {
-        "type": "shift",
-        "target": 53
-      },
-      "number": {
-        "type": "shift",
-        "target": 54
-      },
-      "string": {
-        "type": "shift",
-        "target": 55
-      },
-      "true": {
-        "type": "shift",
-        "target": 56
-      }
-    },
-    "64": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 17
-      }
-    },
-    "65": {
+    "54": {
       "rcurly": {
         "type": "reduce",
         "target": 12
       }
     },
-    "66": {
+    "55": {
+      "rbracket": {
+        "type": "shift",
+        "target": 59
+      }
+    },
+    "56": {
+      "comma": {
+        "type": "reduce",
+        "target": 16
+      },
       "rcurly": {
         "type": "reduce",
-        "target": 14
+        "target": 16
+      }
+    },
+    "57": {
+      "rcurly": {
+        "type": "shift",
+        "target": 60
+      }
+    },
+    "58": {
+      "comma": {
+        "type": "reduce",
+        "target": 10
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "59": {
+      "comma": {
+        "type": "reduce",
+        "target": 15
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
+    "60": {
+      "comma": {
+        "type": "reduce",
+        "target": 9
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 9
       }
     }
   },
@@ -664,86 +648,62 @@
       "Array": 1,
       "Json": 2,
       "Object": 3,
-      "String": 4,
-      "Value": 5
+      "Value": 4
     },
     "6": {
-      "Array": 13,
-      "Element": 14,
-      "Elements": 15,
-      "Object": 16,
-      "String": 17,
-      "Value": 18,
-      "__pgpg_repeat_2": 19
+      "Array": 12,
+      "Elements": 13,
+      "Object": 14,
+      "Value": 15
     },
-    "8": {
-      "Member": 27,
-      "Members": 28,
-      "__pgpg_repeat_1": 29
+    "7": {
+      "Member": 24,
+      "Members": 25
     },
     "15": {
-      "Array": 13,
-      "Element": 14,
-      "Elements": 15,
-      "Object": 16,
-      "String": 17,
-      "Value": 18,
-      "__pgpg_repeat_2": 32
+      "__pgpg_repeat_2": 29
     },
-    "20": {
-      "Array": 13,
-      "Element": 14,
-      "Elements": 15,
-      "Object": 16,
-      "String": 17,
-      "Value": 18,
-      "__pgpg_repeat_2": 34
+    "17": {
+      "Array": 12,
+      "Elements": 31,
+      "Object": 14,
+      "Value": 15
     },
-    "22": {
-      "Member": 27,
-      "Members": 28,
+    "18": {
+      "Member": 24,
+      "Members": 33
+    },
+    "24": {
       "__pgpg_repeat_1": 35
     },
-    "28": {
-      "Member": 27,
-      "Members": 28,
-      "__pgpg_repeat_1": 37
+    "30": {
+      "Array": 12,
+      "Object": 14,
+      "Value": 39
+    },
+    "36": {
+      "Member": 42
+    },
+    "38": {
+      "Array": 43,
+      "Object": 44,
+      "Value": 45
     },
     "39": {
-      "Array": 13,
-      "Object": 16,
-      "String": 17,
-      "Value": 44
+      "__pgpg_repeat_2": 53
     },
-    "40": {
-      "Array": 45,
-      "Element": 46,
-      "Object": 47,
-      "String": 48,
-      "Value": 49
+    "42": {
+      "__pgpg_repeat_1": 54
     },
-    "43": {
-      "Member": 57
+    "47": {
+      "Array": 12,
+      "Elements": 55,
+      "Object": 14,
+      "Value": 15
     },
-    "50": {
-      "Array": 13,
-      "Element": 14,
-      "Elements": 15,
-      "Object": 16,
-      "String": 17,
-      "Value": 18,
-      "__pgpg_repeat_2": 60
-    },
-    "52": {
-      "Member": 27,
-      "Members": 28,
-      "__pgpg_repeat_1": 61
-    },
-    "63": {
-      "Array": 45,
-      "Object": 47,
-      "String": 48,
-      "Value": 66
+    "48": {
+      "Member": 24,
+      "Members": 57
     }
   },
   "productions": [
@@ -787,8 +747,8 @@
       "lhs": "Value",
       "rhs": [
         {
-          "name": "String",
-          "terminal": false
+          "name": "string",
+          "terminal": true
         }
       ]
     },
@@ -829,10 +789,31 @@
       ]
     },
     {
-      "lhs": "String",
+      "lhs": "Object",
       "rhs": [
         {
-          "name": "string",
+          "name": "lcurly",
+          "terminal": true
+        },
+        {
+          "name": "Members",
+          "terminal": false
+        },
+        {
+          "name": "rcurly",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Object",
+      "rhs": [
+        {
+          "name": "lcurly",
+          "terminal": true
+        },
+        {
+          "name": "rcurly",
           "terminal": true
         }
       ]
@@ -845,29 +826,16 @@
       "lhs": "__pgpg_repeat_1",
       "rhs": [
         {
-          "name": "Members",
+          "name": "comma",
+          "terminal": true
+        },
+        {
+          "name": "Member",
           "terminal": false
         },
         {
           "name": "__pgpg_repeat_1",
           "terminal": false
-        }
-      ]
-    },
-    {
-      "lhs": "Object",
-      "rhs": [
-        {
-          "name": "lcurly",
-          "terminal": true
-        },
-        {
-          "name": "__pgpg_repeat_1",
-          "terminal": false
-        },
-        {
-          "name": "rcurly",
-          "terminal": true
         }
       ]
     },
@@ -879,20 +847,8 @@
           "terminal": false
         },
         {
-          "name": "lcurly",
-          "terminal": true
-        },
-        {
-          "name": "comma",
-          "terminal": true
-        },
-        {
-          "name": "Member",
+          "name": "__pgpg_repeat_1",
           "terminal": false
-        },
-        {
-          "name": "rcurly",
-          "terminal": true
         }
       ]
     },
@@ -914,19 +870,19 @@
       ]
     },
     {
-      "lhs": "__pgpg_repeat_2",
-      "rhs": []
-    },
-    {
-      "lhs": "__pgpg_repeat_2",
+      "lhs": "Array",
       "rhs": [
+        {
+          "name": "lbracket",
+          "terminal": true
+        },
         {
           "name": "Elements",
           "terminal": false
         },
         {
-          "name": "__pgpg_repeat_2",
-          "terminal": false
+          "name": "rbracket",
+          "terminal": true
         }
       ]
     },
@@ -934,16 +890,33 @@
       "lhs": "Array",
       "rhs": [
         {
-          "name": "[",
+          "name": "lbracket",
           "terminal": true
+        },
+        {
+          "name": "rbracket",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": [
+        {
+          "name": "comma",
+          "terminal": true
+        },
+        {
+          "name": "Value",
+          "terminal": false
         },
         {
           "name": "__pgpg_repeat_2",
           "terminal": false
-        },
-        {
-          "name": "]",
-          "terminal": true
         }
       ]
     },
@@ -951,32 +924,11 @@
       "lhs": "Elements",
       "rhs": [
         {
-          "name": "Element",
-          "terminal": false
-        },
-        {
-          "name": "lcurly",
-          "terminal": true
-        },
-        {
-          "name": "comma",
-          "terminal": true
-        },
-        {
-          "name": "Element",
-          "terminal": false
-        },
-        {
-          "name": "rcurly",
-          "terminal": true
-        }
-      ]
-    },
-    {
-      "lhs": "Element",
-      "rhs": [
-        {
           "name": "Value",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_2",
           "terminal": false
         }
       ]
