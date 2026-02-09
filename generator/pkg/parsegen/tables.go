@@ -584,19 +584,15 @@ type item struct {
 	lookahead string
 }
 
-func itemKey(it item) string {
-	return fmt.Sprintf("%d:%d:%s", it.prod, it.dot, it.lookahead)
-}
-
 func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[string]int, error) {
 	first := computeFirstSets(grammar)
 	stateMap := map[string]int{}
-	var states []map[string]item
+	var states []map[item]struct{}
 	stateLabels := map[int]string{}
 	var queue []int
 
 	startItem := item{prod: 0, dot: 0, lookahead: eofSymbol}
-	startSet := closure(grammar, first, map[string]item{itemKey(startItem): startItem})
+	startSet := closure(grammar, first, map[item]struct{}{startItem: {}})
 	startKey := itemSetKey(startSet)
 	stateMap[startKey] = 0
 	states = append(states, startSet)
@@ -611,7 +607,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 		queue = queue[1:]
 		itemSet := states[stateID]
 
-		transitions := map[Symbol]map[string]item{}
+		transitions := map[Symbol]map[item]struct{}{}
 		orderedItems := sortedItems(itemSet)
 		for _, it := range orderedItems {
 			prod := grammar.productions[it.prod]
@@ -622,10 +618,10 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 			nextItem := item{prod: it.prod, dot: it.dot + 1, lookahead: it.lookahead}
 			set := transitions[nextSym]
 			if set == nil {
-				set = map[string]item{}
+				set = map[item]struct{}{}
 				transitions[nextSym] = set
 			}
-			set[itemKey(nextItem)] = nextItem
+			set[nextItem] = struct{}{}
 		}
 
 		for _, sym := range sortedSymbols(transitions) {
@@ -675,7 +671,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 	return actions, gotos, nil
 }
 
-func setAction(actions map[int]map[string]Action, state int, terminal string, action Action, itemSet map[string]item, grammar *grammar, stateLabels map[int]string) error {
+func setAction(actions map[int]map[string]Action, state int, terminal string, action Action, itemSet map[item]struct{}, grammar *grammar, stateLabels map[int]string) error {
 	if actions[state] == nil {
 		actions[state] = map[string]Action{}
 	}
@@ -689,7 +685,7 @@ func setAction(actions map[int]map[string]Action, state int, terminal string, ac
 	return nil
 }
 
-func conflictError(state int, terminal string, existing Action, next Action, itemSet map[string]item, grammar *grammar, stateLabels map[int]string) error {
+func conflictError(state int, terminal string, existing Action, next Action, itemSet map[item]struct{}, grammar *grammar, stateLabels map[int]string) error {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Action conflict\n  State: %s\n  Lookahead: %q\n\n", formatStateLabel(state, stateLabels), terminal)
 	b.WriteString(formatAction("Existing", existing, grammar, stateLabels))
@@ -753,7 +749,7 @@ func formatItem(it item, grammar *grammar) string {
 	return fmt.Sprintf("%s ::= %s , lookahead=%s", prod.LHS, strings.Join(rhs, " "), it.lookahead)
 }
 
-func stateLabel(itemSet map[string]item, grammar *grammar) string {
+func stateLabel(itemSet map[item]struct{}, grammar *grammar) string {
 	if grammar == nil || itemSet == nil {
 		return ""
 	}
@@ -839,7 +835,7 @@ func containsSymbol(symbols []Symbol, name string) bool {
 	return false
 }
 
-func closure(grammar *grammar, first *firstSets, items map[string]item) map[string]item {
+func closure(grammar *grammar, first *firstSets, items map[item]struct{}) map[item]struct{} {
 	queue := make([]item, 0, len(items))
 	for _, it := range sortedItems(items) {
 		queue = append(queue, it)
@@ -861,11 +857,10 @@ func closure(grammar *grammar, first *firstSets, items map[string]item) map[stri
 		for _, la := range lookaheads {
 			for _, prodIndex := range grammar.byLHS[next.Name] {
 				newItem := item{prod: prodIndex, dot: 0, lookahead: la}
-				key := itemKey(newItem)
-				if _, ok := items[key]; ok {
+				if _, ok := items[newItem]; ok {
 					continue
 				}
-				items[key] = newItem
+				items[newItem] = struct{}{}
 				queue = append(queue, newItem)
 			}
 		}
@@ -873,20 +868,24 @@ func closure(grammar *grammar, first *firstSets, items map[string]item) map[stri
 	return items
 }
 
-func sortedItems(items map[string]item) []item {
-	keys := make([]string, 0, len(items))
-	for key := range items {
-		keys = append(keys, key)
+func sortedItems(items map[item]struct{}) []item {
+	out := make([]item, 0, len(items))
+	for it := range items {
+		out = append(out, it)
 	}
-	sort.Strings(keys)
-	out := make([]item, 0, len(keys))
-	for _, key := range keys {
-		out = append(out, items[key])
-	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].prod != out[j].prod {
+			return out[i].prod < out[j].prod
+		}
+		if out[i].dot != out[j].dot {
+			return out[i].dot < out[j].dot
+		}
+		return out[i].lookahead < out[j].lookahead
+	})
 	return out
 }
 
-func sortedSymbols(transitions map[Symbol]map[string]item) []Symbol {
+func sortedSymbols(transitions map[Symbol]map[item]struct{}) []Symbol {
 	syms := make([]Symbol, 0, len(transitions))
 	for sym := range transitions {
 		syms = append(syms, sym)
@@ -903,13 +902,23 @@ func sortedSymbols(transitions map[Symbol]map[string]item) []Symbol {
 	return syms
 }
 
-func itemSetKey(items map[string]item) string {
-	keys := make([]string, 0, len(items))
-	for k := range items {
-		keys = append(keys, k)
+func itemSetKey(items map[item]struct{}) string {
+	ordered := sortedItems(items)
+	if len(ordered) == 0 {
+		return ""
 	}
-	sort.Strings(keys)
-	return strings.Join(keys, "|")
+	var b strings.Builder
+	for i, it := range ordered {
+		if i > 0 {
+			b.WriteByte('|')
+		}
+		b.WriteString(strconv.Itoa(it.prod))
+		b.WriteByte(':')
+		b.WriteString(strconv.Itoa(it.dot))
+		b.WriteByte(':')
+		b.WriteString(it.lookahead)
+	}
+	return b.String()
 }
 
 type firstSets struct {
