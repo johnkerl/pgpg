@@ -20,6 +20,13 @@
 * Manual JSON parser?
 * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
 
+# Use-cases for me personally
+
+* JSON, CSV, TSV, DKVP, XTAB I/O.
+* Config-file grammar---for Miller.
+* `kbc` and `spffl`; desk-calculator REPL.
+* LISP interpreter.
+
 # Lexer
 
 * [x] Abstract/interface class and datatypes
