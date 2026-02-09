@@ -11,3 +11,9 @@ echo; ./runners/tryparse g:pemdas  expr '1+2*3'
 echo; ./runners/tryparse g:stmts   expr 'print(1);y=2; if(x=3)y=4;'
 echo; ./runners/tryparse g:lisp    expr '(+ 1 (* 2 3) (* 4 5)) ; comment here'
 echo; ./runners/tryparse g:json    expr '{"a": [1, 2, 3]}'
+echo; ./runners/tryparse g:json    expr \
+  '[
+    1,
+    2,
+    3
+  ]'
