@@ -37,7 +37,8 @@ var parserMakerTable = map[string]parserInfoT{
 	"g:pemdas":  {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser from generated/bnfs/pemdas.bnf."},
 	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
 	"g:seng":  {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
-	"g:lisp":  {run: runGeneratedLISPParser, help: "Generated lisp parser from generated/bnfs/lisp.bnf."},
+	"g:lisp":  {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
+	"g:json":  {run: runGeneratedJSONParser, help: "Generated JSON parser from generated/bnfs/json.bnf."},
 }
 
 func usage() {
@@ -135,6 +136,13 @@ func runGeneratedLISPParser(input string, opts traceOptions) (*asts.AST, error) 
 	lexer := generatedlexers.NewLISPLexer(input)
 	parser := generatedparsers.NewLISPParser()
 	attachLispTrace(parser, opts)
+	return parser.Parse(lexer)
+}
+
+func runGeneratedJSONParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewJSONLexer(input)
+	parser := generatedparsers.NewJSONParser()
+	attachJSONTrace(parser, opts)
 	return parser.Parse(lexer)
 }
 
@@ -277,6 +285,32 @@ func attachLispTrace(parser *generatedparsers.LISPParser, opts traceOptions) {
 	}
 }
 
+func attachJSONTrace(parser *generatedparsers.JSONParser, opts traceOptions) {
+	if !opts.tokens && !opts.states && !opts.stack {
+		return
+	}
+	parser.Trace = &generatedparsers.JSONParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !opts.tokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatToken(tok))
+		},
+		OnAction: func(state int, action generatedparsers.JSONParserAction, lookahead *tokens.Token) {
+			if !opts.states {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatJSONAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !opts.stack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
+		},
+	}
+}
+
 func formatToken(tok *tokens.Token) string {
 	if tok == nil {
 		return "TOK <nil>"
@@ -364,6 +398,19 @@ func formatLispAction(action generatedparsers.LISPParserAction) string {
 	case generatedparsers.LISPParserActionReduce:
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case generatedparsers.LISPParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
+}
+
+func formatJSONAction(action generatedparsers.JSONParserAction) string {
+	switch action.Kind {
+	case generatedparsers.JSONParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case generatedparsers.JSONParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case generatedparsers.JSONParserActionAccept:
 		return "accept"
 	default:
 		return "unknown"

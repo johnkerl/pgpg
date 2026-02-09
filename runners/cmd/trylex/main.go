@@ -33,7 +33,8 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"g:pemdas":  lexerInfoT{generatedlexers.NewPEMDASLexer, "Generated PEMDAS lexer from generated/bnfs/pemdas.bnf."},
 	"g:stmts":  lexerInfoT{generatedlexers.NewStatementsLexer, "Generated statements lexer from generated/bnfs/statements.bnf."},
 	"g:seng":  lexerInfoT{generatedlexers.NewSENGLexer, "Generated statements lexer from generated/bnfs/seng.bnf."},
-	"g:lisp":  lexerInfoT{generatedlexers.NewLISPLexer, "Generated lisp lexer from generated/bnfs/lisp.bnf."},
+	"g:lisp":  lexerInfoT{generatedlexers.NewLISPLexer, "Generated LISP lexer from generated/bnfs/lisp.bnf."},
+	"g:json":  lexerInfoT{generatedlexers.NewJSONLexer, "Generated JSON lexer from generated/bnfs/json.bnf."},
 }
 
 func usage() {
