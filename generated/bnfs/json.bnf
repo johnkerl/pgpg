@@ -1,0 +1,41 @@
+# ================================================================
+# WORK IN PROGRESS
+# ================================================================
+
+# ----------------------------------------------------------------
+true  := "true"
+false := "false"
+null  := "null"
+
+lcurly   ::= "["
+rcurly   ::= "]"
+lbracket ::= "["
+rbracket ::= "]"
+colon    ::= ":"
+comma    ::= ","
+
+<string> ::= '"' <characters> '"'
+<characters> ::= <character> { <character> }
+<character> ::= [ any Unicode character except " or \ or control characters ] | <escape>
+<escape> ::= "\" [" | "\" | "/" | "b" | "n" | "r" | "t" | "u" <hex> <hex> <hex> <hex> ]
+<hex> ::= [ "0"–"9" | "A"–"F" | "a"–"f" ]
+
+<number> ::= [ "-" ] <int> [ <frac> ] [ <exp> ]
+<int> ::= "0" | [ "1"–"9" ] { "0"–"9" }
+<frac> ::= "." { "0"–"9" }
+<exp> ::= ("e" | "E") [ "+" | "-" ] { "0"–"9" }
+
+<ws> ::= [ #x20 | #x09 | #x0A | #x0D ] { <ws> }
+
+# ----------------------------------------------------------------
+Json ::= Value
+
+Value ::= Object | Array | String | number | true | false | null;
+
+Object ::= lcurly [ Members ] rcurly;
+Members ::= Member lcurly comma Member rcurly;
+Member  ::= string colon Value;
+
+Array ::= "[" [ <elements> ] "]";
+Elements ::= Element lcurly comma Element rcurly;
+Element ::= Value;
