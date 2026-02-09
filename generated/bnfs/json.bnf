@@ -3,39 +3,47 @@
 # ================================================================
 
 # ----------------------------------------------------------------
-true  := "true"
-false := "false"
-null  := "null"
+true  ::= "true";
+false ::= "false";
+null  ::= "null";
 
-lcurly   ::= "["
-rcurly   ::= "]"
-lbracket ::= "["
-rbracket ::= "]"
-colon    ::= ":"
-comma    ::= ","
+lcurly   ::= "[";
+rcurly   ::= "]";
+lbracket ::= "[";
+rbracket ::= "]";
+colon    ::= ":";
+comma    ::= ",";
 
-<string> ::= '"' <characters> '"'
-<characters> ::= <character> { <character> }
-<character> ::= [ any Unicode character except " or \ or control characters ] | <escape>
-<escape> ::= "\" [" | "\" | "/" | "b" | "n" | "r" | "t" | "u" <hex> <hex> <hex> <hex> ]
-<hex> ::= [ "0"–"9" | "A"–"F" | "a"–"f" ]
+# WIP
 
-<number> ::= [ "-" ] <int> [ <frac> ] [ <exp> ]
-<int> ::= "0" | [ "1"–"9" ] { "0"–"9" }
-<frac> ::= "." { "0"–"9" }
-<exp> ::= ("e" | "E") [ "+" | "-" ] { "0"–"9" }
+# <character> ::= [ any Unicode character except " or \ or control characters ] | <escape>
+# <characters> ::= <character> { <character> }
+# <string> ::= '"' <characters> '"'
+# <escape> ::= "\" [" | "\" | "/" | "b" | "n" | "r" | "t" | "u" <hex> <hex> <hex> <hex> ]
+# <hex> ::= [ "0"–"9" | "A"–"F" | "a"–"f" ]
 
-<ws> ::= [ #x20 | #x09 | #x0A | #x0D ] { <ws> }
+# TEMP
+_digit  ::= "0"-"9";
+number  ::= _digit { _digit };
+# Temporary string handling: accept any non-newline chars between quotes.
+string  ::= '"' { . } '"' ;
+# <number> ::= [ "-" ] <int> [ <frac> ] [ <exp> ]
+# <int> ::= "0" | [ "1"–"9" ] { "0"–"9" }
+# <frac> ::= "." { "0"–"9" }
+# <exp> ::= ("e" | "E") [ "+" | "-" ] { "0"–"9" }
+
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
 
 # ----------------------------------------------------------------
-Json ::= Value
+Json     ::= Value;
 
-Value ::= Object | Array | String | number | true | false | null;
+Value    ::= Object | Array | String | number | true | false | null;
+String   ::= string;
 
-Object ::= lcurly [ Members ] rcurly;
-Members ::= Member lcurly comma Member rcurly;
-Member  ::= string colon Value;
+Object   ::= lcurly { Members } rcurly;
+Members  ::= Member lcurly comma Member rcurly;
+Member   ::= string colon Value;
 
-Array ::= "[" [ <elements> ] "]";
+Array    ::= "[" { Elements }"]";
 Elements ::= Element lcurly comma Element rcurly;
-Element ::= Value;
+Element  ::= Value;

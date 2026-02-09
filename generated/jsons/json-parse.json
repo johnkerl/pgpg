@@ -1,0 +1,985 @@
+{
+  "start_symbol": "Json",
+  "actions": {
+    "0": {
+      "[": {
+        "type": "shift",
+        "target": 6
+      },
+      "false": {
+        "type": "shift",
+        "target": 7
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 8
+      },
+      "null": {
+        "type": "shift",
+        "target": 9
+      },
+      "number": {
+        "type": "shift",
+        "target": 10
+      },
+      "string": {
+        "type": "shift",
+        "target": 11
+      },
+      "true": {
+        "type": "shift",
+        "target": 12
+      }
+    },
+    "1": {
+      "EOF": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "2": {
+      "EOF": {
+        "type": "accept"
+      }
+    },
+    "3": {
+      "EOF": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "4": {
+      "EOF": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "5": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      }
+    },
+    "6": {
+      "[": {
+        "type": "shift",
+        "target": 20
+      },
+      "]": {
+        "type": "reduce",
+        "target": 15
+      },
+      "false": {
+        "type": "shift",
+        "target": 21
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 22
+      },
+      "null": {
+        "type": "shift",
+        "target": 23
+      },
+      "number": {
+        "type": "shift",
+        "target": 24
+      },
+      "string": {
+        "type": "shift",
+        "target": 25
+      },
+      "true": {
+        "type": "shift",
+        "target": 26
+      }
+    },
+    "7": {
+      "EOF": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "8": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "shift",
+        "target": 30
+      }
+    },
+    "9": {
+      "EOF": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "10": {
+      "EOF": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "11": {
+      "EOF": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "12": {
+      "EOF": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "13": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "14": {
+      "lcurly": {
+        "type": "shift",
+        "target": 31
+      }
+    },
+    "15": {
+      "[": {
+        "type": "shift",
+        "target": 20
+      },
+      "]": {
+        "type": "reduce",
+        "target": 15
+      },
+      "false": {
+        "type": "shift",
+        "target": 21
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 22
+      },
+      "null": {
+        "type": "shift",
+        "target": 23
+      },
+      "number": {
+        "type": "shift",
+        "target": 24
+      },
+      "string": {
+        "type": "shift",
+        "target": 25
+      },
+      "true": {
+        "type": "shift",
+        "target": 26
+      }
+    },
+    "16": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "17": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "18": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "19": {
+      "]": {
+        "type": "shift",
+        "target": 33
+      }
+    },
+    "20": {
+      "[": {
+        "type": "shift",
+        "target": 20
+      },
+      "]": {
+        "type": "reduce",
+        "target": 15
+      },
+      "false": {
+        "type": "shift",
+        "target": 21
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 22
+      },
+      "null": {
+        "type": "shift",
+        "target": 23
+      },
+      "number": {
+        "type": "shift",
+        "target": 24
+      },
+      "string": {
+        "type": "shift",
+        "target": 25
+      },
+      "true": {
+        "type": "shift",
+        "target": 26
+      }
+    },
+    "21": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "22": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "shift",
+        "target": 30
+      }
+    },
+    "23": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "24": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "25": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "26": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "27": {
+      "lcurly": {
+        "type": "shift",
+        "target": 36
+      }
+    },
+    "28": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "shift",
+        "target": 30
+      }
+    },
+    "29": {
+      "rcurly": {
+        "type": "shift",
+        "target": 38
+      }
+    },
+    "30": {
+      "colon": {
+        "type": "shift",
+        "target": 39
+      }
+    },
+    "31": {
+      "comma": {
+        "type": "shift",
+        "target": 40
+      }
+    },
+    "32": {
+      "]": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "33": {
+      "EOF": {
+        "type": "reduce",
+        "target": 17
+      }
+    },
+    "34": {
+      "]": {
+        "type": "shift",
+        "target": 41
+      }
+    },
+    "35": {
+      "rcurly": {
+        "type": "shift",
+        "target": 42
+      }
+    },
+    "36": {
+      "comma": {
+        "type": "shift",
+        "target": 43
+      }
+    },
+    "37": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 11
+      }
+    },
+    "38": {
+      "EOF": {
+        "type": "reduce",
+        "target": 12
+      }
+    },
+    "39": {
+      "[": {
+        "type": "shift",
+        "target": 20
+      },
+      "false": {
+        "type": "shift",
+        "target": 21
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 22
+      },
+      "null": {
+        "type": "shift",
+        "target": 23
+      },
+      "number": {
+        "type": "shift",
+        "target": 24
+      },
+      "string": {
+        "type": "shift",
+        "target": 25
+      },
+      "true": {
+        "type": "shift",
+        "target": 26
+      }
+    },
+    "40": {
+      "[": {
+        "type": "shift",
+        "target": 50
+      },
+      "false": {
+        "type": "shift",
+        "target": 51
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 52
+      },
+      "null": {
+        "type": "shift",
+        "target": 53
+      },
+      "number": {
+        "type": "shift",
+        "target": 54
+      },
+      "string": {
+        "type": "shift",
+        "target": 55
+      },
+      "true": {
+        "type": "shift",
+        "target": 56
+      }
+    },
+    "41": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 17
+      }
+    },
+    "42": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 12
+      }
+    },
+    "43": {
+      "string": {
+        "type": "shift",
+        "target": 58
+      }
+    },
+    "44": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 14
+      }
+    },
+    "45": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "46": {
+      "rcurly": {
+        "type": "shift",
+        "target": 59
+      }
+    },
+    "47": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "48": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "49": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "50": {
+      "[": {
+        "type": "shift",
+        "target": 20
+      },
+      "]": {
+        "type": "reduce",
+        "target": 15
+      },
+      "false": {
+        "type": "shift",
+        "target": 21
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 22
+      },
+      "null": {
+        "type": "shift",
+        "target": 23
+      },
+      "number": {
+        "type": "shift",
+        "target": 24
+      },
+      "string": {
+        "type": "shift",
+        "target": 25
+      },
+      "true": {
+        "type": "shift",
+        "target": 26
+      }
+    },
+    "51": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "52": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "shift",
+        "target": 30
+      }
+    },
+    "53": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "54": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "55": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "56": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "57": {
+      "rcurly": {
+        "type": "shift",
+        "target": 62
+      }
+    },
+    "58": {
+      "colon": {
+        "type": "shift",
+        "target": 63
+      }
+    },
+    "59": {
+      "[": {
+        "type": "reduce",
+        "target": 18
+      },
+      "]": {
+        "type": "reduce",
+        "target": 18
+      },
+      "false": {
+        "type": "reduce",
+        "target": 18
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 18
+      },
+      "null": {
+        "type": "reduce",
+        "target": 18
+      },
+      "number": {
+        "type": "reduce",
+        "target": 18
+      },
+      "string": {
+        "type": "reduce",
+        "target": 18
+      },
+      "true": {
+        "type": "reduce",
+        "target": 18
+      }
+    },
+    "60": {
+      "]": {
+        "type": "shift",
+        "target": 64
+      }
+    },
+    "61": {
+      "rcurly": {
+        "type": "shift",
+        "target": 65
+      }
+    },
+    "62": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 13
+      },
+      "string": {
+        "type": "reduce",
+        "target": 13
+      }
+    },
+    "63": {
+      "[": {
+        "type": "shift",
+        "target": 50
+      },
+      "false": {
+        "type": "shift",
+        "target": 51
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 52
+      },
+      "null": {
+        "type": "shift",
+        "target": 53
+      },
+      "number": {
+        "type": "shift",
+        "target": 54
+      },
+      "string": {
+        "type": "shift",
+        "target": 55
+      },
+      "true": {
+        "type": "shift",
+        "target": 56
+      }
+    },
+    "64": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 17
+      }
+    },
+    "65": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 12
+      }
+    },
+    "66": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 14
+      }
+    }
+  },
+  "gotos": {
+    "0": {
+      "Array": 1,
+      "Json": 2,
+      "Object": 3,
+      "String": 4,
+      "Value": 5
+    },
+    "6": {
+      "Array": 13,
+      "Element": 14,
+      "Elements": 15,
+      "Object": 16,
+      "String": 17,
+      "Value": 18,
+      "__pgpg_repeat_2": 19
+    },
+    "8": {
+      "Member": 27,
+      "Members": 28,
+      "__pgpg_repeat_1": 29
+    },
+    "15": {
+      "Array": 13,
+      "Element": 14,
+      "Elements": 15,
+      "Object": 16,
+      "String": 17,
+      "Value": 18,
+      "__pgpg_repeat_2": 32
+    },
+    "20": {
+      "Array": 13,
+      "Element": 14,
+      "Elements": 15,
+      "Object": 16,
+      "String": 17,
+      "Value": 18,
+      "__pgpg_repeat_2": 34
+    },
+    "22": {
+      "Member": 27,
+      "Members": 28,
+      "__pgpg_repeat_1": 35
+    },
+    "28": {
+      "Member": 27,
+      "Members": 28,
+      "__pgpg_repeat_1": 37
+    },
+    "39": {
+      "Array": 13,
+      "Object": 16,
+      "String": 17,
+      "Value": 44
+    },
+    "40": {
+      "Array": 45,
+      "Element": 46,
+      "Object": 47,
+      "String": 48,
+      "Value": 49
+    },
+    "43": {
+      "Member": 57
+    },
+    "50": {
+      "Array": 13,
+      "Element": 14,
+      "Elements": 15,
+      "Object": 16,
+      "String": 17,
+      "Value": 18,
+      "__pgpg_repeat_2": 60
+    },
+    "52": {
+      "Member": 27,
+      "Members": 28,
+      "__pgpg_repeat_1": 61
+    },
+    "63": {
+      "Array": 45,
+      "Object": 47,
+      "String": 48,
+      "Value": 66
+    }
+  },
+  "productions": [
+    {
+      "lhs": "__pgpg_start_3",
+      "rhs": [
+        {
+          "name": "Json",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Json",
+      "rhs": [
+        {
+          "name": "Value",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "Object",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "Array",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "String",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "number",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "true",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "false",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Value",
+      "rhs": [
+        {
+          "name": "null",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "String",
+      "rhs": [
+        {
+          "name": "string",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": [
+        {
+          "name": "Members",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Object",
+      "rhs": [
+        {
+          "name": "lcurly",
+          "terminal": true
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        },
+        {
+          "name": "rcurly",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Members",
+      "rhs": [
+        {
+          "name": "Member",
+          "terminal": false
+        },
+        {
+          "name": "lcurly",
+          "terminal": true
+        },
+        {
+          "name": "comma",
+          "terminal": true
+        },
+        {
+          "name": "Member",
+          "terminal": false
+        },
+        {
+          "name": "rcurly",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Member",
+      "rhs": [
+        {
+          "name": "string",
+          "terminal": true
+        },
+        {
+          "name": "colon",
+          "terminal": true
+        },
+        {
+          "name": "Value",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": [
+        {
+          "name": "Elements",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_2",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Array",
+      "rhs": [
+        {
+          "name": "[",
+          "terminal": true
+        },
+        {
+          "name": "__pgpg_repeat_2",
+          "terminal": false
+        },
+        {
+          "name": "]",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Elements",
+      "rhs": [
+        {
+          "name": "Element",
+          "terminal": false
+        },
+        {
+          "name": "lcurly",
+          "terminal": true
+        },
+        {
+          "name": "comma",
+          "terminal": true
+        },
+        {
+          "name": "Element",
+          "terminal": false
+        },
+        {
+          "name": "rcurly",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Element",
+      "rhs": [
+        {
+          "name": "Value",
+          "terminal": false
+        }
+      ]
+    }
+  ]
+}
