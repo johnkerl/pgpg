@@ -37,6 +37,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"g:pemdas":  {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser from generated/bnfs/pemdas.bnf."},
 	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
 	"g:seng":  {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
+	"g:lisp":  {run: runGeneratedLISPParser, help: "Generated lisp parser from generated/bnfs/lisp.bnf."},
 }
 
 func usage() {
@@ -127,6 +128,13 @@ func runGeneratedSENGParser(input string, opts traceOptions) (*asts.AST, error) 
 	lexer := generatedlexers.NewSENGLexer(input)
 	parser := generatedparsers.NewSENGParser()
 	attachSENGTrace(parser, opts)
+	return parser.Parse(lexer)
+}
+
+func runGeneratedLISPParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewLISPLexer(input)
+	parser := generatedparsers.NewLISPParser()
+	attachLispTrace(parser, opts)
 	return parser.Parse(lexer)
 }
 
@@ -243,6 +251,32 @@ func attachSENGTrace(parser *generatedparsers.SENGParser, opts traceOptions) {
 	}
 }
 
+func attachLispTrace(parser *generatedparsers.LISPParser, opts traceOptions) {
+	if !opts.tokens && !opts.states && !opts.stack {
+		return
+	}
+	parser.Trace = &generatedparsers.LISPParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !opts.tokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatToken(tok))
+		},
+		OnAction: func(state int, action generatedparsers.LISPParserAction, lookahead *tokens.Token) {
+			if !opts.states {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatLispAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !opts.stack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
+		},
+	}
+}
+
 func formatToken(tok *tokens.Token) string {
 	if tok == nil {
 		return "TOK <nil>"
@@ -317,6 +351,19 @@ func formatSENGAction(action generatedparsers.SENGParserAction) string {
 	case generatedparsers.SENGParserActionReduce:
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case generatedparsers.SENGParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
+}
+
+func formatLispAction(action generatedparsers.LISPParserAction) string {
+	switch action.Kind {
+	case generatedparsers.LISPParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case generatedparsers.LISPParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case generatedparsers.LISPParserActionAccept:
 		return "accept"
 	default:
 		return "unknown"

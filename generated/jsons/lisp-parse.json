@@ -1,0 +1,291 @@
+{
+  "start_symbol": "S_expression",
+  "actions": {
+    "0": {
+      "identifier": {
+        "type": "shift",
+        "target": 4
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 5
+      }
+    },
+    "1": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      }
+    },
+    "2": {
+      "EOF": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "3": {
+      "EOF": {
+        "type": "accept"
+      }
+    },
+    "4": {
+      "EOF": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "5": {
+      "identifier": {
+        "type": "shift",
+        "target": 9
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 10
+      }
+    },
+    "6": {
+      "identifier": {
+        "type": "reduce",
+        "target": 1
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 1
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 1
+      }
+    },
+    "7": {
+      "identifier": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 2
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "8": {
+      "identifier": {
+        "type": "shift",
+        "target": 9
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 10
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "9": {
+      "identifier": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 6
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "10": {
+      "identifier": {
+        "type": "shift",
+        "target": 9
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 10
+      }
+    },
+    "11": {
+      "identifier": {
+        "type": "shift",
+        "target": 9
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 10
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "12": {
+      "rparen": {
+        "type": "shift",
+        "target": 15
+      }
+    },
+    "13": {
+      "identifier": {
+        "type": "shift",
+        "target": 9
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 10
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "14": {
+      "rparen": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "15": {
+      "EOF": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "16": {
+      "rparen": {
+        "type": "shift",
+        "target": 17
+      }
+    },
+    "17": {
+      "identifier": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 5
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 5
+      }
+    }
+  },
+  "gotos": {
+    "0": {
+      "Atom": 1,
+      "List": 2,
+      "S_expression": 3
+    },
+    "5": {
+      "Atom": 6,
+      "List": 7,
+      "S_expression": 8
+    },
+    "8": {
+      "Atom": 6,
+      "List": 7,
+      "S_expression": 11,
+      "__pgpg_repeat_1": 12
+    },
+    "10": {
+      "Atom": 6,
+      "List": 7,
+      "S_expression": 13
+    },
+    "11": {
+      "Atom": 6,
+      "List": 7,
+      "S_expression": 11,
+      "__pgpg_repeat_1": 14
+    },
+    "13": {
+      "Atom": 6,
+      "List": 7,
+      "S_expression": 11,
+      "__pgpg_repeat_1": 16
+    }
+  },
+  "productions": [
+    {
+      "lhs": "__pgpg_start_2",
+      "rhs": [
+        {
+          "name": "S_expression",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "S_expression",
+      "rhs": [
+        {
+          "name": "Atom",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "S_expression",
+      "rhs": [
+        {
+          "name": "List",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_1",
+      "rhs": [
+        {
+          "name": "S_expression",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "List",
+      "rhs": [
+        {
+          "name": "lparen",
+          "terminal": true
+        },
+        {
+          "name": "S_expression",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        },
+        {
+          "name": "rparen",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "Atom",
+      "rhs": [
+        {
+          "name": "identifier",
+          "terminal": true
+        }
+      ]
+    }
+  ]
+}
