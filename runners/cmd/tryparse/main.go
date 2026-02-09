@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -159,22 +158,11 @@ func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input stri
 
 func runParserOnFiles(run func(string, traceOptions) (*asts.AST, error), filenames []string, opts traceOptions) error {
 	for _, filename := range filenames {
-		handle, err := os.Open(filename)
+		content, err := os.ReadFile(filename)
 		if err != nil {
 			return err
 		}
-		scanner := bufio.NewScanner(handle)
-		for scanner.Scan() {
-			if err := runParserOnce(run, scanner.Text(), opts); err != nil {
-				_ = handle.Close()
-				return err
-			}
-		}
-		if err := scanner.Err(); err != nil {
-			_ = handle.Close()
-			return err
-		}
-		if err := handle.Close(); err != nil {
+		if err := runParserOnce(run, string(content), opts); err != nil {
 			return err
 		}
 	}
