@@ -1,0 +1,35 @@
+# https://iamwilhelm.github.io/bnf-examples/lisp
+
+# ----------------------------------------------------------------
+# LEXING
+
+!comment ::= ';' {.} '\n' | ';' {.} ;
+!whitespace ::= " " | "\t" | "\n" | "\r" ;
+
+lparen ::= "(";
+rparen ::= ")";
+
+_letter ::= "a"-"z" | "A"-"Z";
+_digit  ::= "0"-"9";
+
+#_identifier_start    ::= "_" | _letter;
+#_identifier_continue ::= _identifier_start | _digit;
+#identifier           ::= _identifier_start { _identifier_continue };
+
+_idchar ::= _letter | _digit | "_" | "." | "+" | "-" | "*"| "/"| "*"| "*"| "*";
+identifier ::= _idchar { _idchar };
+
+# integer ::= _digit { _digit };
+
+# ----------------------------------------------------------------
+# PARSING
+
+S_expression ::=
+    Atom
+# | lparen S_expression "."S_expression rparen
+  | List
+;
+
+List = lparen S_expression { S_expression } rparen;
+
+Atom ::= identifier;
