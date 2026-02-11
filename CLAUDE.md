@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PGPG (Pretty Good Parser Generator) is a parser generator written in Go. It produces lexers (via Thompson NFA→DFA construction) and LR(1) parsers from BNF grammar files. The project includes both hand-written recursive-descent parsers and a full generator pipeline.
+PGPG (Pretty Good Parser Generator) is a parser generator written in Go. It produces lexers (via
+Thompson NFA→DFA construction) and LR(1) parsers from BNF grammar files. The project includes both
+hand-written recursive-descent parsers and a full generator pipeline.
 
 ## Build Commands
 
@@ -17,27 +19,27 @@ make -C manual          # Build manual module (core libraries)
 make -C manual test     # Run manual tests
 make -C generator       # Build generator executables
 make -C generator test  # Run generator tests
+make -C generated       # Generate lexers and parsers from BNF source
 make -C runners         # Build CLI runner tools
-
-# Regenerate lexers/parsers from BNF grammars
-cd generated && ./try-lexgen.sh && ./try-parsegen.sh
 
 # Format code
 make -C manual fmt
 make -C generator fmt
+make -C generated fmt
+make -C runners fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
 make -C generator staticcheck
 
 # Pre-push check (fmt + build + test)
-make -C generator dev
 make -C manual dev
+make -C generator dev
 ```
 
 ## Running a Single Test
 
 ```bash
-cd manual && go test ./pkg/lexers/ -run TestPEMDASLexer
+cd manual    && go test ./pkg/lexers/ -run TestPEMDASLexer
 cd generator && go test ./pkg/lexgen/ -run TestCodegen
 ```
 
@@ -90,6 +92,10 @@ The JSON intermediate format is intentionally language-independent to allow futu
 - **`manual/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
 - **`generator/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
 - **`generator/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
+- **`generator/bnfs/`** — Grammar files to have lexers/parsers generated from
+- **`generator/pkg/lexers/`** — Auto-generated lexers from `generator/bnfs`
+- **`generator/pkg/parsers/`** — Auto-generated parsers from `generator/bnfs`
+- **`runners/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
 
 ### BNF Grammars
 
