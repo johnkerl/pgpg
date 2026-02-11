@@ -1,5 +1,5 @@
 ```
-./build-all.sh
+make
 
 ./generator/parsegen-tables \
   -cpuprofile cpu.pprof \

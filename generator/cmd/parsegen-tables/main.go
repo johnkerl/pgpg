@@ -23,12 +23,18 @@ func main() {
 	var cpuProfilePath string
 	var memProfilePath string
 	var tracePath string
+	var nosort bool
 	flag.StringVar(&outputPath, "o", "", "Output JSON file (default stdout)")
 	flag.StringVar(&cpuProfilePath, "cpuprofile", "", "Write CPU profile to file")
 	flag.StringVar(&memProfilePath, "memprofile", "", "Write memory profile to file")
 	flag.StringVar(&tracePath, "trace", "", "Write execution trace to file")
+	flag.BoolVar(&nosort, "nosort", false, "Skip sorting for faster output with nondeterministic ordering")
 	flag.Usage = usage
 	flag.Parse()
+
+	if nosort {
+		parsegen.SortOutput = false
+	}
 
 	if flag.NArg() != 1 {
 		usage()

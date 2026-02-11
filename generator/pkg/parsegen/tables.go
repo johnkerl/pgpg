@@ -15,6 +15,11 @@ import (
 
 const eofSymbol = "EOF"
 
+// SortOutput controls whether output is deterministically sorted.
+// When true (default), all maps and item sets are sorted for stable JSON output.
+// When false, sorting is skipped for faster table generation.
+var SortOutput = true
+
 // Tables captures LR(1) parsing tables and productions.
 type Tables struct {
 	StartSymbol string                    `json:"start_symbol"`
@@ -40,9 +45,14 @@ type Symbol struct {
 }
 
 // MarshalJSON ensures deterministic map ordering for stable output.
+// When SortOutput is false, falls back to standard JSON encoding for speed.
 func (tables *Tables) MarshalJSON() ([]byte, error) {
 	if tables == nil {
 		return []byte("null"), nil
+	}
+	if !SortOutput {
+		type tablesAlias Tables
+		return json.Marshal((*tablesAlias)(tables))
 	}
 	var fields []jsonField
 
@@ -873,15 +883,17 @@ func sortedItems(items map[item]struct{}) []item {
 	for it := range items {
 		out = append(out, it)
 	}
-	sort.Slice(out, func(i, j int) bool {
-		if out[i].prod != out[j].prod {
-			return out[i].prod < out[j].prod
-		}
-		if out[i].dot != out[j].dot {
-			return out[i].dot < out[j].dot
-		}
-		return out[i].lookahead < out[j].lookahead
-	})
+	if SortOutput {
+		sort.Slice(out, func(i, j int) bool {
+			if out[i].prod != out[j].prod {
+				return out[i].prod < out[j].prod
+			}
+			if out[i].dot != out[j].dot {
+				return out[i].dot < out[j].dot
+			}
+			return out[i].lookahead < out[j].lookahead
+		})
+	}
 	return out
 }
 
@@ -890,20 +902,35 @@ func sortedSymbols(transitions map[Symbol]map[item]struct{}) []Symbol {
 	for sym := range transitions {
 		syms = append(syms, sym)
 	}
-	sort.Slice(syms, func(i, j int) bool {
-		if syms[i].Terminal != syms[j].Terminal {
-			return !syms[i].Terminal && syms[j].Terminal
-		}
-		if syms[i].Name != syms[j].Name {
-			return syms[i].Name < syms[j].Name
-		}
-		return false
-	})
+	if SortOutput {
+		sort.Slice(syms, func(i, j int) bool {
+			if syms[i].Terminal != syms[j].Terminal {
+				return !syms[i].Terminal && syms[j].Terminal
+			}
+			if syms[i].Name != syms[j].Name {
+				return syms[i].Name < syms[j].Name
+			}
+			return false
+		})
+	}
 	return syms
 }
 
 func itemSetKey(items map[item]struct{}) string {
-	ordered := sortedItems(items)
+	// Must always sort for correct state deduplication, regardless of SortOutput.
+	ordered := make([]item, 0, len(items))
+	for it := range items {
+		ordered = append(ordered, it)
+	}
+	sort.Slice(ordered, func(i, j int) bool {
+		if ordered[i].prod != ordered[j].prod {
+			return ordered[i].prod < ordered[j].prod
+		}
+		if ordered[i].dot != ordered[j].dot {
+			return ordered[i].dot < ordered[j].dot
+		}
+		return ordered[i].lookahead < ordered[j].lookahead
+	})
 	if len(ordered) == 0 {
 		return ""
 	}
@@ -1014,6 +1041,8 @@ func sortedKeys(set map[string]bool) []string {
 	for key := range set {
 		keys = append(keys, key)
 	}
-	sort.Strings(keys)
+	if SortOutput {
+		sort.Strings(keys)
+	}
 	return keys
 }
