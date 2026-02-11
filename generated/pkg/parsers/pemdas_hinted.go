@@ -696,7 +696,7 @@ var PEMDASHintedParserProductions = []PEMDASHintedParserProduction{
 	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
 	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 4, hasHint: true, parentIndex: 1, childIndices: []int{0, 3}, nodeType: asts.NodeType("operator")},
 	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("ParenTerm"), rhsCount: 3, hasHint: true, parentIndex: 0, childIndices: []int{1}},
+	{lhs: asts.NodeType("ParenTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{}},
 	{lhs: asts.NodeType("ParenTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("PrecedenceChainEnd"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("PrecedenceChainEnd"), rhsCount: 1, hasHint: true, parentIndex: 0, childIndices: []int{}, nodeType: asts.NodeType("int_literal")},
 }

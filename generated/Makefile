@@ -1,6 +1,6 @@
 # ----------------------------------------------------------------
-LEXGENS=pkg/lexers/sign-digit.go pkg/lexers/pemdas.go pkg/lexers/statements.go pkg/lexers/seng.go pkg/lexers/lisp.go pkg/lexers/json.go
-PARSEGENS=pkg/parsers/pemdas.go pkg/parsers/statements.go pkg/parsers/seng.go pkg/parsers/lisp.go pkg/parsers/json.go
+LEXGENS=pkg/lexers/sign-digit.go pkg/lexers/pemdas.go pkg/lexers/pemdas_hinted.go pkg/lexers/statements.go pkg/lexers/seng.go pkg/lexers/lisp.go pkg/lexers/json.go
+PARSEGENS=pkg/parsers/pemdas.go pkg/parsers/pemdas_hinted.go pkg/parsers/statements.go pkg/parsers/seng.go pkg/parsers/lisp.go pkg/parsers/json.go
 
 all: $(LEXGENS) $(PARSEGENS)
 
@@ -9,6 +9,8 @@ pkg/lexers/sign-digit.go: jsons/sign-digit-lex.json
 	../generator/lexgen-code -o pkg/lexers/sign-digit.go -type SignDigitLexer jsons/sign-digit-lex.json
 pkg/lexers/pemdas.go: jsons/pemdas-lex.json
 	../generator/lexgen-code -o pkg/lexers/pemdas.go -type PEMDASLexer jsons/pemdas-lex.json
+pkg/lexers/pemdas_hinted.go: jsons/pemdas-hinted-lex.json
+	../generator/lexgen-code -o pkg/lexers/pemdas_hinted.go -type PEMDASHintedLexer jsons/pemdas-hinted-lex.json
 pkg/lexers/statements.go: jsons/statements-lex.json
 	../generator/lexgen-code -o pkg/lexers/statements.go -type StatementsLexer jsons/statements-lex.json
 pkg/lexers/seng.go: jsons/seng-lex.json
@@ -22,6 +24,8 @@ jsons/sign-digit-lex.json: bnfs/sign-digit.bnf
 	../generator/lexgen-tables -o jsons/sign-digit-lex.json bnfs/sign-digit.bnf
 jsons/pemdas-lex.json: bnfs/pemdas.bnf
 	../generator/lexgen-tables -o jsons/pemdas-lex.json bnfs/pemdas.bnf
+jsons/pemdas-hinted-lex.json: bnfs/pemdas-hinted.bnf
+	../generator/lexgen-tables -o jsons/pemdas-hinted-lex.json bnfs/pemdas-hinted.bnf
 jsons/statements-lex.json: bnfs/statements.bnf
 	../generator/lexgen-tables -o jsons/statements-lex.json bnfs/statements.bnf
 jsons/seng-lex.json: bnfs/seng.bnf
@@ -33,6 +37,8 @@ jsons/json-lex.json: bnfs/json.bnf
 
 pkg/parsers/pemdas.go: jsons/pemdas-parse.json
 	../generator/parsegen-code -o pkg/parsers/pemdas.go -package parsers -type PEMDASParser jsons/pemdas-parse.json
+pkg/parsers/pemdas_hinted.go: jsons/pemdas-hinted-parse.json
+	../generator/parsegen-code -o pkg/parsers/pemdas_hinted.go -package parsers -type PEMDASHintedParser jsons/pemdas-hinted-parse.json
 pkg/parsers/statements.go: jsons/statements-parse.json
 	../generator/parsegen-code -o pkg/parsers/statements.go -package parsers -type StatementsParser jsons/statements-parse.json
 pkg/parsers/seng.go: jsons/seng-parse.json
@@ -44,6 +50,8 @@ pkg/parsers/json.go: jsons/json-parse.json
 
 jsons/pemdas-parse.json: bnfs/pemdas.bnf
 	../generator/parsegen-tables -o jsons/pemdas-parse.json bnfs/pemdas.bnf
+jsons/pemdas-hinted-parse.json: bnfs/pemdas-hinted.bnf
+	../generator/parsegen-tables -o jsons/pemdas-hinted-parse.json bnfs/pemdas-hinted.bnf
 jsons/statements-parse.json: bnfs/statements.bnf
 	../generator/parsegen-tables -o jsons/statements-parse.json bnfs/statements.bnf
 jsons/seng-parse.json: bnfs/seng.bnf

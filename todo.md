@@ -1,6 +1,10 @@
 # ASTGEN THING
 
-* keep old manual/ebnf & add new manual/ebnfx
+* dedupe tracer opts ...
+* pemdas-eval
+* better makefile rules for generated
+* x-hinted to x_hinted throughout
+* more hinted bnfs; rename to unhinted & epsilon
 * add trylex & tryparse for all new hinted bnfs
 * get a handle on the 'no hints at all' thing ...
 

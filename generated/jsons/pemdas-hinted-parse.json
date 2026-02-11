@@ -1707,10 +1707,8 @@
         }
       ],
       "hint": {
-        "parent": 0,
-        "children": [
-          1
-        ]
+        "parent": 1,
+        "children": []
       }
     },
     {
@@ -1729,7 +1727,12 @@
           "name": "int_literal",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [],
+        "type": "int_literal"
+      }
     }
   ],
   "hint_mode": "hints"
