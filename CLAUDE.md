@@ -12,7 +12,9 @@ hand-written recursive-descent parsers and a full generator pipeline.
 
 ```bash
 # Build everything (manual, generator, generated, runners) and run tests
-./build-all.sh
+make
+make -C manual test
+make -C generator test
 
 # Build and test individual modules
 make -C manual          # Build manual module (core libraries)
