@@ -7,6 +7,7 @@ import (
 	"go/format"
 	"sort"
 	"strconv"
+	"strings"
 	"text/template"
 
 	_ "embed"
@@ -15,8 +16,22 @@ import (
 //go:embed templates/parser.go.tmpl
 var parserTemplateText string
 
+var parserTemplateFuncs = template.FuncMap{
+	"childIndicesLiteral": func(indices []int) string {
+		if len(indices) == 0 {
+			return "[]int{}"
+		}
+		parts := make([]string, len(indices))
+		for i, idx := range indices {
+			parts[i] = strconv.Itoa(idx)
+		}
+		return "[]int{" + strings.Join(parts, ", ") + "}"
+	},
+	"quote": strconv.Quote,
+}
+
 var parserTemplate = template.Must(
-	template.New("parser").Parse(parserTemplateText),
+	template.New("parser").Funcs(parserTemplateFuncs).Parse(parserTemplateText),
 )
 
 // DecodeTables reads tables JSON into Tables.
@@ -59,6 +74,7 @@ func GenerateGoParserCodeRaw(tables *Tables, packageName string, typeName string
 		Actions:     buildParserActions(tables, typeName),
 		Gotos:       buildParserGotos(tables),
 		Productions: buildParserProductions(tables),
+		HintMode:    tables.HintMode,
 	}
 
 	var buf bytes.Buffer
@@ -74,6 +90,7 @@ type parserTemplateData struct {
 	Actions     []parserActionState
 	Gotos       []parserGotoState
 	Productions []parserProductionInfo
+	HintMode    string
 }
 
 type parserActionState struct {
@@ -99,8 +116,12 @@ type parserGotoEntry struct {
 }
 
 type parserProductionInfo struct {
-	LHSLiteral string
-	RHSCount   int
+	LHSLiteral   string
+	RHSCount     int
+	HasHint      bool
+	ParentIndex  int
+	ChildIndices []int
+	NodeType     string
 }
 
 func buildParserActions(tables *Tables, typeName string) []parserActionState {
@@ -174,10 +195,17 @@ func buildParserGotos(tables *Tables) []parserGotoState {
 func buildParserProductions(tables *Tables) []parserProductionInfo {
 	out := make([]parserProductionInfo, 0, len(tables.Productions))
 	for _, prod := range tables.Productions {
-		out = append(out, parserProductionInfo{
+		info := parserProductionInfo{
 			LHSLiteral: "asts.NodeType(" + strconv.Quote(prod.LHS) + ")",
 			RHSCount:   len(prod.RHS),
-		})
+		}
+		if prod.Hint != nil {
+			info.HasHint = true
+			info.ParentIndex = prod.Hint.ParentIndex
+			info.ChildIndices = prod.Hint.ChildIndices
+			info.NodeType = prod.Hint.NodeType
+		}
+		out = append(out, info)
 	}
 	return out
 }

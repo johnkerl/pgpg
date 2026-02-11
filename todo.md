@@ -1,3 +1,9 @@
+# ASTGEN THING
+
+* keep old manual/ebnf & add new manual/ebnfx
+* add trylex & tryparse for all new hinted bnfs
+* get a handle on the 'no hints at all' thing ...
+
 # Top of list
 
 * Look into custom-AST/custom-traversal options:

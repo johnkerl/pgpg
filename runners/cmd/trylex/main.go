@@ -30,11 +30,12 @@ var lexerMakerTable = map[string]lexerInfoT{
 	"m:vbc":    lexerInfoT{lexers.NewVBCLexer, "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":   lexerInfoT{lexers.NewEBNFLexer, "EBNF grammar with identifiers, literals, and operators."},
 	"g:signd":  lexerInfoT{generatedlexers.NewSignDigitLexer, "Generated sign/digit lexer from generated/bnfs/sign-digit.bnf."},
-	"g:pemdas":  lexerInfoT{generatedlexers.NewPEMDASLexer, "Generated PEMDAS lexer from generated/bnfs/pemdas.bnf."},
+	"g:pemdas": lexerInfoT{generatedlexers.NewPEMDASLexer, "Generated PEMDAS lexer from generated/bnfs/pemdas.bnf."},
+	"g:pemdas-hinted": lexerInfoT{generatedlexers.NewPEMDASHintedLexer, "Generated PEMDAS hinted lexer from generated/bnfs/pemdas-hinted.bnf."},
 	"g:stmts":  lexerInfoT{generatedlexers.NewStatementsLexer, "Generated statements lexer from generated/bnfs/statements.bnf."},
-	"g:seng":  lexerInfoT{generatedlexers.NewSENGLexer, "Generated statements lexer from generated/bnfs/seng.bnf."},
-	"g:lisp":  lexerInfoT{generatedlexers.NewLISPLexer, "Generated LISP lexer from generated/bnfs/lisp.bnf."},
-	"g:json":  lexerInfoT{generatedlexers.NewJSONLexer, "Generated JSON lexer from generated/bnfs/json.bnf."},
+	"g:seng":   lexerInfoT{generatedlexers.NewSENGLexer, "Generated statements lexer from generated/bnfs/seng.bnf."},
+	"g:lisp":   lexerInfoT{generatedlexers.NewLISPLexer, "Generated LISP lexer from generated/bnfs/lisp.bnf."},
+	"g:json":   lexerInfoT{generatedlexers.NewJSONLexer, "Generated JSON lexer from generated/bnfs/json.bnf."},
 }
 
 func usage() {

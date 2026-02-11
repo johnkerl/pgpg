@@ -24,6 +24,10 @@ const (
 	EBNFLexerTypeSemicolon  tokens.TokenType = ";"
 	EBNFLexerTypeDash       tokens.TokenType = "-"
 	EBNFLexerTypeDot        tokens.TokenType = "."
+	EBNFLexerTypeArrow      tokens.TokenType = "->"
+	EBNFLexerTypeColon      tokens.TokenType = ":"
+	EBNFLexerTypeComma      tokens.TokenType = ","
+	EBNFLexerTypeInteger    tokens.TokenType = "integer"
 )
 
 // EBNFLexer tokenizes a common EBNF dialect with identifiers, string literals,
@@ -84,16 +88,12 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 
 	if r == ':' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
+		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
+			return tokens.NewToken([]rune{':'}, EBNFLexerTypeColon, &startLocation)
+		}
 		nextRune, nextWidth := lexer.peekRune()
 		if nextRune != ':' {
-			return tokens.NewErrorToken(
-				fmt.Sprintf(
-					"EBNF lexer: expected '::=' but found ':%c' at %s",
-					nextRune,
-					lexer.formatLocation(&startLocation),
-				),
-				lexer.tokenLocation,
-			)
+			return tokens.NewToken([]rune{':'}, EBNFLexerTypeColon, &startLocation)
 		}
 		lexer.tokenLocation.LocateRune(nextRune, nextWidth)
 		nextRune, nextWidth = lexer.peekRune()
@@ -148,14 +148,39 @@ func (lexer *EBNFLexer) Scan() (token *tokens.Token) {
 
 	} else if r == '-' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
+		if lexer.tokenLocation.ByteOffset < lexer.inputLength {
+			nextR, nextW := lexer.peekRune()
+			if nextR == '>' {
+				lexer.tokenLocation.LocateRune(nextR, nextW)
+				return tokens.NewToken([]rune{'-', '>'}, EBNFLexerTypeArrow, &startLocation)
+			}
+		}
 		return tokens.NewToken([]rune{r}, EBNFLexerTypeDash, &startLocation)
+
+	} else if r == ',' {
+		lexer.tokenLocation.LocateRune(r, runeWidth)
+		return tokens.NewToken([]rune{r}, EBNFLexerTypeComma, &startLocation)
 
 	} else if r == '.' {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return tokens.NewToken([]rune{r}, EBNFLexerTypeDot, &startLocation)
 
-		} else if r == '"' || r == '\'' {
-			return lexer.scanStringLiteral(r, runeWidth, &startLocation)
+	} else if unicode.IsDigit(r) {
+		lexer.tokenLocation.LocateRune(r, runeWidth)
+		runes := []rune{r}
+		for lexer.tokenLocation.ByteOffset < lexer.inputLength {
+			nextR, nextW := lexer.peekRune()
+			if unicode.IsDigit(nextR) {
+				lexer.tokenLocation.LocateRune(nextR, nextW)
+				runes = append(runes, nextR)
+			} else {
+				break
+			}
+		}
+		return tokens.NewToken(runes, EBNFLexerTypeInteger, &startLocation)
+
+	} else if r == '"' || r == '\'' {
+		return lexer.scanStringLiteral(r, runeWidth, &startLocation)
 
 	} else if isEBNFIdentifierStart(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
