@@ -596,15 +596,15 @@ type item struct {
 
 func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[string]int, error) {
 	first := computeFirstSets(grammar)
-	stateMap := map[string]int{}
+	stateMap := map[uint64][]int{} // hash → state IDs (for collision resolution)
 	var states []map[item]struct{}
 	stateLabels := map[int]string{}
 	var queue []int
 
 	startItem := item{prod: 0, dot: 0, lookahead: eofSymbol}
 	startSet := closure(grammar, first, map[item]struct{}{startItem: {}})
-	startKey := itemSetKey(startSet)
-	stateMap[startKey] = 0
+	startHash := itemSetHash(startSet)
+	stateMap[startHash] = []int{0}
 	states = append(states, startSet)
 	stateLabels[0] = stateLabel(startSet, grammar)
 	queue = append(queue, 0)
@@ -637,11 +637,17 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 		for _, sym := range sortedSymbols(transitions) {
 			seedSet := transitions[sym]
 			gotoSet := closure(grammar, first, seedSet)
-			key := itemSetKey(gotoSet)
-			target, ok := stateMap[key]
-			if !ok {
+			hash := itemSetHash(gotoSet)
+			target := -1
+			for _, id := range stateMap[hash] {
+				if itemSetsEqual(states[id], gotoSet) {
+					target = id
+					break
+				}
+			}
+			if target < 0 {
 				target = len(states)
-				stateMap[key] = target
+				stateMap[hash] = append(stateMap[hash], target)
 				states = append(states, gotoSet)
 				stateLabels[target] = stateLabel(gotoSet, grammar)
 				queue = append(queue, target)
@@ -916,36 +922,31 @@ func sortedSymbols(transitions map[Symbol]map[item]struct{}) []Symbol {
 	return syms
 }
 
-func itemSetKey(items map[item]struct{}) string {
-	// Must always sort for correct state deduplication, regardless of SortOutput.
-	ordered := make([]item, 0, len(items))
+// itemSetHash computes an order-independent hash of an item set.
+// Uses commutative addition so iteration order doesn't matter.
+func itemSetHash(items map[item]struct{}) uint64 {
+	var h uint64
 	for it := range items {
-		ordered = append(ordered, it)
-	}
-	sort.Slice(ordered, func(i, j int) bool {
-		if ordered[i].prod != ordered[j].prod {
-			return ordered[i].prod < ordered[j].prod
+		ih := uint64(it.prod)*2654435761 ^ uint64(it.dot)*40503
+		for i := 0; i < len(it.lookahead); i++ {
+			ih = ih*1099511628211 ^ uint64(it.lookahead[i])
 		}
-		if ordered[i].dot != ordered[j].dot {
-			return ordered[i].dot < ordered[j].dot
-		}
-		return ordered[i].lookahead < ordered[j].lookahead
-	})
-	if len(ordered) == 0 {
-		return ""
+		h += ih
 	}
-	var b strings.Builder
-	for i, it := range ordered {
-		if i > 0 {
-			b.WriteByte('|')
-		}
-		b.WriteString(strconv.Itoa(it.prod))
-		b.WriteByte(':')
-		b.WriteString(strconv.Itoa(it.dot))
-		b.WriteByte(':')
-		b.WriteString(it.lookahead)
+	return h
+}
+
+// itemSetsEqual checks whether two item sets contain the same items.
+func itemSetsEqual(a, b map[item]struct{}) bool {
+	if len(a) != len(b) {
+		return false
 	}
-	return b.String()
+	for it := range a {
+		if _, ok := b[it]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
 type firstSets struct {
