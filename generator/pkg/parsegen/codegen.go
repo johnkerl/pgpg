@@ -116,14 +116,14 @@ type parserGotoEntry struct {
 }
 
 type parserProductionInfo struct {
-	LHSLiteral        string
-	RHSCount          int
-	HasHint           bool
-	HasPassthrough    bool
-	ParentIndex       int
-	PassthroughIndex  int
-	ChildIndices      []int
-	NodeType          string
+	LHSLiteral       string
+	RHSCount         int
+	HasHint          bool
+	HasPassthrough   bool
+	ParentIndex      int
+	PassthroughIndex int
+	ChildIndices     []int
+	NodeType         string
 }
 
 func buildParserActions(tables *Tables, typeName string) []parserActionState {

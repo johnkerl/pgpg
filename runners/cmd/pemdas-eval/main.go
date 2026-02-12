@@ -63,8 +63,8 @@ func runParserOnFiles(filenames []string) error {
 }
 
 func runParserOnce(input string) error {
-	lexer := generatedlexers.NewPEMDASHintedLexer(input)
-	parser := generatedparsers.NewPEMDASHintedParser()
+	lexer := generatedlexers.NewPEMDASLexer(input)
+	parser := generatedparsers.NewPEMDASParser()
 	ast, err := parser.Parse(lexer)
 	if err != nil {
 		return err
