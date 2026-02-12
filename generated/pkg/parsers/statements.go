@@ -2,6 +2,8 @@ package parsers
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
@@ -92,6 +94,35 @@ func (parser *StatementsParser) Parse(lexer manuallexers.AbstractLexer) (*asts.A
 	}
 }
 
+// AttachCLITrace installs tracing hooks for CLI debugging.
+func (parser *StatementsParser) AttachCLITrace(traceTokens bool, traceStates bool, traceStack bool) {
+	if !traceTokens && !traceStates && !traceStack {
+		return
+	}
+	parser.Trace = &StatementsParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !traceTokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatStatementsParserToken(tok))
+		},
+		OnAction: func(state int, action StatementsParserAction, lookahead *tokens.Token) {
+			if !traceStates {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n",
+				state, formatStatementsParserAction(action), tokenTypeNameStatementsParser(lookahead), tokenLexemeStatementsParser(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !traceStack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n",
+				formatStatementsParserIntStack(stateStack), formatStatementsParserNodeStack(nodeStack))
+		},
+	}
+}
+
 type StatementsParserActionKind int
 
 const (
@@ -103,6 +134,61 @@ const (
 type StatementsParserAction struct {
 	Kind   StatementsParserActionKind
 	Target int
+}
+
+func formatStatementsParserToken(tok *tokens.Token) string {
+	if tok == nil {
+		return "TOK <nil>"
+	}
+	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d",
+		tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
+}
+
+func tokenTypeNameStatementsParser(tok *tokens.Token) string {
+	if tok == nil {
+		return "<nil>"
+	}
+	return string(tok.Type)
+}
+
+func tokenLexemeStatementsParser(tok *tokens.Token) string {
+	if tok == nil {
+		return ""
+	}
+	return string(tok.Lexeme)
+}
+
+func formatStatementsParserIntStack(stack []int) string {
+	parts := make([]string, len(stack))
+	for i, v := range stack {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatStatementsParserNodeStack(stack []*asts.ASTNode) string {
+	parts := make([]string, len(stack))
+	for i, node := range stack {
+		if node == nil {
+			parts[i] = "<nil>"
+			continue
+		}
+		parts[i] = string(node.Type)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatStatementsParserAction(action StatementsParserAction) string {
+	switch action.Kind {
+	case StatementsParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case StatementsParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case StatementsParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
 }
 
 type StatementsParserProduction struct {

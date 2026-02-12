@@ -2,6 +2,8 @@ package parsers
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
@@ -92,6 +94,35 @@ func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 	}
 }
 
+// AttachCLITrace installs tracing hooks for CLI debugging.
+func (parser *JSONParser) AttachCLITrace(traceTokens bool, traceStates bool, traceStack bool) {
+	if !traceTokens && !traceStates && !traceStack {
+		return
+	}
+	parser.Trace = &JSONParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !traceTokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatJSONParserToken(tok))
+		},
+		OnAction: func(state int, action JSONParserAction, lookahead *tokens.Token) {
+			if !traceStates {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n",
+				state, formatJSONParserAction(action), tokenTypeNameJSONParser(lookahead), tokenLexemeJSONParser(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !traceStack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n",
+				formatJSONParserIntStack(stateStack), formatJSONParserNodeStack(nodeStack))
+		},
+	}
+}
+
 type JSONParserActionKind int
 
 const (
@@ -103,6 +134,61 @@ const (
 type JSONParserAction struct {
 	Kind   JSONParserActionKind
 	Target int
+}
+
+func formatJSONParserToken(tok *tokens.Token) string {
+	if tok == nil {
+		return "TOK <nil>"
+	}
+	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d",
+		tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
+}
+
+func tokenTypeNameJSONParser(tok *tokens.Token) string {
+	if tok == nil {
+		return "<nil>"
+	}
+	return string(tok.Type)
+}
+
+func tokenLexemeJSONParser(tok *tokens.Token) string {
+	if tok == nil {
+		return ""
+	}
+	return string(tok.Lexeme)
+}
+
+func formatJSONParserIntStack(stack []int) string {
+	parts := make([]string, len(stack))
+	for i, v := range stack {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatJSONParserNodeStack(stack []*asts.ASTNode) string {
+	parts := make([]string, len(stack))
+	for i, node := range stack {
+		if node == nil {
+			parts[i] = "<nil>"
+			continue
+		}
+		parts[i] = string(node.Type)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatJSONParserAction(action JSONParserAction) string {
+	switch action.Kind {
+	case JSONParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case JSONParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case JSONParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
 }
 
 type JSONParserProduction struct {

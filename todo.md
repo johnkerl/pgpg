@@ -1,8 +1,7 @@
 # ASTGEN THING
 
-* dedupe tracer opts ...
-* more hinted bnfs; rename to unhinted & epsilon
-* add trylex & tryparse for all new hinted bnfs
+* pemdas-eval with -v
+* Plain/hinted json.bnf
 
 # Top of list
 

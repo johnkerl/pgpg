@@ -2,6 +2,8 @@ package parsers
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
@@ -92,6 +94,35 @@ func (parser *SENGParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 	}
 }
 
+// AttachCLITrace installs tracing hooks for CLI debugging.
+func (parser *SENGParser) AttachCLITrace(traceTokens bool, traceStates bool, traceStack bool) {
+	if !traceTokens && !traceStates && !traceStack {
+		return
+	}
+	parser.Trace = &SENGParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !traceTokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatSENGParserToken(tok))
+		},
+		OnAction: func(state int, action SENGParserAction, lookahead *tokens.Token) {
+			if !traceStates {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n",
+				state, formatSENGParserAction(action), tokenTypeNameSENGParser(lookahead), tokenLexemeSENGParser(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !traceStack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n",
+				formatSENGParserIntStack(stateStack), formatSENGParserNodeStack(nodeStack))
+		},
+	}
+}
+
 type SENGParserActionKind int
 
 const (
@@ -103,6 +134,61 @@ const (
 type SENGParserAction struct {
 	Kind   SENGParserActionKind
 	Target int
+}
+
+func formatSENGParserToken(tok *tokens.Token) string {
+	if tok == nil {
+		return "TOK <nil>"
+	}
+	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d",
+		tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
+}
+
+func tokenTypeNameSENGParser(tok *tokens.Token) string {
+	if tok == nil {
+		return "<nil>"
+	}
+	return string(tok.Type)
+}
+
+func tokenLexemeSENGParser(tok *tokens.Token) string {
+	if tok == nil {
+		return ""
+	}
+	return string(tok.Lexeme)
+}
+
+func formatSENGParserIntStack(stack []int) string {
+	parts := make([]string, len(stack))
+	for i, v := range stack {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatSENGParserNodeStack(stack []*asts.ASTNode) string {
+	parts := make([]string, len(stack))
+	for i, node := range stack {
+		if node == nil {
+			parts[i] = "<nil>"
+			continue
+		}
+		parts[i] = string(node.Type)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatSENGParserAction(action SENGParserAction) string {
+	switch action.Kind {
+	case SENGParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case SENGParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case SENGParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
 }
 
 type SENGParserProduction struct {
