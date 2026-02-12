@@ -33,9 +33,13 @@ Json     ::= Value;
 
 Value    ::= Object | Array | string | number | true | false | null;
 
-Object   ::= lcurly [ Members ] rcurly;
-Members  ::= Member { comma Member };
-Member   ::= string colon Value;
+# Want/need:
+# * parent can be a string token not an integer, e.g. "[]"
+# * with-adopted-children
 
-Array    ::= lbracket [ Elements ] rbracket;
-Elements ::= Value { comma Value };
+Object   ::= lcurly [ Members ] rcurly -> { "parent_literal": "{}", "children": [1] };
+Members  ::= Member { comma Member } -> { "parent": 0, "children": [1] };
+Member   ::= string colon Value -> { "parent": 1, "children": [0, 2] };
+
+Array    ::= lbracket [ Elements ] rbracket -> { "parent_literal": "[]", "children": [1] };
+Elements ::= Value { comma Value } -> { "parent": 0, "children": [1] };

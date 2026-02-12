@@ -120,8 +120,10 @@ type parserProductionInfo struct {
 	RHSCount         int
 	HasHint          bool
 	HasPassthrough   bool
+	HasParentLiteral bool
 	ParentIndex      int
 	PassthroughIndex int
+	ParentLiteral    string
 	ChildIndices     []int
 	NodeType         string
 }
@@ -207,7 +209,12 @@ func buildParserProductions(tables *Tables) []parserProductionInfo {
 				info.PassthroughIndex = *prod.Hint.PassthroughIndex
 			} else {
 				info.HasHint = true
-				info.ParentIndex = prod.Hint.ParentIndex
+				if prod.Hint.ParentLiteral != nil {
+					info.HasParentLiteral = true
+					info.ParentLiteral = *prod.Hint.ParentLiteral
+				} else {
+					info.ParentIndex = prod.Hint.ParentIndex
+				}
 				info.ChildIndices = prod.Hint.ChildIndices
 				info.NodeType = prod.Hint.NodeType
 			}

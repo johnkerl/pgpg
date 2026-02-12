@@ -66,10 +66,32 @@ func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 				rhsNodes[i] = nodeStack[len(nodeStack)-1]
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
-			if prod.rhsCount == 0 {
-				rhsNodes = []*asts.ASTNode{}
+			var node *asts.ASTNode
+			if prod.hasPassthrough {
+				node = rhsNodes[prod.passthroughIndex]
+			} else if prod.hasHint {
+				nodeType := prod.nodeType
+				if nodeType == "" {
+					nodeType = prod.lhs
+				}
+				var parentToken *tokens.Token
+				if prod.hasParentLiteral {
+					parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+				} else if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
+					parentToken = rhsNodes[prod.parentIndex].Token
+				}
+				hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
+				for i, ci := range prod.childIndices {
+					hintChildren[i] = rhsNodes[ci]
+				}
+				node = asts.NewASTNode(parentToken, nodeType, hintChildren)
+			} else if prod.rhsCount == 1 {
+				node = rhsNodes[0]
+			} else if prod.rhsCount == 0 {
+				node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
+			} else {
+				node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
 			}
-			node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
 			nodeStack = append(nodeStack, node)
 			state = stateStack[len(stateStack)-1]
 			nextState, ok := JSONParserGotos[state][prod.lhs]
@@ -192,8 +214,16 @@ func formatJSONParserAction(action JSONParserAction) string {
 }
 
 type JSONParserProduction struct {
-	lhs      asts.NodeType
-	rhsCount int
+	lhs              asts.NodeType
+	rhsCount         int
+	hasHint          bool
+	hasPassthrough   bool
+	hasParentLiteral bool
+	parentIndex      int
+	passthroughIndex int
+	parentLiteral    string
+	childIndices     []int
+	nodeType         asts.NodeType
 }
 
 var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
@@ -516,24 +546,24 @@ var JSONParserGotos = map[int]map[asts.NodeType]int{
 }
 
 var JSONParserProductions = []JSONParserProduction{
-	{lhs: asts.NodeType("__pgpg_start_3"), rhsCount: 1},
-	{lhs: asts.NodeType("Json"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Object"), rhsCount: 3},
-	{lhs: asts.NodeType("Object"), rhsCount: 2},
-	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0},
-	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 3},
-	{lhs: asts.NodeType("Members"), rhsCount: 2},
-	{lhs: asts.NodeType("Member"), rhsCount: 3},
-	{lhs: asts.NodeType("Array"), rhsCount: 3},
-	{lhs: asts.NodeType("Array"), rhsCount: 2},
-	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 0},
-	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 3},
-	{lhs: asts.NodeType("Elements"), rhsCount: 2},
+	{lhs: asts.NodeType("__pgpg_start_3"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Json"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Object"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{1}},
+	{lhs: asts.NodeType("Object"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{1}},
+	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 3, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Members"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{1}},
+	{lhs: asts.NodeType("Member"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, parentIndex: 1, passthroughIndex: 0, parentLiteral: "", childIndices: []int{0, 2}},
+	{lhs: asts.NodeType("Array"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{1}},
+	{lhs: asts.NodeType("Array"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{1}},
+	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 0, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 3, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
+	{lhs: asts.NodeType("Elements"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{1}},
 }

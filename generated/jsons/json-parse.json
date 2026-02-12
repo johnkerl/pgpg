@@ -803,7 +803,14 @@
           "name": "rcurly",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "parent_literal": "{}"
+      }
     },
     {
       "lhs": "Object",
@@ -816,7 +823,14 @@
           "name": "rcurly",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "parent_literal": "{}"
+      }
     },
     {
       "lhs": "__pgpg_repeat_1",
@@ -850,7 +864,13 @@
           "name": "__pgpg_repeat_1",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ]
+      }
     },
     {
       "lhs": "Member",
@@ -867,7 +887,14 @@
           "name": "Value",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ]
+      }
     },
     {
       "lhs": "Array",
@@ -884,7 +911,14 @@
           "name": "rbracket",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "parent_literal": "[]"
+      }
     },
     {
       "lhs": "Array",
@@ -897,7 +931,14 @@
           "name": "rbracket",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "parent_literal": "[]"
+      }
     },
     {
       "lhs": "__pgpg_repeat_2",
@@ -931,7 +972,14 @@
           "name": "__pgpg_repeat_2",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ]
+      }
     }
-  ]
+  ],
+  "hint_mode": "hints"
 }

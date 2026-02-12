@@ -76,7 +76,9 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 					nodeType = prod.lhs
 				}
 				var parentToken *tokens.Token
-				if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
+				if prod.hasParentLiteral {
+					parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+				} else if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
 					parentToken = rhsNodes[prod.parentIndex].Token
 				}
 				hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
@@ -225,8 +227,10 @@ type {{.TypeName}}Production struct {
 	rhsCount     int
 	hasHint      bool
 	hasPassthrough bool
+	hasParentLiteral bool
 	parentIndex  int
 	passthroughIndex int
+	parentLiteral string
 	childIndices []int
 	nodeType     asts.NodeType
 }
@@ -261,7 +265,7 @@ var {{.TypeName}}Gotos = map[int]map[asts.NodeType]int{
 var {{.TypeName}}Productions = []{{.TypeName}}Production{
 {{- range .Productions }}
 {{- if $.HintMode | eq "hints" }}
-	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, hasPassthrough: {{.HasPassthrough}}, parentIndex: {{.ParentIndex}}, passthroughIndex: {{.PassthroughIndex}}, childIndices: {{childIndicesLiteral .ChildIndices}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
+	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, hasPassthrough: {{.HasPassthrough}}, hasParentLiteral: {{.HasParentLiteral}}, parentIndex: {{.ParentIndex}}, passthroughIndex: {{.PassthroughIndex}}, parentLiteral: {{quote .ParentLiteral}}, childIndices: {{childIndicesLiteral .ChildIndices}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
 {{- else }}
 	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}},
 {{- end }}

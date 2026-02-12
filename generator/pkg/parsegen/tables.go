@@ -45,6 +45,7 @@ type Production struct {
 type ASTHint struct {
 	ParentIndex      int    `json:"parent"`
 	ChildIndices     []int  `json:"children"`
+	ParentLiteral    *string `json:"parent_literal,omitempty"`
 	PassthroughIndex *int   `json:"pass-through,omitempty"`
 	NodeType         string `json:"type,omitempty"`
 }
@@ -586,6 +587,7 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 	hint := &ASTHint{}
 	hasParent := false
 	hasChildren := false
+	hasParentLiteral := false
 	hasPassthrough := false
 	for _, field := range node.Children {
 		if field.Type != parsers.EBNFParserNodeTypeHintField || field.Token == nil {
@@ -612,6 +614,16 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 			}
 			hint.ParentIndex = val
 			hasParent = true
+		case "parent_literal":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintString || valueNode.Token == nil {
+				return nil, fmt.Errorf("hint \"parent_literal\" must be a string")
+			}
+			unquotedLiteral, err := strconv.Unquote(string(valueNode.Token.Lexeme))
+			if err != nil {
+				return nil, fmt.Errorf("invalid hint parent_literal value: %w", err)
+			}
+			hint.ParentLiteral = &unquotedLiteral
+			hasParentLiteral = true
 		case "children":
 			if valueNode.Type != parsers.EBNFParserNodeTypeHintArray {
 				return nil, fmt.Errorf("hint \"children\" must be an array")
@@ -653,13 +665,16 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 		}
 	}
 	if hasPassthrough {
-		if hasParent || hasChildren || hint.NodeType != "" {
-			return nil, fmt.Errorf("hint \"passthrough\" cannot be combined with \"parent\", \"children\", or \"type\"")
+		if hasParent || hasParentLiteral || hasChildren || hint.NodeType != "" {
+			return nil, fmt.Errorf("hint \"passthrough\" cannot be combined with \"parent\", \"parent_literal\", \"children\", or \"type\"")
 		}
 		return hint, nil
 	}
-	if !hasParent {
-		return nil, fmt.Errorf("hint missing required \"parent\" field")
+	if hasParent && hasParentLiteral {
+		return nil, fmt.Errorf("hint cannot set both \"parent\" and \"parent_literal\"")
+	}
+	if !hasParent && !hasParentLiteral {
+		return nil, fmt.Errorf("hint missing required \"parent\" or \"parent_literal\" field")
 	}
 	if !hasChildren {
 		return nil, fmt.Errorf("hint missing required \"children\" field")
@@ -702,9 +717,11 @@ func validateHints(productions []Production) error {
 			}
 			continue
 		}
-		if prod.Hint.ParentIndex < 0 || prod.Hint.ParentIndex >= len(prod.RHS) {
-			return fmt.Errorf("production %s: parent index %d out of range [0, %d)",
-				prod.LHS, prod.Hint.ParentIndex, len(prod.RHS))
+		if prod.Hint.ParentLiteral == nil {
+			if prod.Hint.ParentIndex < 0 || prod.Hint.ParentIndex >= len(prod.RHS) {
+				return fmt.Errorf("production %s: parent index %d out of range [0, %d)",
+					prod.LHS, prod.Hint.ParentIndex, len(prod.RHS))
+			}
 		}
 		for _, ci := range prod.Hint.ChildIndices {
 			if ci < 0 || ci >= len(prod.RHS) {

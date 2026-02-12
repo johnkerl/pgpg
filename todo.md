@@ -2,6 +2,7 @@
 
 * pemdas-eval with -v
 * Plain/hinted json.bnf
+* prohibit any parent/child indices the same
 
 # Top of list
 
