@@ -5,11 +5,9 @@ import (
 	"fmt"
 	"os"
 	"sort"
-	"strings"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	"github.com/johnkerl/pgpg/manual/pkg/parsers"
-	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
@@ -114,42 +112,42 @@ func runManualParser(maker func() parsers.AbstractParser) func(string, traceOpti
 func runGeneratedPEMDASPlainParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewPEMDASPlainLexer(input)
 	parser := generatedparsers.NewPEMDASPlainParser()
-	attachPEMDASPlainTrace(parser, opts)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
 
 func runGeneratedPEMDASParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewPEMDASLexer(input)
 	parser := generatedparsers.NewPEMDASParser()
-	attachPEMDASTrace(parser, opts)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
 
 func runGeneratedStatementsParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewStatementsLexer(input)
 	parser := generatedparsers.NewStatementsParser()
-	attachStatementsTrace(parser, opts)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
 
 func runGeneratedSENGParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewSENGLexer(input)
 	parser := generatedparsers.NewSENGParser()
-	attachSENGTrace(parser, opts)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
 
 func runGeneratedLISPParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewLISPLexer(input)
 	parser := generatedparsers.NewLISPParser()
-	attachLispTrace(parser, opts)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
 
 func runGeneratedJSONParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewJSONLexer(input)
 	parser := generatedparsers.NewJSONParser()
-	attachJSONTrace(parser, opts)
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
 
@@ -175,279 +173,4 @@ func runParserOnFiles(run func(string, traceOptions) (*asts.AST, error), filenam
 		}
 	}
 	return nil
-}
-
-func attachPEMDASTrace(parser *generatedparsers.PEMDASParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.PEMDASParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.PEMDASParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatPEMDASAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func attachPEMDASPlainTrace(parser *generatedparsers.PEMDASPlainParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.PEMDASPlainParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.PEMDASPlainParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatPEMDASPlainAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func attachStatementsTrace(parser *generatedparsers.StatementsParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.StatementsParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.StatementsParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatStatementsAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func attachSENGTrace(parser *generatedparsers.SENGParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.SENGParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.SENGParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatSENGAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func attachLispTrace(parser *generatedparsers.LISPParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.LISPParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.LISPParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatLispAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func attachJSONTrace(parser *generatedparsers.JSONParser, opts traceOptions) {
-	if !opts.tokens && !opts.states && !opts.stack {
-		return
-	}
-	parser.Trace = &generatedparsers.JSONParserTraceHooks{
-		OnToken: func(tok *tokens.Token) {
-			if !opts.tokens {
-				return
-			}
-			fmt.Fprintln(os.Stderr, formatToken(tok))
-		},
-		OnAction: func(state int, action generatedparsers.JSONParserAction, lookahead *tokens.Token) {
-			if !opts.states {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatJSONAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
-		},
-		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
-			if !opts.stack {
-				return
-			}
-			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
-		},
-	}
-}
-
-func formatToken(tok *tokens.Token) string {
-	if tok == nil {
-		return "TOK <nil>"
-	}
-	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d", tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
-}
-
-func tokenTypeName(tok *tokens.Token) string {
-	if tok == nil {
-		return "<nil>"
-	}
-	return string(tok.Type)
-}
-
-func tokenLexeme(tok *tokens.Token) string {
-	if tok == nil {
-		return ""
-	}
-	return string(tok.Lexeme)
-}
-
-func formatIntStack(stack []int) string {
-	parts := make([]string, len(stack))
-	for i, v := range stack {
-		parts[i] = fmt.Sprintf("%d", v)
-	}
-	return "[" + strings.Join(parts, " ") + "]"
-}
-
-func formatNodeStack(stack []*asts.ASTNode) string {
-	parts := make([]string, len(stack))
-	for i, node := range stack {
-		if node == nil {
-			parts[i] = "<nil>"
-			continue
-		}
-		parts[i] = string(node.Type)
-	}
-	return "[" + strings.Join(parts, " ") + "]"
-}
-
-func formatPEMDASAction(action generatedparsers.PEMDASParserAction) string {
-	switch action.Kind {
-	case generatedparsers.PEMDASParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.PEMDASParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.PEMDASParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
-}
-
-func formatPEMDASPlainAction(action generatedparsers.PEMDASPlainParserAction) string {
-	switch action.Kind {
-	case generatedparsers.PEMDASPlainParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.PEMDASPlainParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.PEMDASPlainParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
-}
-
-func formatStatementsAction(action generatedparsers.StatementsParserAction) string {
-	switch action.Kind {
-	case generatedparsers.StatementsParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.StatementsParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.StatementsParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
-}
-
-func formatSENGAction(action generatedparsers.SENGParserAction) string {
-	switch action.Kind {
-	case generatedparsers.SENGParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.SENGParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.SENGParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
-}
-
-func formatLispAction(action generatedparsers.LISPParserAction) string {
-	switch action.Kind {
-	case generatedparsers.LISPParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.LISPParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.LISPParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
-}
-
-func formatJSONAction(action generatedparsers.JSONParserAction) string {
-	switch action.Kind {
-	case generatedparsers.JSONParserActionShift:
-		return fmt.Sprintf("shift(%d)", action.Target)
-	case generatedparsers.JSONParserActionReduce:
-		return fmt.Sprintf("reduce(%d)", action.Target)
-	case generatedparsers.JSONParserActionAccept:
-		return "accept"
-	default:
-		return "unknown"
-	}
 }

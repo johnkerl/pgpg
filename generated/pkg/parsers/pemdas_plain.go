@@ -2,6 +2,8 @@ package parsers
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
@@ -92,6 +94,35 @@ func (parser *PEMDASPlainParser) Parse(lexer manuallexers.AbstractLexer) (*asts.
 	}
 }
 
+// AttachCLITrace installs tracing hooks for CLI debugging.
+func (parser *PEMDASPlainParser) AttachCLITrace(traceTokens bool, traceStates bool, traceStack bool) {
+	if !traceTokens && !traceStates && !traceStack {
+		return
+	}
+	parser.Trace = &PEMDASPlainParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !traceTokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatPEMDASPlainParserToken(tok))
+		},
+		OnAction: func(state int, action PEMDASPlainParserAction, lookahead *tokens.Token) {
+			if !traceStates {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n",
+				state, formatPEMDASPlainParserAction(action), tokenTypeNamePEMDASPlainParser(lookahead), tokenLexemePEMDASPlainParser(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !traceStack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n",
+				formatPEMDASPlainParserIntStack(stateStack), formatPEMDASPlainParserNodeStack(nodeStack))
+		},
+	}
+}
+
 type PEMDASPlainParserActionKind int
 
 const (
@@ -103,6 +134,61 @@ const (
 type PEMDASPlainParserAction struct {
 	Kind   PEMDASPlainParserActionKind
 	Target int
+}
+
+func formatPEMDASPlainParserToken(tok *tokens.Token) string {
+	if tok == nil {
+		return "TOK <nil>"
+	}
+	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d",
+		tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
+}
+
+func tokenTypeNamePEMDASPlainParser(tok *tokens.Token) string {
+	if tok == nil {
+		return "<nil>"
+	}
+	return string(tok.Type)
+}
+
+func tokenLexemePEMDASPlainParser(tok *tokens.Token) string {
+	if tok == nil {
+		return ""
+	}
+	return string(tok.Lexeme)
+}
+
+func formatPEMDASPlainParserIntStack(stack []int) string {
+	parts := make([]string, len(stack))
+	for i, v := range stack {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatPEMDASPlainParserNodeStack(stack []*asts.ASTNode) string {
+	parts := make([]string, len(stack))
+	for i, node := range stack {
+		if node == nil {
+			parts[i] = "<nil>"
+			continue
+		}
+		parts[i] = string(node.Type)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatPEMDASPlainParserAction(action PEMDASPlainParserAction) string {
+	switch action.Kind {
+	case PEMDASPlainParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case PEMDASPlainParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case PEMDASPlainParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
 }
 
 type PEMDASPlainParserProduction struct {

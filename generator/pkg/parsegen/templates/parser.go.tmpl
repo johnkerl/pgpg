@@ -2,6 +2,8 @@ package {{.PackageName}}
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
@@ -119,6 +121,35 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 	}
 }
 
+// AttachCLITrace installs tracing hooks for CLI debugging.
+func (parser *{{.TypeName}}) AttachCLITrace(traceTokens bool, traceStates bool, traceStack bool) {
+	if !traceTokens && !traceStates && !traceStack {
+		return
+	}
+	parser.Trace = &{{.TypeName}}TraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !traceTokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, format{{.TypeName}}Token(tok))
+		},
+		OnAction: func(state int, action {{.TypeName}}Action, lookahead *tokens.Token) {
+			if !traceStates {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n",
+				state, format{{.TypeName}}Action(action), tokenTypeName{{.TypeName}}(lookahead), tokenLexeme{{.TypeName}}(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !traceStack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n",
+				format{{.TypeName}}IntStack(stateStack), format{{.TypeName}}NodeStack(nodeStack))
+		},
+	}
+}
+
 type {{.TypeName}}ActionKind int
 
 const (
@@ -130,6 +161,61 @@ const (
 type {{.TypeName}}Action struct {
 	Kind   {{.TypeName}}ActionKind
 	Target int
+}
+
+func format{{.TypeName}}Token(tok *tokens.Token) string {
+	if tok == nil {
+		return "TOK <nil>"
+	}
+	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d",
+		tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
+}
+
+func tokenTypeName{{.TypeName}}(tok *tokens.Token) string {
+	if tok == nil {
+		return "<nil>"
+	}
+	return string(tok.Type)
+}
+
+func tokenLexeme{{.TypeName}}(tok *tokens.Token) string {
+	if tok == nil {
+		return ""
+	}
+	return string(tok.Lexeme)
+}
+
+func format{{.TypeName}}IntStack(stack []int) string {
+	parts := make([]string, len(stack))
+	for i, v := range stack {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func format{{.TypeName}}NodeStack(stack []*asts.ASTNode) string {
+	parts := make([]string, len(stack))
+	for i, node := range stack {
+		if node == nil {
+			parts[i] = "<nil>"
+			continue
+		}
+		parts[i] = string(node.Type)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func format{{.TypeName}}Action(action {{.TypeName}}Action) string {
+	switch action.Kind {
+	case {{.TypeName}}ActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case {{.TypeName}}ActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case {{.TypeName}}ActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
 }
 
 {{- if eq .HintMode "hints" }}

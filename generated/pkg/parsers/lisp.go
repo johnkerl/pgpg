@@ -2,6 +2,8 @@ package parsers
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
@@ -92,6 +94,35 @@ func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 	}
 }
 
+// AttachCLITrace installs tracing hooks for CLI debugging.
+func (parser *LISPParser) AttachCLITrace(traceTokens bool, traceStates bool, traceStack bool) {
+	if !traceTokens && !traceStates && !traceStack {
+		return
+	}
+	parser.Trace = &LISPParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !traceTokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatLISPParserToken(tok))
+		},
+		OnAction: func(state int, action LISPParserAction, lookahead *tokens.Token) {
+			if !traceStates {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n",
+				state, formatLISPParserAction(action), tokenTypeNameLISPParser(lookahead), tokenLexemeLISPParser(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !traceStack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n",
+				formatLISPParserIntStack(stateStack), formatLISPParserNodeStack(nodeStack))
+		},
+	}
+}
+
 type LISPParserActionKind int
 
 const (
@@ -103,6 +134,61 @@ const (
 type LISPParserAction struct {
 	Kind   LISPParserActionKind
 	Target int
+}
+
+func formatLISPParserToken(tok *tokens.Token) string {
+	if tok == nil {
+		return "TOK <nil>"
+	}
+	return fmt.Sprintf("TOK type=%s lexeme=%q line=%d col=%d",
+		tok.Type, string(tok.Lexeme), tok.Location.LineNumber, tok.Location.ColumnNumber)
+}
+
+func tokenTypeNameLISPParser(tok *tokens.Token) string {
+	if tok == nil {
+		return "<nil>"
+	}
+	return string(tok.Type)
+}
+
+func tokenLexemeLISPParser(tok *tokens.Token) string {
+	if tok == nil {
+		return ""
+	}
+	return string(tok.Lexeme)
+}
+
+func formatLISPParserIntStack(stack []int) string {
+	parts := make([]string, len(stack))
+	for i, v := range stack {
+		parts[i] = fmt.Sprintf("%d", v)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatLISPParserNodeStack(stack []*asts.ASTNode) string {
+	parts := make([]string, len(stack))
+	for i, node := range stack {
+		if node == nil {
+			parts[i] = "<nil>"
+			continue
+		}
+		parts[i] = string(node.Type)
+	}
+	return "[" + strings.Join(parts, " ") + "]"
+}
+
+func formatLISPParserAction(action LISPParserAction) string {
+	switch action.Kind {
+	case LISPParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case LISPParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case LISPParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
 }
 
 type LISPParserProduction struct {
