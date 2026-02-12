@@ -43,9 +43,10 @@ type Production struct {
 
 // ASTHint captures AST-construction directives for a production.
 type ASTHint struct {
-	ParentIndex  int    `json:"parent"`
-	ChildIndices []int  `json:"children"`
-	NodeType     string `json:"type,omitempty"`
+	ParentIndex      int    `json:"parent"`
+	ChildIndices     []int  `json:"children"`
+	PassthroughIndex *int   `json:"pass-through,omitempty"`
+	NodeType         string `json:"type,omitempty"`
 }
 
 type Symbol struct {
@@ -585,6 +586,7 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 	hint := &ASTHint{}
 	hasParent := false
 	hasChildren := false
+	hasPassthrough := false
 	for _, field := range node.Children {
 		if field.Type != parsers.EBNFParserNodeTypeHintField || field.Token == nil {
 			return nil, fmt.Errorf("invalid hint field node")
@@ -627,6 +629,16 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 			}
 			hint.ChildIndices = indices
 			hasChildren = true
+		case "pass-through", "passthrough":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintInt || valueNode.Token == nil {
+				return nil, fmt.Errorf("hint \"pass-through\" must be an integer")
+			}
+			val, err := strconv.Atoi(string(valueNode.Token.Lexeme))
+			if err != nil {
+				return nil, fmt.Errorf("invalid hint pass-through value: %w", err)
+			}
+			hint.PassthroughIndex = &val
+			hasPassthrough = true
 		case "type":
 			if valueNode.Type != parsers.EBNFParserNodeTypeHintString || valueNode.Token == nil {
 				return nil, fmt.Errorf("hint \"type\" must be a string")
@@ -639,6 +651,12 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 		default:
 			return nil, fmt.Errorf("unknown hint field %q", unquoted)
 		}
+	}
+	if hasPassthrough {
+		if hasParent || hasChildren || hint.NodeType != "" {
+			return nil, fmt.Errorf("hint \"passthrough\" cannot be combined with \"parent\", \"children\", or \"type\"")
+		}
+		return hint, nil
 	}
 	if !hasParent {
 		return nil, fmt.Errorf("hint missing required \"parent\" field")
@@ -676,6 +694,13 @@ func validateHints(productions []Production) error {
 				"production %s ::= %s has %d RHS symbols but no AST hint; "+
 					"in hint mode, multi-element productions require hints",
 				prod.LHS, strings.Join(rhsNames, " "), len(prod.RHS))
+		}
+		if prod.Hint.PassthroughIndex != nil {
+			if *prod.Hint.PassthroughIndex < 0 || *prod.Hint.PassthroughIndex >= len(prod.RHS) {
+				return fmt.Errorf("production %s: passthrough index %d out of range [0, %d)",
+					prod.LHS, *prod.Hint.PassthroughIndex, len(prod.RHS))
+			}
+			continue
 		}
 		if prod.Hint.ParentIndex < 0 || prod.Hint.ParentIndex >= len(prod.RHS) {
 			return fmt.Errorf("production %s: parent index %d out of range [0, %d)",

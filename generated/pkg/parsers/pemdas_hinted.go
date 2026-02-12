@@ -65,7 +65,9 @@ func (parser *PEMDASHintedParser) Parse(lexer manuallexers.AbstractLexer) (*asts
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
 			var node *asts.ASTNode
-			if prod.hasHint {
+			if prod.hasPassthrough {
+				node = rhsNodes[prod.passthroughIndex]
+			} else if prod.hasHint {
 				nodeType := prod.nodeType
 				if nodeType == "" {
 					nodeType = prod.lhs
@@ -124,12 +126,14 @@ type PEMDASHintedParserAction struct {
 }
 
 type PEMDASHintedParserProduction struct {
-	lhs          asts.NodeType
-	rhsCount     int
-	hasHint      bool
-	parentIndex  int
-	childIndices []int
-	nodeType     asts.NodeType
+	lhs              asts.NodeType
+	rhsCount         int
+	hasHint          bool
+	hasPassthrough   bool
+	parentIndex      int
+	passthroughIndex int
+	childIndices     []int
+	nodeType         asts.NodeType
 }
 
 var PEMDASHintedParserActions = map[int]map[tokens.TokenType]PEMDASHintedParserAction{
@@ -679,24 +683,24 @@ var PEMDASHintedParserGotos = map[int]map[asts.NodeType]int{
 }
 
 var PEMDASHintedParserProductions = []PEMDASHintedParserProduction{
-	{lhs: asts.NodeType("__pgpg_start_1"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("Root"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("Rvalue"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("PrecedenceChainStart"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("AddSubTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("AddSubTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("AddSubTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("UnaryTerm"), rhsCount: 2, hasHint: true, parentIndex: 0, childIndices: []int{1}, nodeType: asts.NodeType("unary")},
-	{lhs: asts.NodeType("UnaryTerm"), rhsCount: 2, hasHint: true, parentIndex: 0, childIndices: []int{1}, nodeType: asts.NodeType("unary")},
-	{lhs: asts.NodeType("UnaryTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 4, hasHint: true, parentIndex: 1, childIndices: []int{0, 3}, nodeType: asts.NodeType("operator")},
-	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("ParenTerm"), rhsCount: 3, hasHint: true, parentIndex: 1, childIndices: []int{}},
-	{lhs: asts.NodeType("ParenTerm"), rhsCount: 1, hasHint: false, parentIndex: 0, childIndices: []int{}},
-	{lhs: asts.NodeType("PrecedenceChainEnd"), rhsCount: 1, hasHint: true, parentIndex: 0, childIndices: []int{}, nodeType: asts.NodeType("int_literal")},
+	{lhs: asts.NodeType("__pgpg_start_1"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("Root"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("Rvalue"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("PrecedenceChainStart"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("AddSubTerm"), rhsCount: 3, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("AddSubTerm"), rhsCount: 3, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("AddSubTerm"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 3, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 3, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 3, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("MulDivTerm"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("UnaryTerm"), rhsCount: 2, hasHint: true, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{1}, nodeType: asts.NodeType("unary")},
+	{lhs: asts.NodeType("UnaryTerm"), rhsCount: 2, hasHint: true, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{1}, nodeType: asts.NodeType("unary")},
+	{lhs: asts.NodeType("UnaryTerm"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 3, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 2}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 4, hasHint: true, hasPassthrough: false, parentIndex: 1, passthroughIndex: 0, childIndices: []int{0, 3}, nodeType: asts.NodeType("operator")},
+	{lhs: asts.NodeType("ExponentiationTerm"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("ParenTerm"), rhsCount: 3, hasHint: false, hasPassthrough: true, parentIndex: 0, passthroughIndex: 1, childIndices: []int{}},
+	{lhs: asts.NodeType("ParenTerm"), rhsCount: 1, hasHint: false, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}},
+	{lhs: asts.NodeType("PrecedenceChainEnd"), rhsCount: 1, hasHint: true, hasPassthrough: false, parentIndex: 0, passthroughIndex: 0, childIndices: []int{}, nodeType: asts.NodeType("int_literal")},
 }

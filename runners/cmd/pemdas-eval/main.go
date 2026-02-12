@@ -95,14 +95,21 @@ func evaluateASTNode(node *asts.ASTNode) (int, error) {
 	case "int_literal":
 		v, err := evaluateLiteralNode(node)
 		if err != nil {
-			return -1, nil
+			return -1, err
 		}
 		return v, nil
 
 	case "operator":
 		v, err := evaluateOperatorNode(node)
 		if err != nil {
-			return -1, nil
+			return -1, err
+		}
+		return v, nil
+
+	case "unary":
+		v, err := evaluateUnaryNode(node)
+		if err != nil {
+			return -1, err
 		}
 		return v, nil
 
@@ -112,9 +119,12 @@ func evaluateASTNode(node *asts.ASTNode) (int, error) {
 }
 
 func evaluateLiteralNode(node *asts.ASTNode) (int, error) {
+	if node.Token == nil {
+		return -1, fmt.Errorf("Literal node has no token")
+	}
 	v, err := strconv.Atoi(string(node.Token.Lexeme))
 	if err != nil {
-		return -1, nil
+		return -1, err
 	}
 	return v, nil
 }
@@ -123,15 +133,15 @@ func evaluateOperatorNode(node *asts.ASTNode) (int, error) {
 	op := string(node.Token.Lexeme)
 	if len(node.Children) != 2 {
 		return -1, fmt.Errorf("Expected two operands for operator \"%s\"; got %d",
-			len(node.Children),
+			op, len(node.Children),
 		)
 	}
 
-	c1, e1 := evaluateLiteralNode(node.Children[0])
+	c1, e1 := evaluateASTNode(node.Children[0])
 	if e1 != nil {
 		return -1, e1
 	}
-	c2, e2 := evaluateLiteralNode(node.Children[1])
+	c2, e2 := evaluateASTNode(node.Children[1])
 	if e2 != nil {
 		return -1, e2
 	}
@@ -149,5 +159,28 @@ func evaluateOperatorNode(node *asts.ASTNode) (int, error) {
 		return c1 % c2, nil
 	default:
 		return -1, fmt.Errorf("Unhandled operator \"%s\"", op)
+	}
+}
+
+func evaluateUnaryNode(node *asts.ASTNode) (int, error) {
+	op := string(node.Token.Lexeme)
+	if len(node.Children) != 1 {
+		return -1, fmt.Errorf("Expected one operand for unary \"%s\"; got %d",
+			op, len(node.Children),
+		)
+	}
+
+	v, err := evaluateASTNode(node.Children[0])
+	if err != nil {
+		return -1, err
+	}
+
+	switch op {
+	case "+":
+		return v, nil
+	case "-":
+		return -v, nil
+	default:
+		return -1, fmt.Errorf("Unhandled unary operator \"%s\"", op)
 	}
 }

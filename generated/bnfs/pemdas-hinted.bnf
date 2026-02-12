@@ -54,7 +54,7 @@ ExponentiationTerm ::=
 ;
 
 ParenTerm ::=
-    lparen PrecedenceChainStart rparen -> { "parent": 1, "children": [], "type" } # TODO: pass through 1 with ITS type
+    lparen PrecedenceChainStart rparen -> { "pass-through": 1 }
   | PrecedenceChainEnd
 ;
 

@@ -116,12 +116,14 @@ type parserGotoEntry struct {
 }
 
 type parserProductionInfo struct {
-	LHSLiteral   string
-	RHSCount     int
-	HasHint      bool
-	ParentIndex  int
-	ChildIndices []int
-	NodeType     string
+	LHSLiteral        string
+	RHSCount          int
+	HasHint           bool
+	HasPassthrough    bool
+	ParentIndex       int
+	PassthroughIndex  int
+	ChildIndices      []int
+	NodeType          string
 }
 
 func buildParserActions(tables *Tables, typeName string) []parserActionState {
@@ -200,10 +202,15 @@ func buildParserProductions(tables *Tables) []parserProductionInfo {
 			RHSCount:   len(prod.RHS),
 		}
 		if prod.Hint != nil {
-			info.HasHint = true
-			info.ParentIndex = prod.Hint.ParentIndex
-			info.ChildIndices = prod.Hint.ChildIndices
-			info.NodeType = prod.Hint.NodeType
+			if prod.Hint.PassthroughIndex != nil {
+				info.HasPassthrough = true
+				info.PassthroughIndex = *prod.Hint.PassthroughIndex
+			} else {
+				info.HasHint = true
+				info.ParentIndex = prod.Hint.ParentIndex
+				info.ChildIndices = prod.Hint.ChildIndices
+				info.NodeType = prod.Hint.NodeType
+			}
 		}
 		out = append(out, info)
 	}

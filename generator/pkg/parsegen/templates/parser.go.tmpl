@@ -66,7 +66,9 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 			}
 {{- if eq .HintMode "hints" }}
 			var node *asts.ASTNode
-			if prod.hasHint {
+			if prod.hasPassthrough {
+				node = rhsNodes[prod.passthroughIndex]
+			} else if prod.hasHint {
 				nodeType := prod.nodeType
 				if nodeType == "" {
 					nodeType = prod.lhs
@@ -136,7 +138,9 @@ type {{.TypeName}}Production struct {
 	lhs          asts.NodeType
 	rhsCount     int
 	hasHint      bool
+	hasPassthrough bool
 	parentIndex  int
+	passthroughIndex int
 	childIndices []int
 	nodeType     asts.NodeType
 }
@@ -171,7 +175,7 @@ var {{.TypeName}}Gotos = map[int]map[asts.NodeType]int{
 var {{.TypeName}}Productions = []{{.TypeName}}Production{
 {{- range .Productions }}
 {{- if $.HintMode | eq "hints" }}
-	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, parentIndex: {{.ParentIndex}}, childIndices: {{childIndicesLiteral .ChildIndices}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
+	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, hasPassthrough: {{.HasPassthrough}}, parentIndex: {{.ParentIndex}}, passthroughIndex: {{.PassthroughIndex}}, childIndices: {{childIndicesLiteral .ChildIndices}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
 {{- else }}
 	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}},
 {{- end }}

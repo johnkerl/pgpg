@@ -1707,8 +1707,7 @@
         }
       ],
       "hint": {
-        "parent": 1,
-        "children": []
+        "pass-through": 1
       }
     },
     {
