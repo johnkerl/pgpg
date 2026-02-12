@@ -29,26 +29,13 @@ string        ::= "\"" { _string_char | _escape } "\"";
 # ----------------------------------------------------------------
 # Parsing
 
-Json ::= Value;
+Json     ::= Value;
 
-Value ::= Object | Array | string | number | true | false | null;
+Value    ::= Object | Array | string | number | true | false | null;
 
-# Want/need:
-# * parent can be a string token not an integer, e.g. "[]"
-# * with-adopted-children
+Object   ::= lcurly [ Members ] rcurly;
+Members  ::= Member { comma Member };
+Member   ::= string colon Value;
 
-Object
-  ::= lcurly rcurly -> { "parent_literal": "{}", "children": [] }
-  |   lcurly Members rcurly -> { "parent_literal": "{}", "children": [1] };
-Members  ::=
-    Member -> { "pass-through": 0 }
-  | Member comma Members -> { "parent": 1, "children": [0, 2] };
-Member
-  ::= string colon Value -> { "parent": 1, "children": [0, 2] };
-
-Array
-  ::= lbracket rbracket -> { "parent_literal": "[]", "children": [] }
-  |   lbracket Elements rbracket -> { "parent_literal": "[]", "children": [1] };
-Elements
-  ::= Value -> { "pass-through": 0 }
-  |   Value comma Elements -> { "parent": 0, "children": [2] };
+Array    ::= lbracket [ Elements ] rbracket;
+Elements ::= Value { comma Value };

@@ -160,13 +160,14 @@ func runGeneratedJSONPlainParser(input string, opts traceOptions) (*asts.AST, er
 }
 
 func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input string, opts traceOptions) error {
+	// TODO: CLI option
+	fmt.Println(input)
 	ast, err := run(input, opts)
 	if err != nil {
 		return err
 	}
 	// TODO: CLI option
 	ast.Print()
-	// ast.PrintParex()
 	return nil
 }
 

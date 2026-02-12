@@ -157,11 +157,11 @@
     "15": {
       "comma": {
         "type": "shift",
-        "target": 29
+        "target": 30
       },
       "rbracket": {
         "type": "reduce",
-        "target": 16
+        "target": 17
       }
     },
     "16": {
@@ -197,7 +197,7 @@
       },
       "rbracket": {
         "type": "shift",
-        "target": 31
+        "target": 32
       },
       "string": {
         "type": "shift",
@@ -211,7 +211,7 @@
     "18": {
       "rcurly": {
         "type": "shift",
-        "target": 33
+        "target": 34
       },
       "string": {
         "type": "shift",
@@ -241,7 +241,7 @@
     "21": {
       "EOF": {
         "type": "reduce",
-        "target": 14
+        "target": 16
       }
     },
     "22": {
@@ -267,7 +267,7 @@
     "24": {
       "comma": {
         "type": "shift",
-        "target": 34
+        "target": 36
       },
       "rcurly": {
         "type": "reduce",
@@ -277,19 +277,19 @@
     "25": {
       "rcurly": {
         "type": "shift",
-        "target": 35
+        "target": 37
       }
     },
     "26": {
       "EOF": {
         "type": "reduce",
-        "target": 9
+        "target": 10
       }
     },
     "27": {
       "colon": {
         "type": "shift",
-        "target": 36
+        "target": 38
       }
     },
     "28": {
@@ -299,6 +299,12 @@
       }
     },
     "29": {
+      "rbracket": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "30": {
       "false": {
         "type": "shift",
         "target": 16
@@ -328,143 +334,157 @@
         "target": 23
       }
     },
-    "30": {
+    "31": {
       "rbracket": {
         "type": "shift",
-        "target": 38
-      }
-    },
-    "31": {
-      "comma": {
-        "type": "reduce",
-        "target": 14
-      },
-      "rbracket": {
-        "type": "reduce",
-        "target": 14
+        "target": 40
       }
     },
     "32": {
-      "rcurly": {
-        "type": "shift",
-        "target": 39
-      }
-    },
-    "33": {
       "comma": {
         "type": "reduce",
-        "target": 9
+        "target": 16
       },
       "rbracket": {
         "type": "reduce",
-        "target": 9
+        "target": 16
+      }
+    },
+    "33": {
+      "rcurly": {
+        "type": "shift",
+        "target": 41
       }
     },
     "34": {
+      "comma": {
+        "type": "reduce",
+        "target": 10
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "35": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 13
+      }
+    },
+    "36": {
       "string": {
         "type": "shift",
         "target": 27
       }
     },
-    "35": {
+    "37": {
       "EOF": {
         "type": "reduce",
-        "target": 10
+        "target": 9
       }
     },
-    "36": {
+    "38": {
       "false": {
-        "type": "shift",
-        "target": 44
-      },
-      "lbracket": {
-        "type": "shift",
-        "target": 45
-      },
-      "lcurly": {
         "type": "shift",
         "target": 46
       },
-      "null": {
+      "lbracket": {
         "type": "shift",
         "target": 47
       },
-      "number": {
+      "lcurly": {
         "type": "shift",
         "target": 48
       },
-      "string": {
+      "null": {
         "type": "shift",
         "target": 49
       },
-      "true": {
+      "number": {
         "type": "shift",
         "target": 50
+      },
+      "string": {
+        "type": "shift",
+        "target": 51
+      },
+      "true": {
+        "type": "shift",
+        "target": 52
       }
     },
-    "37": {
+    "39": {
+      "comma": {
+        "type": "shift",
+        "target": 30
+      },
       "rbracket": {
         "type": "reduce",
         "target": 17
       }
     },
-    "38": {
-      "comma": {
-        "type": "reduce",
-        "target": 15
-      },
-      "rbracket": {
-        "type": "reduce",
-        "target": 15
-      }
-    },
-    "39": {
-      "comma": {
-        "type": "reduce",
-        "target": 10
-      },
-      "rbracket": {
-        "type": "reduce",
-        "target": 10
-      }
-    },
     "40": {
-      "rcurly": {
+      "comma": {
         "type": "reduce",
-        "target": 12
+        "target": 15
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 15
       }
     },
     "41": {
       "comma": {
         "type": "reduce",
-        "target": 3
+        "target": 9
       },
-      "rcurly": {
+      "rbracket": {
         "type": "reduce",
-        "target": 3
+        "target": 9
       }
     },
     "42": {
       "comma": {
-        "type": "reduce",
-        "target": 2
+        "type": "shift",
+        "target": 36
       },
       "rcurly": {
         "type": "reduce",
-        "target": 2
+        "target": 11
       }
     },
     "43": {
       "comma": {
         "type": "reduce",
-        "target": 13
+        "target": 3
       },
       "rcurly": {
         "type": "reduce",
-        "target": 13
+        "target": 3
       }
     },
     "44": {
+      "comma": {
+        "type": "reduce",
+        "target": 2
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "45": {
+      "comma": {
+        "type": "reduce",
+        "target": 14
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 14
+      }
+    },
+    "46": {
       "comma": {
         "type": "reduce",
         "target": 7
@@ -474,7 +494,7 @@
         "target": 7
       }
     },
-    "45": {
+    "47": {
       "false": {
         "type": "shift",
         "target": 16
@@ -497,7 +517,7 @@
       },
       "rbracket": {
         "type": "shift",
-        "target": 52
+        "target": 56
       },
       "string": {
         "type": "shift",
@@ -508,106 +528,118 @@
         "target": 23
       }
     },
-    "46": {
+    "48": {
       "rcurly": {
         "type": "shift",
-        "target": 54
+        "target": 58
       },
       "string": {
         "type": "shift",
         "target": 27
       }
     },
-    "47": {
-      "comma": {
-        "type": "reduce",
-        "target": 8
-      },
-      "rcurly": {
-        "type": "reduce",
-        "target": 8
-      }
-    },
-    "48": {
-      "comma": {
-        "type": "reduce",
-        "target": 5
-      },
-      "rcurly": {
-        "type": "reduce",
-        "target": 5
-      }
-    },
     "49": {
       "comma": {
         "type": "reduce",
-        "target": 4
+        "target": 8
       },
       "rcurly": {
         "type": "reduce",
-        "target": 4
+        "target": 8
       }
     },
     "50": {
       "comma": {
         "type": "reduce",
-        "target": 6
+        "target": 5
       },
       "rcurly": {
         "type": "reduce",
-        "target": 6
+        "target": 5
       }
     },
     "51": {
-      "rbracket": {
-        "type": "shift",
-        "target": 55
+      "comma": {
+        "type": "reduce",
+        "target": 4
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 4
       }
     },
     "52": {
       "comma": {
         "type": "reduce",
-        "target": 14
+        "target": 6
       },
       "rcurly": {
         "type": "reduce",
-        "target": 14
+        "target": 6
       }
     },
     "53": {
-      "rcurly": {
-        "type": "shift",
-        "target": 56
+      "rbracket": {
+        "type": "reduce",
+        "target": 18
       }
     },
     "54": {
-      "comma": {
-        "type": "reduce",
-        "target": 9
-      },
       "rcurly": {
         "type": "reduce",
-        "target": 9
+        "target": 12
       }
     },
     "55": {
-      "comma": {
-        "type": "reduce",
-        "target": 15
-      },
-      "rcurly": {
-        "type": "reduce",
-        "target": 15
+      "rbracket": {
+        "type": "shift",
+        "target": 59
       }
     },
     "56": {
       "comma": {
         "type": "reduce",
+        "target": 16
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "57": {
+      "rcurly": {
+        "type": "shift",
+        "target": 60
+      }
+    },
+    "58": {
+      "comma": {
+        "type": "reduce",
         "target": 10
       },
       "rcurly": {
         "type": "reduce",
         "target": 10
+      }
+    },
+    "59": {
+      "comma": {
+        "type": "reduce",
+        "target": 15
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
+    "60": {
+      "comma": {
+        "type": "reduce",
+        "target": 9
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 9
       }
     }
   },
@@ -628,45 +660,55 @@
       "Member": 24,
       "Members": 25
     },
+    "15": {
+      "__pgpg_repeat_2": 29
+    },
     "17": {
       "Array": 12,
-      "Elements": 30,
+      "Elements": 31,
       "Object": 14,
       "Value": 15
     },
     "18": {
       "Member": 24,
-      "Members": 32
+      "Members": 33
     },
-    "29": {
+    "24": {
+      "__pgpg_repeat_1": 35
+    },
+    "30": {
       "Array": 12,
-      "Elements": 37,
       "Object": 14,
-      "Value": 15
-    },
-    "34": {
-      "Member": 24,
-      "Members": 40
+      "Value": 39
     },
     "36": {
-      "Array": 41,
-      "Object": 42,
-      "Value": 43
+      "Member": 42
     },
-    "45": {
+    "38": {
+      "Array": 43,
+      "Object": 44,
+      "Value": 45
+    },
+    "39": {
+      "__pgpg_repeat_2": 53
+    },
+    "42": {
+      "__pgpg_repeat_1": 54
+    },
+    "47": {
       "Array": 12,
-      "Elements": 51,
+      "Elements": 55,
       "Object": 14,
       "Value": 15
     },
-    "46": {
+    "48": {
       "Member": 24,
-      "Members": 53
+      "Members": 57
     }
   },
   "productions": [
     {
-      "lhs": "__pgpg_start_1",
+      "lhs": "__pgpg_start_3",
       "rhs": [
         {
           "name": "Json",
@@ -754,15 +796,14 @@
           "terminal": true
         },
         {
+          "name": "Members",
+          "terminal": false
+        },
+        {
           "name": "rcurly",
           "terminal": true
         }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": [],
-        "parent_literal": "{}"
-      }
+      ]
     },
     {
       "lhs": "Object",
@@ -772,59 +813,44 @@
           "terminal": true
         },
         {
-          "name": "Members",
-          "terminal": false
-        },
-        {
           "name": "rcurly",
           "terminal": true
         }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": [
-          1
-        ],
-        "parent_literal": "{}"
-      }
+      ]
     },
     {
-      "lhs": "Members",
-      "rhs": [
-        {
-          "name": "Member",
-          "terminal": false
-        }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": null,
-        "pass-through": 0
-      }
+      "lhs": "__pgpg_repeat_1",
+      "rhs": []
     },
     {
-      "lhs": "Members",
+      "lhs": "__pgpg_repeat_1",
       "rhs": [
-        {
-          "name": "Member",
-          "terminal": false
-        },
         {
           "name": "comma",
           "terminal": true
         },
         {
-          "name": "Members",
+          "name": "Member",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_1",
           "terminal": false
         }
-      ],
-      "hint": {
-        "parent": 1,
-        "children": [
-          0,
-          2
-        ]
-      }
+      ]
+    },
+    {
+      "lhs": "Members",
+      "rhs": [
+        {
+          "name": "Member",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_1",
+          "terminal": false
+        }
+      ]
     },
     {
       "lhs": "Member",
@@ -841,32 +867,7 @@
           "name": "Value",
           "terminal": false
         }
-      ],
-      "hint": {
-        "parent": 1,
-        "children": [
-          0,
-          2
-        ]
-      }
-    },
-    {
-      "lhs": "Array",
-      "rhs": [
-        {
-          "name": "lbracket",
-          "terminal": true
-        },
-        {
-          "name": "rbracket",
-          "terminal": true
-        }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": [],
-        "parent_literal": "[]"
-      }
+      ]
     },
     {
       "lhs": "Array",
@@ -883,52 +884,54 @@
           "name": "rbracket",
           "terminal": true
         }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": [
-          1
-        ],
-        "parent_literal": "[]"
-      }
+      ]
     },
     {
-      "lhs": "Elements",
+      "lhs": "Array",
       "rhs": [
         {
-          "name": "Value",
-          "terminal": false
-        }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": null,
-        "pass-through": 0
-      }
-    },
-    {
-      "lhs": "Elements",
-      "rhs": [
-        {
-          "name": "Value",
-          "terminal": false
+          "name": "lbracket",
+          "terminal": true
         },
+        {
+          "name": "rbracket",
+          "terminal": true
+        }
+      ]
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": []
+    },
+    {
+      "lhs": "__pgpg_repeat_2",
+      "rhs": [
         {
           "name": "comma",
           "terminal": true
         },
         {
-          "name": "Elements",
+          "name": "Value",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_2",
           "terminal": false
         }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": [
-          2
-        ]
-      }
+      ]
+    },
+    {
+      "lhs": "Elements",
+      "rhs": [
+        {
+          "name": "Value",
+          "terminal": false
+        },
+        {
+          "name": "__pgpg_repeat_2",
+          "terminal": false
+        }
+      ]
     }
-  ],
-  "hint_mode": "hints"
+  ]
 }
