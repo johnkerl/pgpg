@@ -58,16 +58,16 @@ func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 			}
 		case LISPParserActionReduce:
 			prod := LISPParserProductions[action.Target]
-			children := make([]*asts.ASTNode, prod.rhsCount)
+			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
 			for i := prod.rhsCount - 1; i >= 0; i-- {
 				stateStack = stateStack[:len(stateStack)-1]
-				children[i] = nodeStack[len(nodeStack)-1]
+				rhsNodes[i] = nodeStack[len(nodeStack)-1]
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
 			if prod.rhsCount == 0 {
-				children = []*asts.ASTNode{}
+				rhsNodes = []*asts.ASTNode{}
 			}
-			node := asts.NewASTNode(nil, prod.lhs, children)
+			node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
 			nodeStack = append(nodeStack, node)
 			state = stateStack[len(stateStack)-1]
 			nextState, ok := LISPParserGotos[state][prod.lhs]

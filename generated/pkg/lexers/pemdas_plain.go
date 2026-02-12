@@ -9,23 +9,23 @@ import (
 	"github.com/johnkerl/pgpg/manual/pkg/tokens"
 )
 
-type PEMDASHintedLexer struct {
+type PEMDASPlainLexer struct {
 	inputText     string
 	inputLength   int
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*PEMDASHintedLexer)(nil)
+var _ manuallexers.AbstractLexer = (*PEMDASPlainLexer)(nil)
 
-func NewPEMDASHintedLexer(inputText string) manuallexers.AbstractLexer {
-	return &PEMDASHintedLexer{
+func NewPEMDASPlainLexer(inputText string) manuallexers.AbstractLexer {
+	return &PEMDASPlainLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
-func (lexer *PEMDASHintedLexer) Scan() *tokens.Token {
+func (lexer *PEMDASPlainLexer) Scan() *tokens.Token {
 	for {
 		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
 			return tokens.NewEOFToken(lexer.tokenLocation)
@@ -33,7 +33,7 @@ func (lexer *PEMDASHintedLexer) Scan() *tokens.Token {
 
 		startLocation := *lexer.tokenLocation
 		scanLocation := *lexer.tokenLocation
-		state := PEMDASHintedLexerStartState
+		state := PEMDASPlainLexerStartState
 		lastAcceptState := -1
 		lastAcceptLocation := scanLocation
 
@@ -42,13 +42,13 @@ func (lexer *PEMDASHintedLexer) Scan() *tokens.Token {
 				break
 			}
 			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-			nextState, ok := PEMDASHintedLexerLookupTransition(state, r)
+			nextState, ok := PEMDASPlainLexerLookupTransition(state, r)
 			if !ok {
 				break
 			}
 			scanLocation.LocateRune(r, width)
 			state = nextState
-			if _, ok := PEMDASHintedLexerActions[state]; ok {
+			if _, ok := PEMDASPlainLexerActions[state]; ok {
 				lastAcceptState = state
 				lastAcceptLocation = scanLocation
 			}
@@ -62,21 +62,21 @@ func (lexer *PEMDASHintedLexer) Scan() *tokens.Token {
 		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
 		lexeme := []rune(lexemeText)
 		*lexer.tokenLocation = lastAcceptLocation
-		tokenType := PEMDASHintedLexerActions[lastAcceptState]
-		if PEMDASHintedLexerIsIgnoredToken(tokenType) {
+		tokenType := PEMDASPlainLexerActions[lastAcceptState]
+		if PEMDASPlainLexerIsIgnoredToken(tokenType) {
 			continue
 		}
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
 
-func (lexer *PEMDASHintedLexer) peekRuneAt(byteOffset int) (rune, int) {
+func (lexer *PEMDASPlainLexer) peekRuneAt(byteOffset int) (rune, int) {
 	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
 	return r, width
 }
 
-func PEMDASHintedLexerLookupTransition(state int, r rune) (int, bool) {
-	transitionsForState, ok := PEMDASHintedLexerTransitions[state]
+func PEMDASPlainLexerLookupTransition(state int, r rune) (int, bool) {
+	transitionsForState, ok := PEMDASPlainLexerTransitions[state]
 	if !ok {
 		return 0, false
 	}
@@ -90,19 +90,19 @@ func PEMDASHintedLexerLookupTransition(state int, r rune) (int, bool) {
 	}
 	return 0, false
 }
-func PEMDASHintedLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
+func PEMDASPlainLexerIsIgnoredToken(tokenType tokens.TokenType) bool {
 	return strings.HasPrefix(string(tokenType), "!")
 }
 
-const PEMDASHintedLexerStartState = 0
+const PEMDASPlainLexerStartState = 0
 
-type PEMDASHintedLexerRangeTransition struct {
+type PEMDASPlainLexerRangeTransition struct {
 	from rune
 	to   rune
 	next int
 }
 
-var PEMDASHintedLexerTransitions = map[int][]PEMDASHintedLexerRangeTransition{
+var PEMDASPlainLexerTransitions = map[int][]PEMDASPlainLexerRangeTransition{
 	0: {
 		{from: '\t', to: '\t', next: 1},
 		{from: '\n', to: '\n', next: 2},
@@ -371,7 +371,7 @@ var PEMDASHintedLexerTransitions = map[int][]PEMDASHintedLexerRangeTransition{
 	},
 }
 
-var PEMDASHintedLexerActions = map[int]tokens.TokenType{
+var PEMDASPlainLexerActions = map[int]tokens.TokenType{
 	1:  "!whitespace",
 	2:  "!whitespace",
 	3:  "!whitespace",

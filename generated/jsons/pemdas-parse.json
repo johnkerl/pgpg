@@ -1450,7 +1450,15 @@
           "name": "MulDivTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "AddSubTerm",
@@ -1467,7 +1475,15 @@
           "name": "MulDivTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "AddSubTerm",
@@ -1493,7 +1509,15 @@
           "name": "UnaryTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "MulDivTerm",
@@ -1510,7 +1534,15 @@
           "name": "UnaryTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "MulDivTerm",
@@ -1527,7 +1559,15 @@
           "name": "UnaryTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "MulDivTerm",
@@ -1549,7 +1589,14 @@
           "name": "ExponentiationTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "type": "unary"
+      }
     },
     {
       "lhs": "UnaryTerm",
@@ -1562,7 +1609,14 @@
           "name": "UnaryTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "type": "unary"
+      }
     },
     {
       "lhs": "UnaryTerm",
@@ -1588,7 +1642,15 @@
           "name": "ExponentiationTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "ExponentiationTerm",
@@ -1609,7 +1671,15 @@
           "name": "ExponentiationTerm",
           "terminal": false
         }
-      ]
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          3
+        ],
+        "type": "operator"
+      }
     },
     {
       "lhs": "ExponentiationTerm",
@@ -1635,7 +1705,12 @@
           "name": "rparen",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": null,
+        "pass-through": 1
+      }
     },
     {
       "lhs": "ParenTerm",
@@ -1653,7 +1728,13 @@
           "name": "int_literal",
           "terminal": true
         }
-      ]
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [],
+        "type": "int_literal"
+      }
     }
-  ]
+  ],
+  "hint_mode": "hints"
 }

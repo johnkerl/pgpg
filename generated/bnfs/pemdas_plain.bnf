@@ -1,0 +1,58 @@
+# ----------------------------------------------------------------
+# Lexing rules
+
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+
+_decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+plus           ::= "+";
+minus          ::= "-";
+exponentiation ::= "**"; # Before times, since first match wins
+times          ::= "*";
+divide         ::= "/";
+modulo         ::= "%";
+lparen         ::= "(";
+rparen         ::= ")";
+
+int_literal ::= _decdig { _decdig } ;
+
+# ----------------------------------------------------------------
+# Parsing rules
+
+Root ::= Rvalue;
+
+Rvalue ::= PrecedenceChainStart ;
+
+PrecedenceChainStart ::= AddSubTerm ;
+
+AddSubTerm ::=
+    AddSubTerm plus  MulDivTerm
+  | AddSubTerm minus MulDivTerm
+  | MulDivTerm
+;
+
+MulDivTerm ::=
+    MulDivTerm times  UnaryTerm
+  | MulDivTerm divide UnaryTerm
+  | MulDivTerm modulo UnaryTerm
+  | UnaryTerm
+;
+
+UnaryTerm ::=
+    plus  ExponentiationTerm
+  | minus UnaryTerm
+  | ExponentiationTerm
+;
+
+ExponentiationTerm ::=
+    ParenTerm exponentiation       ExponentiationTerm
+  | ParenTerm exponentiation minus ExponentiationTerm
+  | ParenTerm
+;
+
+ParenTerm ::=
+    lparen PrecedenceChainStart rparen
+  | PrecedenceChainEnd
+;
+
+PrecedenceChainEnd ::= int_literal;
