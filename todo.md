@@ -1,3 +1,9 @@
+# ASTGEN THING
+
+* dedupe tracer opts ...
+* more hinted bnfs; rename to unhinted & epsilon
+* add trylex & tryparse for all new hinted bnfs
+
 # Top of list
 
 * Look into custom-AST/custom-traversal options:

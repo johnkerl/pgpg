@@ -15,16 +15,22 @@ type EBNFParser struct {
 }
 
 const (
-	EBNFParserNodeTypeGrammar    asts.NodeType = "grammar"
-	EBNFParserNodeTypeRule       asts.NodeType = "rule"
-	EBNFParserNodeTypeAlternates asts.NodeType = "alternates"
-	EBNFParserNodeTypeSequence   asts.NodeType = "sequence"
-	EBNFParserNodeTypeOptional   asts.NodeType = "optional"
-	EBNFParserNodeTypeRepeat     asts.NodeType = "repeat"
-	EBNFParserNodeTypeIdentifier asts.NodeType = "identifier"
-	EBNFParserNodeTypeLiteral    asts.NodeType = "literal"
-	EBNFParserNodeTypeRange      asts.NodeType = "range"
-	EBNFParserNodeTypeWildcard   asts.NodeType = "wildcard"
+	EBNFParserNodeTypeGrammar        asts.NodeType = "grammar"
+	EBNFParserNodeTypeRule           asts.NodeType = "rule"
+	EBNFParserNodeTypeAlternates     asts.NodeType = "alternates"
+	EBNFParserNodeTypeSequence       asts.NodeType = "sequence"
+	EBNFParserNodeTypeOptional       asts.NodeType = "optional"
+	EBNFParserNodeTypeRepeat         asts.NodeType = "repeat"
+	EBNFParserNodeTypeIdentifier     asts.NodeType = "identifier"
+	EBNFParserNodeTypeLiteral        asts.NodeType = "literal"
+	EBNFParserNodeTypeRange          asts.NodeType = "range"
+	EBNFParserNodeTypeWildcard       asts.NodeType = "wildcard"
+	EBNFParserNodeTypeHintedSequence asts.NodeType = "hinted_sequence"
+	EBNFParserNodeTypeHint           asts.NodeType = "hint"
+	EBNFParserNodeTypeHintField      asts.NodeType = "hint_field"
+	EBNFParserNodeTypeHintInt        asts.NodeType = "hint_int"
+	EBNFParserNodeTypeHintString     asts.NodeType = "hint_string"
+	EBNFParserNodeTypeHintArray      asts.NodeType = "hint_array"
 )
 
 func NewEBNFParser() AbstractParser {
@@ -130,7 +136,7 @@ func (parser *EBNFParser) parseExpression() (*asts.ASTNode, error) {
 }
 
 func (parser *EBNFParser) parseSequence() (*asts.ASTNode, error) {
-	// Sequence : Term+ ;
+	// Sequence : Term+ [HintBlock] ;
 	var terms []*asts.ASTNode
 	for {
 		term, ok, err := parser.parseTermIfPresent()
@@ -145,10 +151,23 @@ func (parser *EBNFParser) parseSequence() (*asts.ASTNode, error) {
 	if len(terms) == 0 {
 		return nil, errors.New("syntax error: expected term")
 	}
+
+	var seqNode *asts.ASTNode
 	if len(terms) == 1 {
-		return terms[0], nil
+		seqNode = terms[0]
+	} else {
+		seqNode = asts.NewASTNode(nil, EBNFParserNodeTypeSequence, terms)
 	}
-	return asts.NewASTNode(nil, EBNFParserNodeTypeSequence, terms), nil
+
+	hintNode, err := parser.parseHintIfPresent()
+	if err != nil {
+		return nil, err
+	}
+	if hintNode != nil {
+		return asts.NewASTNode(nil, EBNFParserNodeTypeHintedSequence,
+			[]*asts.ASTNode{seqNode, hintNode}), nil
+	}
+	return seqNode, nil
 }
 
 func (parser *EBNFParser) parseTermIfPresent() (*asts.ASTNode, bool, error) {
@@ -238,6 +257,120 @@ func (parser *EBNFParser) parseTermIfPresent() (*asts.ASTNode, bool, error) {
 	}
 
 	return nil, false, nil
+}
+
+func (parser *EBNFParser) parseHintIfPresent() (*asts.ASTNode, error) {
+	accepted, _, err := parser.accept(lexers.EBNFLexerTypeArrow)
+	if err != nil {
+		return nil, err
+	}
+	if !accepted {
+		return nil, nil
+	}
+
+	if err := parser.expect(lexers.EBNFLexerTypeLBrace); err != nil {
+		return nil, err
+	}
+
+	var fields []*asts.ASTNode
+	for {
+		// Check for closing brace
+		accepted, _, err := parser.accept(lexers.EBNFLexerTypeRBrace)
+		if err != nil {
+			return nil, err
+		}
+		if accepted {
+			break
+		}
+
+		// Comma separator between fields
+		if len(fields) > 0 {
+			if err := parser.expect(lexers.EBNFLexerTypeComma); err != nil {
+				return nil, err
+			}
+		}
+
+		// Parse "key" : value
+		accepted, keyToken, err := parser.accept(lexers.EBNFLexerTypeString)
+		if err != nil {
+			return nil, err
+		}
+		if !accepted {
+			return nil, fmt.Errorf("syntax error: expected hint field name at %s",
+				parser.formatTokenLocation(parser.lexer.LookAhead()))
+		}
+
+		if err := parser.expect(lexers.EBNFLexerTypeColon); err != nil {
+			return nil, err
+		}
+
+		valueNode, err := parser.parseHintValue()
+		if err != nil {
+			return nil, err
+		}
+
+		fieldNode := asts.NewASTNode(keyToken, EBNFParserNodeTypeHintField,
+			[]*asts.ASTNode{valueNode})
+		fields = append(fields, fieldNode)
+	}
+
+	return asts.NewASTNode(nil, EBNFParserNodeTypeHint, fields), nil
+}
+
+func (parser *EBNFParser) parseHintValue() (*asts.ASTNode, error) {
+	// Integer value
+	accepted, token, err := parser.accept(lexers.EBNFLexerTypeInteger)
+	if err != nil {
+		return nil, err
+	}
+	if accepted {
+		return asts.NewASTNode(token, EBNFParserNodeTypeHintInt, nil), nil
+	}
+
+	// String value
+	accepted, token, err = parser.accept(lexers.EBNFLexerTypeString)
+	if err != nil {
+		return nil, err
+	}
+	if accepted {
+		return asts.NewASTNode(token, EBNFParserNodeTypeHintString, nil), nil
+	}
+
+	// Array value: [ int, int, ... ]
+	accepted, _, err = parser.accept(lexers.EBNFLexerTypeLBracket)
+	if err != nil {
+		return nil, err
+	}
+	if accepted {
+		var elements []*asts.ASTNode
+		for {
+			accepted, _, err := parser.accept(lexers.EBNFLexerTypeRBracket)
+			if err != nil {
+				return nil, err
+			}
+			if accepted {
+				break
+			}
+			if len(elements) > 0 {
+				if err := parser.expect(lexers.EBNFLexerTypeComma); err != nil {
+					return nil, err
+				}
+			}
+			accepted, intToken, err := parser.accept(lexers.EBNFLexerTypeInteger)
+			if err != nil {
+				return nil, err
+			}
+			if !accepted {
+				return nil, fmt.Errorf("syntax error: expected integer in hint array at %s",
+					parser.formatTokenLocation(parser.lexer.LookAhead()))
+			}
+			elements = append(elements, asts.NewASTNode(intToken, EBNFParserNodeTypeHintInt, nil))
+		}
+		return asts.NewASTNode(nil, EBNFParserNodeTypeHintArray, elements), nil
+	}
+
+	return nil, fmt.Errorf("syntax error: expected hint value (integer, string, or array) at %s",
+		parser.formatTokenLocation(parser.lexer.LookAhead()))
 }
 
 func (parser *EBNFParser) accept(tokenType tokens.TokenType) (bool, *tokens.Token, error) {

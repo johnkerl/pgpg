@@ -58,16 +58,43 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 			}
 		case {{.TypeName}}ActionReduce:
 			prod := {{.TypeName}}Productions[action.Target]
-			children := make([]*asts.ASTNode, prod.rhsCount)
+			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
 			for i := prod.rhsCount - 1; i >= 0; i-- {
 				stateStack = stateStack[:len(stateStack)-1]
-				children[i] = nodeStack[len(nodeStack)-1]
+				rhsNodes[i] = nodeStack[len(nodeStack)-1]
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
-			if prod.rhsCount == 0 {
-				children = []*asts.ASTNode{}
+{{- if eq .HintMode "hints" }}
+			var node *asts.ASTNode
+			if prod.hasPassthrough {
+				node = rhsNodes[prod.passthroughIndex]
+			} else if prod.hasHint {
+				nodeType := prod.nodeType
+				if nodeType == "" {
+					nodeType = prod.lhs
+				}
+				var parentToken *tokens.Token
+				if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
+					parentToken = rhsNodes[prod.parentIndex].Token
+				}
+				hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
+				for i, ci := range prod.childIndices {
+					hintChildren[i] = rhsNodes[ci]
+				}
+				node = asts.NewASTNode(parentToken, nodeType, hintChildren)
+			} else if prod.rhsCount == 1 {
+				node = rhsNodes[0]
+			} else if prod.rhsCount == 0 {
+				node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
+			} else {
+				node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
 			}
-			node := asts.NewASTNode(nil, prod.lhs, children)
+{{- else }}
+			if prod.rhsCount == 0 {
+				rhsNodes = []*asts.ASTNode{}
+			}
+			node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
+{{- end }}
 			nodeStack = append(nodeStack, node)
 			state = stateStack[len(stateStack)-1]
 			nextState, ok := {{.TypeName}}Gotos[state][prod.lhs]
@@ -105,10 +132,25 @@ type {{.TypeName}}Action struct {
 	Target int
 }
 
+{{- if eq .HintMode "hints" }}
+
+type {{.TypeName}}Production struct {
+	lhs          asts.NodeType
+	rhsCount     int
+	hasHint      bool
+	hasPassthrough bool
+	parentIndex  int
+	passthroughIndex int
+	childIndices []int
+	nodeType     asts.NodeType
+}
+{{- else }}
+
 type {{.TypeName}}Production struct {
 	lhs      asts.NodeType
 	rhsCount int
 }
+{{- end }}
 
 var {{.TypeName}}Actions = map[int]map[tokens.TokenType]{{.TypeName}}Action{
 {{- range .Actions }}
@@ -132,6 +174,10 @@ var {{.TypeName}}Gotos = map[int]map[asts.NodeType]int{
 
 var {{.TypeName}}Productions = []{{.TypeName}}Production{
 {{- range .Productions }}
+{{- if $.HintMode | eq "hints" }}
+	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, hasPassthrough: {{.HasPassthrough}}, parentIndex: {{.ParentIndex}}, passthroughIndex: {{.PassthroughIndex}}, childIndices: {{childIndicesLiteral .ChildIndices}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
+{{- else }}
 	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}},
+{{- end }}
 {{- end }}
 }

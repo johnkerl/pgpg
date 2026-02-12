@@ -27,17 +27,18 @@ type traceOptions struct {
 }
 
 var parserMakerTable = map[string]parserInfoT{
-	"m:ame":    {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
-	"m:amne":   {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
-	"m:pemdas": {run: runManualParser(parsers.NewPEMDASParser), help: "Arithmetic with parentheses and PEMDAS precedence."},
-	"m:vic":    {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
-	"m:vbc":    {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
-	"m:ebnf":   {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
-	"g:pemdas":  {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser from generated/bnfs/pemdas.bnf."},
-	"g:stmts":  {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
-	"g:seng":  {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
-	"g:lisp":  {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
-	"g:json":  {run: runGeneratedJSONParser, help: "Generated JSON parser from generated/bnfs/json.bnf."},
+	"m:ame":          {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
+	"m:amne":         {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
+	"m:pemdas":       {run: runManualParser(parsers.NewPEMDASParser), help: "Arithmetic with parentheses and PEMDAS precedence."},
+	"m:vic":          {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
+	"m:vbc":          {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
+	"m:ebnf":         {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
+	"g:pemdas-plain": {run: runGeneratedPEMDASPlainParser, help: "Generated arithmetic parser from generated/bnfs/pemdas-plain.bnf."},
+	"g:pemdas":       {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser with AST hints from generated/bnfs/pemdas.bnf."},
+	"g:stmts":        {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
+	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
+	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
+	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from generated/bnfs/json.bnf."},
 }
 
 func usage() {
@@ -108,6 +109,13 @@ func runManualParser(maker func() parsers.AbstractParser) func(string, traceOpti
 		parser := maker()
 		return parser.Parse(input)
 	}
+}
+
+func runGeneratedPEMDASPlainParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewPEMDASPlainLexer(input)
+	parser := generatedparsers.NewPEMDASPlainParser()
+	attachPEMDASPlainTrace(parser, opts)
+	return parser.Parse(lexer)
 }
 
 func runGeneratedPEMDASParser(input string, opts traceOptions) (*asts.AST, error) {
@@ -185,6 +193,32 @@ func attachPEMDASTrace(parser *generatedparsers.PEMDASParser, opts traceOptions)
 				return
 			}
 			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatPEMDASAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
+		},
+		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
+			if !opts.stack {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STACK states=%s nodes=%s\n", formatIntStack(stateStack), formatNodeStack(nodeStack))
+		},
+	}
+}
+
+func attachPEMDASPlainTrace(parser *generatedparsers.PEMDASPlainParser, opts traceOptions) {
+	if !opts.tokens && !opts.states && !opts.stack {
+		return
+	}
+	parser.Trace = &generatedparsers.PEMDASPlainParserTraceHooks{
+		OnToken: func(tok *tokens.Token) {
+			if !opts.tokens {
+				return
+			}
+			fmt.Fprintln(os.Stderr, formatToken(tok))
+		},
+		OnAction: func(state int, action generatedparsers.PEMDASPlainParserAction, lookahead *tokens.Token) {
+			if !opts.states {
+				return
+			}
+			fmt.Fprintf(os.Stderr, "STATE %d %s on %s(%q)\n", state, formatPEMDASPlainAction(action), tokenTypeName(lookahead), tokenLexeme(lookahead))
 		},
 		OnStack: func(stateStack []int, nodeStack []*asts.ASTNode) {
 			if !opts.stack {
@@ -347,6 +381,19 @@ func formatPEMDASAction(action generatedparsers.PEMDASParserAction) string {
 	case generatedparsers.PEMDASParserActionReduce:
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case generatedparsers.PEMDASParserActionAccept:
+		return "accept"
+	default:
+		return "unknown"
+	}
+}
+
+func formatPEMDASPlainAction(action generatedparsers.PEMDASPlainParserAction) string {
+	switch action.Kind {
+	case generatedparsers.PEMDASPlainParserActionShift:
+		return fmt.Sprintf("shift(%d)", action.Target)
+	case generatedparsers.PEMDASPlainParserActionReduce:
+		return fmt.Sprintf("reduce(%d)", action.Target)
+	case generatedparsers.PEMDASPlainParserActionAccept:
 		return "accept"
 	default:
 		return "unknown"

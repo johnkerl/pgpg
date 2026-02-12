@@ -17,42 +17,45 @@ rparen         ::= ")";
 int_literal ::= _decdig { _decdig } ;
 
 # ----------------------------------------------------------------
-# Parsing rules
+# Parsing rules with AST hints
+#
+# Unhinted single-element alternatives pass through (no wrapping node).
+# Hinted alternatives create shaped AST nodes.
 
 Root ::= Rvalue;
 
-Rvalue ::= PrecedenceChainStart ;
+Rvalue ::= PrecedenceChainStart;
 
-PrecedenceChainStart ::= AddSubTerm ;
+PrecedenceChainStart ::= AddSubTerm;
 
 AddSubTerm ::=
-    AddSubTerm plus  MulDivTerm
-  | AddSubTerm minus MulDivTerm
+    AddSubTerm plus  MulDivTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | AddSubTerm minus MulDivTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
   | MulDivTerm
 ;
 
 MulDivTerm ::=
-    MulDivTerm times  UnaryTerm
-  | MulDivTerm divide UnaryTerm
-  | MulDivTerm modulo UnaryTerm
+    MulDivTerm times  UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm divide UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm modulo UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
   | UnaryTerm
 ;
 
 UnaryTerm ::=
-    plus  ExponentiationTerm
-  | minus UnaryTerm
+    plus  ExponentiationTerm -> { "parent": 0, "children": [1], "type": "unary" }
+  | minus UnaryTerm          -> { "parent": 0, "children": [1], "type": "unary" }
   | ExponentiationTerm
 ;
 
 ExponentiationTerm ::=
-    ParenTerm exponentiation       ExponentiationTerm
-  | ParenTerm exponentiation minus ExponentiationTerm
+    ParenTerm exponentiation       ExponentiationTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | ParenTerm exponentiation minus ExponentiationTerm -> { "parent": 1, "children": [0, 3], "type": "operator" }
   | ParenTerm
 ;
 
 ParenTerm ::=
-    lparen PrecedenceChainStart rparen
+    lparen PrecedenceChainStart rparen -> { "pass-through": 1 }
   | PrecedenceChainEnd
 ;
 
-PrecedenceChainEnd ::= int_literal;
+PrecedenceChainEnd ::= int_literal -> {"parent": 0, "children": [], "type": "int_literal"};

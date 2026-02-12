@@ -27,6 +27,7 @@ type Tables struct {
 	Gotos       map[int]map[string]int    `json:"gotos"`
 	Productions []Production              `json:"productions"`
 	Metadata    map[string]string         `json:"metadata,omitempty"`
+	HintMode    string                    `json:"hint_mode,omitempty"`
 }
 
 type Action struct {
@@ -35,8 +36,17 @@ type Action struct {
 }
 
 type Production struct {
-	LHS string   `json:"lhs"`
-	RHS []Symbol `json:"rhs"`
+	LHS  string   `json:"lhs"`
+	RHS  []Symbol `json:"rhs"`
+	Hint *ASTHint `json:"hint,omitempty"`
+}
+
+// ASTHint captures AST-construction directives for a production.
+type ASTHint struct {
+	ParentIndex      int    `json:"parent"`
+	ChildIndices     []int  `json:"children"`
+	PassthroughIndex *int   `json:"pass-through,omitempty"`
+	NodeType         string `json:"type,omitempty"`
 }
 
 type Symbol struct {
@@ -88,6 +98,14 @@ func (tables *Tables) MarshalJSON() ([]byte, error) {
 		fields = append(fields, jsonField{name: "metadata", value: metadataBytes})
 	}
 
+	if tables.HintMode != "" {
+		hintModeBytes, err := json.Marshal(tables.HintMode)
+		if err != nil {
+			return nil, err
+		}
+		fields = append(fields, jsonField{name: "hint_mode", value: hintModeBytes})
+	}
+
 	return marshalOrderedFields(fields), nil
 }
 
@@ -130,6 +148,18 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 		}
 	}
 
+	if err := validateHints(builder.productions); err != nil {
+		return nil, err
+	}
+
+	hintMode := ""
+	for _, prod := range builder.productions {
+		if prod.Hint != nil {
+			hintMode = "hints"
+			break
+		}
+	}
+
 	grammar := newGrammar(builder, startSymbol)
 	actions, gotos, err := buildLR1Tables(grammar)
 	if err != nil {
@@ -141,6 +171,7 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 		Actions:     actions,
 		Gotos:       gotos,
 		Productions: grammar.productions,
+		HintMode:    hintMode,
 	}, nil
 }
 
@@ -405,21 +436,27 @@ func newGrammarBuilder(parserRuleNames []string, lexerRuleSet map[string]bool) *
 	}
 }
 
+type expandedAlternative struct {
+	symbols []Symbol
+	hint    *ASTHint
+}
+
 func (builder *grammarBuilder) addRule(ruleName string, expr *asts.ASTNode) error {
-	sequences, err := builder.expandExpr(expr)
+	alts, err := builder.expandExpr(expr)
 	if err != nil {
 		return fmt.Errorf("rule %q: %w", ruleName, err)
 	}
-	for _, seq := range sequences {
+	for _, alt := range alts {
 		builder.productions = append(builder.productions, Production{
-			LHS: ruleName,
-			RHS: seq,
+			LHS:  ruleName,
+			RHS:  alt.symbols,
+			Hint: alt.hint,
 		})
 	}
 	return nil
 }
 
-func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([][]Symbol, error) {
+func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([]expandedAlternative, error) {
 	switch node.Type {
 	case parsers.EBNFParserNodeTypeLiteral:
 		if node.Token == nil {
@@ -430,7 +467,7 @@ func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([][]Symbol, error
 		if err != nil {
 			return nil, fmt.Errorf("invalid literal %q: %w", text, err)
 		}
-		return [][]Symbol{{{Name: unquoted, Terminal: true}}}, nil
+		return []expandedAlternative{{symbols: []Symbol{{Name: unquoted, Terminal: true}}}}, nil
 	case parsers.EBNFParserNodeTypeRange:
 		return nil, fmt.Errorf("range expressions are only allowed in lexer rules")
 	case parsers.EBNFParserNodeTypeWildcard:
@@ -441,58 +478,58 @@ func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([][]Symbol, error
 		}
 		identifier := string(node.Token.Lexeme)
 		if builder.lexerRuleSet[identifier] {
-			return [][]Symbol{{{Name: identifier, Terminal: true}}}, nil
+			return []expandedAlternative{{symbols: []Symbol{{Name: identifier, Terminal: true}}}}, nil
 		}
 		if !builder.parserRuleSet[identifier] {
 			return nil, fmt.Errorf("undefined rule %q", identifier)
 		}
-		return [][]Symbol{{{Name: identifier, Terminal: false}}}, nil
+		return []expandedAlternative{{symbols: []Symbol{{Name: identifier, Terminal: false}}}}, nil
 	case parsers.EBNFParserNodeTypeSequence:
 		if len(node.Children) == 0 {
-			return [][]Symbol{{}}, nil
+			return []expandedAlternative{{symbols: []Symbol{}}}, nil
 		}
-		sequences := [][]Symbol{{}}
+		alts := []expandedAlternative{{symbols: []Symbol{}}}
 		for _, child := range node.Children {
-			childSeqs, err := builder.expandExpr(child)
+			childAlts, err := builder.expandExpr(child)
 			if err != nil {
 				return nil, err
 			}
-			var next [][]Symbol
-			for _, seq := range sequences {
-				for _, childSeq := range childSeqs {
-					combined := make([]Symbol, 0, len(seq)+len(childSeq))
-					combined = append(combined, seq...)
-					combined = append(combined, childSeq...)
-					next = append(next, combined)
+			var next []expandedAlternative
+			for _, alt := range alts {
+				for _, childAlt := range childAlts {
+					combined := make([]Symbol, 0, len(alt.symbols)+len(childAlt.symbols))
+					combined = append(combined, alt.symbols...)
+					combined = append(combined, childAlt.symbols...)
+					next = append(next, expandedAlternative{symbols: combined})
 				}
 			}
-			sequences = next
+			alts = next
 		}
-		return sequences, nil
+		return alts, nil
 	case parsers.EBNFParserNodeTypeAlternates:
-		var out [][]Symbol
+		var out []expandedAlternative
 		for _, child := range node.Children {
-			childSeqs, err := builder.expandExpr(child)
+			childAlts, err := builder.expandExpr(child)
 			if err != nil {
 				return nil, err
 			}
-			out = append(out, childSeqs...)
+			out = append(out, childAlts...)
 		}
 		return out, nil
 	case parsers.EBNFParserNodeTypeOptional:
 		if err := node.CheckArity(1); err != nil {
 			return nil, err
 		}
-		childSeqs, err := builder.expandExpr(node.Children[0])
+		childAlts, err := builder.expandExpr(node.Children[0])
 		if err != nil {
 			return nil, err
 		}
-		return append(childSeqs, []Symbol{}), nil
+		return append(childAlts, expandedAlternative{symbols: []Symbol{}}), nil
 	case parsers.EBNFParserNodeTypeRepeat:
 		if err := node.CheckArity(1); err != nil {
 			return nil, err
 		}
-		childSeqs, err := builder.expandExpr(node.Children[0])
+		childAlts, err := builder.expandExpr(node.Children[0])
 		if err != nil {
 			return nil, err
 		}
@@ -503,22 +540,180 @@ func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([][]Symbol, error
 			LHS: repeatName,
 			RHS: []Symbol{},
 		})
-		for _, childSeq := range childSeqs {
-			if len(childSeq) == 0 {
+		for _, childAlt := range childAlts {
+			if len(childAlt.symbols) == 0 {
 				continue
 			}
-			combined := make([]Symbol, 0, len(childSeq)+1)
-			combined = append(combined, childSeq...)
+			combined := make([]Symbol, 0, len(childAlt.symbols)+1)
+			combined = append(combined, childAlt.symbols...)
 			combined = append(combined, Symbol{Name: repeatName, Terminal: false})
 			builder.productions = append(builder.productions, Production{
 				LHS: repeatName,
 				RHS: combined,
 			})
 		}
-		return [][]Symbol{{{Name: repeatName, Terminal: false}}}, nil
+		return []expandedAlternative{{symbols: []Symbol{{Name: repeatName, Terminal: false}}}}, nil
+	case parsers.EBNFParserNodeTypeHintedSequence:
+		if err := node.CheckArity(2); err != nil {
+			return nil, err
+		}
+		seqNode := node.Children[0]
+		hintNode := node.Children[1]
+
+		alts, err := builder.expandExpr(seqNode)
+		if err != nil {
+			return nil, err
+		}
+
+		hint, err := parseHintNode(hintNode)
+		if err != nil {
+			return nil, err
+		}
+
+		for i := range alts {
+			alts[i].hint = hint
+		}
+		return alts, nil
 	default:
 		return nil, fmt.Errorf("unsupported node type %q", node.Type)
 	}
+}
+
+func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
+	if node.Type != parsers.EBNFParserNodeTypeHint {
+		return nil, fmt.Errorf("expected hint node, got %q", node.Type)
+	}
+	hint := &ASTHint{}
+	hasParent := false
+	hasChildren := false
+	hasPassthrough := false
+	for _, field := range node.Children {
+		if field.Type != parsers.EBNFParserNodeTypeHintField || field.Token == nil {
+			return nil, fmt.Errorf("invalid hint field node")
+		}
+		key := string(field.Token.Lexeme)
+		// Strip quotes from key
+		unquoted, err := strconv.Unquote(key)
+		if err != nil {
+			return nil, fmt.Errorf("invalid hint key %q: %w", key, err)
+		}
+		if len(field.Children) != 1 {
+			return nil, fmt.Errorf("hint field %q must have exactly one value", unquoted)
+		}
+		valueNode := field.Children[0]
+		switch unquoted {
+		case "parent":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintInt || valueNode.Token == nil {
+				return nil, fmt.Errorf("hint \"parent\" must be an integer")
+			}
+			val, err := strconv.Atoi(string(valueNode.Token.Lexeme))
+			if err != nil {
+				return nil, fmt.Errorf("invalid hint parent value: %w", err)
+			}
+			hint.ParentIndex = val
+			hasParent = true
+		case "children":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintArray {
+				return nil, fmt.Errorf("hint \"children\" must be an array")
+			}
+			indices := make([]int, 0, len(valueNode.Children))
+			for _, elem := range valueNode.Children {
+				if elem.Type != parsers.EBNFParserNodeTypeHintInt || elem.Token == nil {
+					return nil, fmt.Errorf("hint children elements must be integers")
+				}
+				val, err := strconv.Atoi(string(elem.Token.Lexeme))
+				if err != nil {
+					return nil, fmt.Errorf("invalid hint child index: %w", err)
+				}
+				indices = append(indices, val)
+			}
+			hint.ChildIndices = indices
+			hasChildren = true
+		case "pass-through", "passthrough":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintInt || valueNode.Token == nil {
+				return nil, fmt.Errorf("hint \"pass-through\" must be an integer")
+			}
+			val, err := strconv.Atoi(string(valueNode.Token.Lexeme))
+			if err != nil {
+				return nil, fmt.Errorf("invalid hint pass-through value: %w", err)
+			}
+			hint.PassthroughIndex = &val
+			hasPassthrough = true
+		case "type":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintString || valueNode.Token == nil {
+				return nil, fmt.Errorf("hint \"type\" must be a string")
+			}
+			unquotedType, err := strconv.Unquote(string(valueNode.Token.Lexeme))
+			if err != nil {
+				return nil, fmt.Errorf("invalid hint type value: %w", err)
+			}
+			hint.NodeType = unquotedType
+		default:
+			return nil, fmt.Errorf("unknown hint field %q", unquoted)
+		}
+	}
+	if hasPassthrough {
+		if hasParent || hasChildren || hint.NodeType != "" {
+			return nil, fmt.Errorf("hint \"passthrough\" cannot be combined with \"parent\", \"children\", or \"type\"")
+		}
+		return hint, nil
+	}
+	if !hasParent {
+		return nil, fmt.Errorf("hint missing required \"parent\" field")
+	}
+	if !hasChildren {
+		return nil, fmt.Errorf("hint missing required \"children\" field")
+	}
+	return hint, nil
+}
+
+func validateHints(productions []Production) error {
+	hasAnyHint := false
+	for _, prod := range productions {
+		if prod.Hint != nil {
+			hasAnyHint = true
+			break
+		}
+	}
+	if !hasAnyHint {
+		return nil
+	}
+	for _, prod := range productions {
+		if strings.HasPrefix(prod.LHS, "__pgpg_") {
+			continue
+		}
+		if prod.Hint == nil {
+			if len(prod.RHS) <= 1 {
+				continue
+			}
+			rhsNames := make([]string, len(prod.RHS))
+			for i, sym := range prod.RHS {
+				rhsNames[i] = sym.Name
+			}
+			return fmt.Errorf(
+				"production %s ::= %s has %d RHS symbols but no AST hint; "+
+					"in hint mode, multi-element productions require hints",
+				prod.LHS, strings.Join(rhsNames, " "), len(prod.RHS))
+		}
+		if prod.Hint.PassthroughIndex != nil {
+			if *prod.Hint.PassthroughIndex < 0 || *prod.Hint.PassthroughIndex >= len(prod.RHS) {
+				return fmt.Errorf("production %s: passthrough index %d out of range [0, %d)",
+					prod.LHS, *prod.Hint.PassthroughIndex, len(prod.RHS))
+			}
+			continue
+		}
+		if prod.Hint.ParentIndex < 0 || prod.Hint.ParentIndex >= len(prod.RHS) {
+			return fmt.Errorf("production %s: parent index %d out of range [0, %d)",
+				prod.LHS, prod.Hint.ParentIndex, len(prod.RHS))
+		}
+		for _, ci := range prod.Hint.ChildIndices {
+			if ci < 0 || ci >= len(prod.RHS) {
+				return fmt.Errorf("production %s: child index %d out of range [0, %d)",
+					prod.LHS, ci, len(prod.RHS))
+			}
+		}
+	}
+	return nil
 }
 
 func (builder *grammarBuilder) newSyntheticName(kind string) string {
