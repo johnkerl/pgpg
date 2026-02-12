@@ -34,7 +34,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:vbc":           {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":          {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
 	"g:pemdas":        {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser from generated/bnfs/pemdas.bnf."},
-	"g:pemdas-hinted": {run: runGeneratedPEMDASHintedParser, help: "Generated arithmetic parser with AST hints from generated/bnfs/pemdas-hinted.bnf."},
+	"g:pemdas_hinted": {run: runGeneratedPEMDASHintedParser, help: "Generated arithmetic parser with AST hints from generated/bnfs/pemdas_hinted.bnf."},
 	"g:stmts":         {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
 	"g:seng":          {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
 	"g:lisp":          {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
