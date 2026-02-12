@@ -1,8 +1,8 @@
 # ----------------------------------------------------------------
 # Grammar specs are "name|TypePrefix" where TypePrefix is used to
 # build FooLexer / FooParser type names.
-LEX_SPECS=sign-digit|SignDigit pemdas|PEMDAS pemdas_plain|PEMDASPlain statements|Statements seng|SENG lisp|LISP json|JSON
-PARSE_SPECS=pemdas|PEMDAS pemdas_plain|PEMDASPlain statements|Statements seng|SENG lisp|LISP json|JSON
+LEX_SPECS=sign-digit|SignDigit pemdas|PEMDAS pemdas_plain|PEMDASPlain statements|Statements seng|SENG lisp|LISP json|JSON json_plain|JSONPlain
+PARSE_SPECS=pemdas|PEMDAS pemdas_plain|PEMDASPlain statements|Statements seng|SENG lisp|LISP json|JSON json_plain|JSONPlain
 
 LEXGENS=$(foreach spec,$(LEX_SPECS),pkg/lexers/$(firstword $(subst |, ,$(spec))).go)
 PARSEGENS=$(foreach spec,$(PARSE_SPECS),pkg/parsers/$(firstword $(subst |, ,$(spec))).go)

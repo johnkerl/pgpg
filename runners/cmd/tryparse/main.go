@@ -37,6 +37,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
 	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
 	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from generated/bnfs/json.bnf."},
+	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from generated/bnfs/json_plain.bnf."},
 }
 
 func usage() {
@@ -147,6 +148,13 @@ func runGeneratedLISPParser(input string, opts traceOptions) (*asts.AST, error) 
 func runGeneratedJSONParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewJSONLexer(input)
 	parser := generatedparsers.NewJSONParser()
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
+	return parser.Parse(lexer)
+}
+
+func runGeneratedJSONPlainParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewJSONPlainLexer(input)
+	parser := generatedparsers.NewJSONPlainParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 	return parser.Parse(lexer)
 }
