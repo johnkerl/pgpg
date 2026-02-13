@@ -19,9 +19,10 @@ type parserInfoT struct {
 }
 
 type traceOptions struct {
-	tokens bool
-	states bool
-	stack  bool
+	tokens  bool
+	states  bool
+	stack   bool
+	astMode string // "", "noast", or "fullast"
 }
 
 var parserMakerTable = map[string]parserInfoT{
@@ -37,6 +38,7 @@ var parserMakerTable = map[string]parserInfoT{
 	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
 	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
 	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from generated/bnfs/json.bnf."},
+	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from generated/bnfs/json_plain.bnf."},
 }
 
 func usage() {
@@ -60,11 +62,26 @@ func main() {
 	var traceTokens bool
 	var traceStates bool
 	var traceStack bool
+	var noast bool
+	var fullast bool
 	flag.BoolVar(&traceTokens, "tokens", false, "Print tokens as they're read")
 	flag.BoolVar(&traceStates, "states", false, "Show parser state transitions")
 	flag.BoolVar(&traceStack, "stack", false, "Show parser stack after each action")
+	flag.BoolVar(&noast, "noast", false, "Syntax-only: do not build or print AST (generated parsers only)")
+	flag.BoolVar(&fullast, "fullast", false, "Ignore AST hints and build full parse tree (generated parsers only)")
 	flag.Usage = usage
 	flag.Parse()
+
+	if noast && fullast {
+		fmt.Fprintln(os.Stderr, "cannot use -noast and -fullast together")
+		os.Exit(1)
+	}
+	astMode := ""
+	if noast {
+		astMode = "noast"
+	} else if fullast {
+		astMode = "fullast"
+	}
 
 	if flag.NArg() < 3 {
 		usage()
@@ -79,9 +96,10 @@ func main() {
 	}
 	run := parserInfo.run
 	opts := traceOptions{
-		tokens: traceTokens,
-		states: traceStates,
-		stack:  traceStack,
+		tokens:  traceTokens,
+		states:  traceStates,
+		stack:   traceStack,
+		astMode: astMode,
 	}
 
 	switch mode {
@@ -113,52 +131,61 @@ func runGeneratedPEMDASPlainParser(input string, opts traceOptions) (*asts.AST, 
 	lexer := generatedlexers.NewPEMDASPlainLexer(input)
 	parser := generatedparsers.NewPEMDASPlainParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer)
+	return parser.Parse(lexer, opts.astMode)
 }
 
 func runGeneratedPEMDASParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewPEMDASLexer(input)
 	parser := generatedparsers.NewPEMDASParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer)
+	return parser.Parse(lexer, opts.astMode)
 }
 
 func runGeneratedStatementsParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewStatementsLexer(input)
 	parser := generatedparsers.NewStatementsParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer)
+	return parser.Parse(lexer, opts.astMode)
 }
 
 func runGeneratedSENGParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewSENGLexer(input)
 	parser := generatedparsers.NewSENGParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer)
+	return parser.Parse(lexer, opts.astMode)
 }
 
 func runGeneratedLISPParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewLISPLexer(input)
 	parser := generatedparsers.NewLISPParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer)
+	return parser.Parse(lexer, opts.astMode)
 }
 
 func runGeneratedJSONParser(input string, opts traceOptions) (*asts.AST, error) {
 	lexer := generatedlexers.NewJSONLexer(input)
 	parser := generatedparsers.NewJSONParser()
 	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer)
+	return parser.Parse(lexer, opts.astMode)
+}
+
+func runGeneratedJSONPlainParser(input string, opts traceOptions) (*asts.AST, error) {
+	lexer := generatedlexers.NewJSONPlainLexer(input)
+	parser := generatedparsers.NewJSONPlainParser()
+	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
+	return parser.Parse(lexer, opts.astMode)
 }
 
 func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input string, opts traceOptions) error {
+	// TODO: CLI option
+	fmt.Println(input)
 	ast, err := run(input, opts)
 	if err != nil {
 		return err
 	}
-	// TODO: CLI option
-	ast.Print()
-	// ast.PrintParex()
+	if ast != nil && opts.astMode != "noast" {
+		ast.Print()
+	}
 	return nil
 }
 

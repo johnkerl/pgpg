@@ -22,7 +22,10 @@ type LISPParserTraceHooks struct {
 
 func NewLISPParser() *LISPParser { return &LISPParser{} }
 
-func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, error) {
+// noASTSentinel is used as a placeholder on the node stack when astMode == "noast".
+var LISPParserNoASTSentinel = &asts.ASTNode{}
+
+func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer, astMode string) (*asts.AST, error) {
 	if lexer == nil {
 		return nil, fmt.Errorf("parser: nil lexer")
 	}
@@ -49,7 +52,11 @@ func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 		}
 		switch action.Kind {
 		case LISPParserActionShift:
-			nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, LISPParserNoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
 			stateStack = append(stateStack, action.Target)
 			lookahead = lexer.Scan()
 			if parser.Trace != nil && parser.Trace.OnToken != nil {
@@ -66,11 +73,15 @@ func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 				rhsNodes[i] = nodeStack[len(nodeStack)-1]
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
-			if prod.rhsCount == 0 {
-				rhsNodes = []*asts.ASTNode{}
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, LISPParserNoASTSentinel)
+			} else {
+				if prod.rhsCount == 0 {
+					rhsNodes = []*asts.ASTNode{}
+				}
+				node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				nodeStack = append(nodeStack, node)
 			}
-			node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
-			nodeStack = append(nodeStack, node)
 			state = stateStack[len(stateStack)-1]
 			nextState, ok := LISPParserGotos[state][prod.lhs]
 			if !ok {
@@ -86,6 +97,9 @@ func (parser *LISPParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 			}
 			if parser.Trace != nil && parser.Trace.OnStack != nil {
 				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
 		default:

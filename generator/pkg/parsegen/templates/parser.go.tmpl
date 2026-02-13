@@ -22,7 +22,10 @@ type {{.TypeName}}TraceHooks struct {
 
 func New{{.TypeName}}() *{{.TypeName}} { return &{{.TypeName}}{} }
 
-func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, error) {
+// noASTSentinel is used as a placeholder on the node stack when astMode == "noast".
+var {{.TypeName}}NoASTSentinel = &asts.ASTNode{}
+
+func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer, astMode string) (*asts.AST, error) {
 	if lexer == nil {
 		return nil, fmt.Errorf("parser: nil lexer")
 	}
@@ -49,7 +52,11 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 		}
 		switch action.Kind {
 		case {{.TypeName}}ActionShift:
-			nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, {{.TypeName}}NoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
 			stateStack = append(stateStack, action.Target)
 			lookahead = lexer.Scan()
 			if parser.Trace != nil && parser.Trace.OnToken != nil {
@@ -66,38 +73,120 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 				rhsNodes[i] = nodeStack[len(nodeStack)-1]
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
-{{- if eq .HintMode "hints" }}
-			var node *asts.ASTNode
-			if prod.hasPassthrough {
-				node = rhsNodes[prod.passthroughIndex]
-			} else if prod.hasHint {
-				nodeType := prod.nodeType
-				if nodeType == "" {
-					nodeType = prod.lhs
-				}
-				var parentToken *tokens.Token
-				if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
-					parentToken = rhsNodes[prod.parentIndex].Token
-				}
-				hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
-				for i, ci := range prod.childIndices {
-					hintChildren[i] = rhsNodes[ci]
-				}
-				node = asts.NewASTNode(parentToken, nodeType, hintChildren)
-			} else if prod.rhsCount == 1 {
-				node = rhsNodes[0]
-			} else if prod.rhsCount == 0 {
-				node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, {{.TypeName}}NoASTSentinel)
 			} else {
-				node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
-			}
+{{- if eq .HintMode "hints" }}
+				var node *asts.ASTNode
+				useFullTree := (astMode == "fullast")
+				if !useFullTree && prod.hasPassthrough {
+					node = rhsNodes[prod.passthroughIndex]
+				} else if !useFullTree && prod.hasWithAppendedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					for _, ci := range prod.withAppendedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithPrependedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withPrependedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithAdoptedGrandchildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withAdoptedGrandchildren {
+						childNode := rhsNodes[ci]
+						if childNode != nil && childNode.Children != nil {
+							newChildren = append(newChildren, childNode.Children...)
+						}
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasHint {
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = prod.lhs
+					}
+					var parentToken *tokens.Token
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+					} else if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
+						parentToken = rhsNodes[prod.parentIndex].Token
+					}
+					hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
+					for i, ci := range prod.childIndices {
+						hintChildren[i] = rhsNodes[ci]
+					}
+					node = asts.NewASTNode(parentToken, nodeType, hintChildren)
+				} else if prod.rhsCount == 1 {
+					node = rhsNodes[0]
+				} else if prod.rhsCount == 0 {
+					node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
+				} else {
+					node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				}
 {{- else }}
-			if prod.rhsCount == 0 {
-				rhsNodes = []*asts.ASTNode{}
-			}
-			node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				if prod.rhsCount == 0 {
+					rhsNodes = []*asts.ASTNode{}
+				}
+				node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
 {{- end }}
-			nodeStack = append(nodeStack, node)
+				nodeStack = append(nodeStack, node)
+			}
 			state = stateStack[len(stateStack)-1]
 			nextState, ok := {{.TypeName}}Gotos[state][prod.lhs]
 			if !ok {
@@ -113,6 +202,9 @@ func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer) (*asts.AST,
 			}
 			if parser.Trace != nil && parser.Trace.OnStack != nil {
 				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
 		default:
@@ -221,14 +313,22 @@ func format{{.TypeName}}Action(action {{.TypeName}}Action) string {
 {{- if eq .HintMode "hints" }}
 
 type {{.TypeName}}Production struct {
-	lhs          asts.NodeType
-	rhsCount     int
-	hasHint      bool
-	hasPassthrough bool
-	parentIndex  int
-	passthroughIndex int
-	childIndices []int
-	nodeType     asts.NodeType
+	lhs                        asts.NodeType
+	rhsCount                    int
+	hasHint                     bool
+	hasPassthrough              bool
+	hasParentLiteral            bool
+	hasWithAppendedChildren     bool
+	hasWithPrependedChildren    bool
+	hasWithAdoptedGrandchildren bool
+	parentIndex                 int
+	passthroughIndex            int
+	parentLiteral               string
+	childIndices                []int
+	withAppendedChildren        []int
+	withPrependedChildren       []int
+	withAdoptedGrandchildren    []int
+	nodeType                    asts.NodeType
 }
 {{- else }}
 
@@ -261,7 +361,7 @@ var {{.TypeName}}Gotos = map[int]map[asts.NodeType]int{
 var {{.TypeName}}Productions = []{{.TypeName}}Production{
 {{- range .Productions }}
 {{- if $.HintMode | eq "hints" }}
-	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, hasPassthrough: {{.HasPassthrough}}, parentIndex: {{.ParentIndex}}, passthroughIndex: {{.PassthroughIndex}}, childIndices: {{childIndicesLiteral .ChildIndices}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
+	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}, hasHint: {{.HasHint}}, hasPassthrough: {{.HasPassthrough}}, hasParentLiteral: {{.HasParentLiteral}}, hasWithAppendedChildren: {{.HasWithAppendedChildren}}, hasWithPrependedChildren: {{.HasWithPrependedChildren}}, hasWithAdoptedGrandchildren: {{.HasWithAdoptedGrandchildren}}, parentIndex: {{.ParentIndex}}, passthroughIndex: {{.PassthroughIndex}}, parentLiteral: {{quote .ParentLiteral}}, childIndices: {{childIndicesLiteral .ChildIndices}}, withAppendedChildren: {{childIndicesLiteral .WithAppendedChildren}}, withPrependedChildren: {{childIndicesLiteral .WithPrependedChildren}}, withAdoptedGrandchildren: {{childIndicesLiteral .WithAdoptedGrandchildren}}{{if .NodeType}}, nodeType: asts.NodeType({{quote .NodeType}}){{end}}},
 {{- else }}
 	{lhs: {{.LHSLiteral}}, rhsCount: {{.RHSCount}}},
 {{- end }}

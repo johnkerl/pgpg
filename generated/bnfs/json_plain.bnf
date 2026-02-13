@@ -1,0 +1,41 @@
+# ----------------------------------------------------------------
+# Lexing
+
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+
+true  ::= "true";
+false ::= "false";
+null  ::= "null";
+
+lcurly   ::= "{";
+rcurly   ::= "}";
+lbracket ::= "[";
+rbracket ::= "]";
+colon    ::= ":";
+comma    ::= ",";
+
+_digit        ::= "0"-"9";
+_nonzero      ::= "1"-"9";
+_hex          ::= "0"-"9" | "A"-"F" | "a"-"f";
+_int          ::= "0" | _nonzero { _digit };
+_frac         ::= "." _digit { _digit };
+_exp          ::= ("e" | "E") [ "+" | "-" ] _digit { _digit };
+number        ::= [ "-" ] _int [ _frac ] [ _exp ];
+
+_string_char  ::= "\u0020"-"\u0021" | "\u0023"-"\u005B" | "\u005D"-"\uFFFF";
+_escape       ::= "\\" ( "\"" | "\\" | "/" | "b" | "f" | "n" | "r" | "t" | "u" _hex _hex _hex _hex );
+string        ::= "\"" { _string_char | _escape } "\"";
+
+# ----------------------------------------------------------------
+# Parsing
+
+Json     ::= Value;
+
+Value    ::= Object | Array | string | number | true | false | null;
+
+Object   ::= lcurly [ Members ] rcurly;
+Members  ::= Member { comma Member };
+Member   ::= string colon Value;
+
+Array    ::= lbracket [ Elements ] rbracket;
+Elements ::= Value { comma Value };

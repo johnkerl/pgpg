@@ -43,10 +43,14 @@ type Production struct {
 
 // ASTHint captures AST-construction directives for a production.
 type ASTHint struct {
-	ParentIndex      int    `json:"parent"`
-	ChildIndices     []int  `json:"children"`
-	PassthroughIndex *int   `json:"pass-through,omitempty"`
-	NodeType         string `json:"type,omitempty"`
+	ParentIndex               int     `json:"parent"`
+	ChildIndices              []int   `json:"children"`
+	WithAppendedChildren      []int   `json:"with_appended_children,omitempty"`
+	WithPrependedChildren     []int   `json:"with_prepended_children,omitempty"`
+	WithAdoptedGrandchildren  []int   `json:"with_adopted_grandchildren,omitempty"`
+	ParentLiteral             *string `json:"parent_literal,omitempty"`
+	PassthroughIndex          *int    `json:"pass-through,omitempty"`
+	NodeType                  string  `json:"type,omitempty"`
 }
 
 type Symbol struct {
@@ -586,6 +590,10 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 	hint := &ASTHint{}
 	hasParent := false
 	hasChildren := false
+	hasWithAppendedChildren := false
+	hasWithPrependedChildren := false
+	hasWithAdoptedGrandchildren := false
+	hasParentLiteral := false
 	hasPassthrough := false
 	for _, field := range node.Children {
 		if field.Type != parsers.EBNFParserNodeTypeHintField || field.Token == nil {
@@ -612,6 +620,16 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 			}
 			hint.ParentIndex = val
 			hasParent = true
+		case "parent_literal":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintString || valueNode.Token == nil {
+				return nil, fmt.Errorf("hint \"parent_literal\" must be a string")
+			}
+			unquotedLiteral, err := strconv.Unquote(string(valueNode.Token.Lexeme))
+			if err != nil {
+				return nil, fmt.Errorf("invalid hint parent_literal value: %w", err)
+			}
+			hint.ParentLiteral = &unquotedLiteral
+			hasParentLiteral = true
 		case "children":
 			if valueNode.Type != parsers.EBNFParserNodeTypeHintArray {
 				return nil, fmt.Errorf("hint \"children\" must be an array")
@@ -629,6 +647,57 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 			}
 			hint.ChildIndices = indices
 			hasChildren = true
+		case "with_appended_children":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintArray {
+				return nil, fmt.Errorf("hint \"with_appended_children\" must be an array")
+			}
+			indices := make([]int, 0, len(valueNode.Children))
+			for _, elem := range valueNode.Children {
+				if elem.Type != parsers.EBNFParserNodeTypeHintInt || elem.Token == nil {
+					return nil, fmt.Errorf("hint with_appended_children elements must be integers")
+				}
+				val, err := strconv.Atoi(string(elem.Token.Lexeme))
+				if err != nil {
+					return nil, fmt.Errorf("invalid hint with_appended_children index: %w", err)
+				}
+				indices = append(indices, val)
+			}
+			hint.WithAppendedChildren = indices
+			hasWithAppendedChildren = true
+		case "with_prepended_children":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintArray {
+				return nil, fmt.Errorf("hint \"with_prepended_children\" must be an array")
+			}
+			indices := make([]int, 0, len(valueNode.Children))
+			for _, elem := range valueNode.Children {
+				if elem.Type != parsers.EBNFParserNodeTypeHintInt || elem.Token == nil {
+					return nil, fmt.Errorf("hint with_prepended_children elements must be integers")
+				}
+				val, err := strconv.Atoi(string(elem.Token.Lexeme))
+				if err != nil {
+					return nil, fmt.Errorf("invalid hint with_prepended_children index: %w", err)
+				}
+				indices = append(indices, val)
+			}
+			hint.WithPrependedChildren = indices
+			hasWithPrependedChildren = true
+		case "with_adopted_grandchildren":
+			if valueNode.Type != parsers.EBNFParserNodeTypeHintArray {
+				return nil, fmt.Errorf("hint \"with_adopted_grandchildren\" must be an array")
+			}
+			indices := make([]int, 0, len(valueNode.Children))
+			for _, elem := range valueNode.Children {
+				if elem.Type != parsers.EBNFParserNodeTypeHintInt || elem.Token == nil {
+					return nil, fmt.Errorf("hint with_adopted_grandchildren elements must be integers")
+				}
+				val, err := strconv.Atoi(string(elem.Token.Lexeme))
+				if err != nil {
+					return nil, fmt.Errorf("invalid hint with_adopted_grandchildren index: %w", err)
+				}
+				indices = append(indices, val)
+			}
+			hint.WithAdoptedGrandchildren = indices
+			hasWithAdoptedGrandchildren = true
 		case "pass-through", "passthrough":
 			if valueNode.Type != parsers.EBNFParserNodeTypeHintInt || valueNode.Token == nil {
 				return nil, fmt.Errorf("hint \"pass-through\" must be an integer")
@@ -653,16 +722,35 @@ func parseHintNode(node *asts.ASTNode) (*ASTHint, error) {
 		}
 	}
 	if hasPassthrough {
-		if hasParent || hasChildren || hint.NodeType != "" {
-			return nil, fmt.Errorf("hint \"passthrough\" cannot be combined with \"parent\", \"children\", or \"type\"")
+		if hasParent || hasParentLiteral || hasChildren || hasWithAppendedChildren || hasWithPrependedChildren || hasWithAdoptedGrandchildren || hint.NodeType != "" {
+			return nil, fmt.Errorf("hint \"passthrough\" cannot be combined with \"parent\", \"parent_literal\", \"children\", \"with_appended_children\", \"with_prepended_children\", \"with_adopted_grandchildren\", or \"type\"")
 		}
 		return hint, nil
 	}
-	if !hasParent {
-		return nil, fmt.Errorf("hint missing required \"parent\" field")
+	if hasParent && hasParentLiteral {
+		return nil, fmt.Errorf("hint cannot set both \"parent\" and \"parent_literal\"")
 	}
-	if !hasChildren {
-		return nil, fmt.Errorf("hint missing required \"children\" field")
+	if !hasParent && !hasParentLiteral {
+		return nil, fmt.Errorf("hint missing required \"parent\" or \"parent_literal\" field")
+	}
+	childVariantCount := 0
+	if hasChildren {
+		childVariantCount++
+	}
+	if hasWithAppendedChildren {
+		childVariantCount++
+	}
+	if hasWithPrependedChildren {
+		childVariantCount++
+	}
+	if hasWithAdoptedGrandchildren {
+		childVariantCount++
+	}
+	if childVariantCount > 1 {
+		return nil, fmt.Errorf("hint cannot set more than one of \"children\", \"with_appended_children\", \"with_prepended_children\", \"with_adopted_grandchildren\"")
+	}
+	if childVariantCount == 0 {
+		return nil, fmt.Errorf("hint missing required \"children\", \"with_appended_children\", \"with_prepended_children\", or \"with_adopted_grandchildren\" field")
 	}
 	return hint, nil
 }
@@ -702,13 +790,33 @@ func validateHints(productions []Production) error {
 			}
 			continue
 		}
-		if prod.Hint.ParentIndex < 0 || prod.Hint.ParentIndex >= len(prod.RHS) {
-			return fmt.Errorf("production %s: parent index %d out of range [0, %d)",
-				prod.LHS, prod.Hint.ParentIndex, len(prod.RHS))
+		if prod.Hint.ParentLiteral == nil {
+			if prod.Hint.ParentIndex < 0 || prod.Hint.ParentIndex >= len(prod.RHS) {
+				return fmt.Errorf("production %s: parent index %d out of range [0, %d)",
+					prod.LHS, prod.Hint.ParentIndex, len(prod.RHS))
+			}
 		}
 		for _, ci := range prod.Hint.ChildIndices {
 			if ci < 0 || ci >= len(prod.RHS) {
 				return fmt.Errorf("production %s: child index %d out of range [0, %d)",
+					prod.LHS, ci, len(prod.RHS))
+			}
+		}
+		for _, ci := range prod.Hint.WithAppendedChildren {
+			if ci < 0 || ci >= len(prod.RHS) {
+				return fmt.Errorf("production %s: with_appended_children index %d out of range [0, %d)",
+					prod.LHS, ci, len(prod.RHS))
+			}
+		}
+		for _, ci := range prod.Hint.WithPrependedChildren {
+			if ci < 0 || ci >= len(prod.RHS) {
+				return fmt.Errorf("production %s: with_prepended_children index %d out of range [0, %d)",
+					prod.LHS, ci, len(prod.RHS))
+			}
+		}
+		for _, ci := range prod.Hint.WithAdoptedGrandchildren {
+			if ci < 0 || ci >= len(prod.RHS) {
+				return fmt.Errorf("production %s: with_adopted_grandchildren index %d out of range [0, %d)",
 					prod.LHS, ci, len(prod.RHS))
 			}
 		}

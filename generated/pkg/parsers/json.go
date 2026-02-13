@@ -22,7 +22,10 @@ type JSONParserTraceHooks struct {
 
 func NewJSONParser() *JSONParser { return &JSONParser{} }
 
-func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, error) {
+// noASTSentinel is used as a placeholder on the node stack when astMode == "noast".
+var JSONParserNoASTSentinel = &asts.ASTNode{}
+
+func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer, astMode string) (*asts.AST, error) {
 	if lexer == nil {
 		return nil, fmt.Errorf("parser: nil lexer")
 	}
@@ -49,7 +52,11 @@ func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 		}
 		switch action.Kind {
 		case JSONParserActionShift:
-			nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, JSONParserNoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
 			stateStack = append(stateStack, action.Target)
 			lookahead = lexer.Scan()
 			if parser.Trace != nil && parser.Trace.OnToken != nil {
@@ -66,11 +73,113 @@ func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 				rhsNodes[i] = nodeStack[len(nodeStack)-1]
 				nodeStack = nodeStack[:len(nodeStack)-1]
 			}
-			if prod.rhsCount == 0 {
-				rhsNodes = []*asts.ASTNode{}
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, JSONParserNoASTSentinel)
+			} else {
+				var node *asts.ASTNode
+				useFullTree := (astMode == "fullast")
+				if !useFullTree && prod.hasPassthrough {
+					node = rhsNodes[prod.passthroughIndex]
+				} else if !useFullTree && prod.hasWithAppendedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					for _, ci := range prod.withAppendedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithPrependedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withPrependedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithAdoptedGrandchildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withAdoptedGrandchildren {
+						childNode := rhsNodes[ci]
+						if childNode != nil && childNode.Children != nil {
+							newChildren = append(newChildren, childNode.Children...)
+						}
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasHint {
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = prod.lhs
+					}
+					var parentToken *tokens.Token
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+					} else if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
+						parentToken = rhsNodes[prod.parentIndex].Token
+					}
+					hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
+					for i, ci := range prod.childIndices {
+						hintChildren[i] = rhsNodes[ci]
+					}
+					node = asts.NewASTNode(parentToken, nodeType, hintChildren)
+				} else if prod.rhsCount == 1 {
+					node = rhsNodes[0]
+				} else if prod.rhsCount == 0 {
+					node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
+				} else {
+					node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				}
+				nodeStack = append(nodeStack, node)
 			}
-			node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
-			nodeStack = append(nodeStack, node)
 			state = stateStack[len(stateStack)-1]
 			nextState, ok := JSONParserGotos[state][prod.lhs]
 			if !ok {
@@ -86,6 +195,9 @@ func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer) (*asts.AST, er
 			}
 			if parser.Trace != nil && parser.Trace.OnStack != nil {
 				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
 		default:
@@ -192,8 +304,22 @@ func formatJSONParserAction(action JSONParserAction) string {
 }
 
 type JSONParserProduction struct {
-	lhs      asts.NodeType
-	rhsCount int
+	lhs                         asts.NodeType
+	rhsCount                    int
+	hasHint                     bool
+	hasPassthrough              bool
+	hasParentLiteral            bool
+	hasWithAppendedChildren     bool
+	hasWithPrependedChildren    bool
+	hasWithAdoptedGrandchildren bool
+	parentIndex                 int
+	passthroughIndex            int
+	parentLiteral               string
+	childIndices                []int
+	withAppendedChildren        []int
+	withPrependedChildren       []int
+	withAdoptedGrandchildren    []int
+	nodeType                    asts.NodeType
 }
 
 var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
@@ -252,15 +378,16 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 3},
 	},
 	13: {
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 28},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 28},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 29},
 	},
 	14: {
 		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 2},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 2},
 	},
 	15: {
-		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 30},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 17},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 16},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 16},
 	},
 	16: {
 		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 7},
@@ -272,12 +399,12 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
 		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 19},
 		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 32},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 31},
 		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
 	18: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 34},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 33},
 		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
 	},
 	19: {
@@ -289,7 +416,7 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 5},
 	},
 	21: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 16},
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 14},
 	},
 	22: {
 		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 4},
@@ -300,25 +427,20 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 6},
 	},
 	24: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 36},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 11},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 11},
 	},
 	25: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 37},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 35},
 	},
 	26: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 10},
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 9},
 	},
 	27: {
-		tokens.TokenType("colon"): {Kind: JSONParserActionShift, Target: 38},
+		tokens.TokenType("colon"): {Kind: JSONParserActionShift, Target: 36},
 	},
 	28: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 15},
-	},
-	29: {
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 19},
-	},
-	30: {
 		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
 		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
 		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
@@ -327,127 +449,125 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
+	29: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 15},
+	},
+	30: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 28},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 38},
+	},
 	31: {
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 40},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 14},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 14},
 	},
 	32: {
-		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 16},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 16},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 39},
 	},
 	33: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 41},
-	},
-	34: {
-		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 10},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 10},
-	},
-	35: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 13},
-	},
-	36: {
-		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
-	},
-	37: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 9},
-	},
-	38: {
-		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 46},
-		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 47},
-		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 48},
-		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 49},
-		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 50},
-		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 51},
-		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 52},
-	},
-	39: {
-		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 30},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 17},
-	},
-	40: {
-		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 15},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 15},
-	},
-	41: {
 		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 9},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 9},
 	},
-	42: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 36},
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 11},
+	34: {
+		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
 	},
-	43: {
+	35: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 10},
+	},
+	36: {
+		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 44},
+		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 45},
+		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 46},
+		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 47},
+		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 48},
+		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 49},
+		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 50},
+	},
+	37: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 17},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 17},
+	},
+	38: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 15},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 15},
+	},
+	39: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 10},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 10},
+	},
+	40: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 12},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 12},
+	},
+	41: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 3},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 3},
 	},
-	44: {
+	42: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 2},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 2},
 	},
-	45: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 14},
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 14},
+	43: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 13},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 13},
 	},
-	46: {
+	44: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 7},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 7},
 	},
-	47: {
+	45: {
 		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
 		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
 		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
 		tokens.TokenType("null"):     {Kind: JSONParserActionShift, Target: 19},
 		tokens.TokenType("number"):   {Kind: JSONParserActionShift, Target: 20},
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 56},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 52},
 		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
-	48: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 58},
+	46: {
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 54},
 		tokens.TokenType("string"): {Kind: JSONParserActionShift, Target: 27},
 	},
-	49: {
+	47: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 8},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 8},
 	},
-	50: {
+	48: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 5},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 5},
 	},
-	51: {
+	49: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 4},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 4},
 	},
-	52: {
+	50: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 6},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 6},
 	},
+	51: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 28},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 55},
+	},
+	52: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 14},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 14},
+	},
 	53: {
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 18},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 56},
 	},
 	54: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 12},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 9},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 9},
 	},
 	55: {
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 59},
-	},
-	56: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 16},
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 16},
-	},
-	57: {
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 60},
-	},
-	58: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 10},
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
-	},
-	59: {
 		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 15},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 15},
 	},
-	60: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 9},
-		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 9},
+	56: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 10},
+		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 10},
 	},
 }
 
@@ -468,72 +588,58 @@ var JSONParserGotos = map[int]map[asts.NodeType]int{
 		asts.NodeType("Member"):  24,
 		asts.NodeType("Members"): 25,
 	},
-	15: {
-		asts.NodeType("__pgpg_repeat_2"): 29,
-	},
 	17: {
 		asts.NodeType("Array"):    12,
-		asts.NodeType("Elements"): 31,
+		asts.NodeType("Elements"): 30,
 		asts.NodeType("Object"):   14,
 		asts.NodeType("Value"):    15,
 	},
 	18: {
 		asts.NodeType("Member"):  24,
-		asts.NodeType("Members"): 33,
+		asts.NodeType("Members"): 32,
 	},
-	24: {
-		asts.NodeType("__pgpg_repeat_1"): 35,
-	},
-	30: {
+	28: {
 		asts.NodeType("Array"):  12,
 		asts.NodeType("Object"): 14,
-		asts.NodeType("Value"):  39,
+		asts.NodeType("Value"):  37,
+	},
+	34: {
+		asts.NodeType("Member"): 40,
 	},
 	36: {
-		asts.NodeType("Member"): 42,
+		asts.NodeType("Array"):  41,
+		asts.NodeType("Object"): 42,
+		asts.NodeType("Value"):  43,
 	},
-	38: {
-		asts.NodeType("Array"):  43,
-		asts.NodeType("Object"): 44,
-		asts.NodeType("Value"):  45,
-	},
-	39: {
-		asts.NodeType("__pgpg_repeat_2"): 53,
-	},
-	42: {
-		asts.NodeType("__pgpg_repeat_1"): 54,
-	},
-	47: {
+	45: {
 		asts.NodeType("Array"):    12,
-		asts.NodeType("Elements"): 55,
+		asts.NodeType("Elements"): 51,
 		asts.NodeType("Object"):   14,
 		asts.NodeType("Value"):    15,
 	},
-	48: {
+	46: {
 		asts.NodeType("Member"):  24,
-		asts.NodeType("Members"): 57,
+		asts.NodeType("Members"): 53,
 	},
 }
 
 var JSONParserProductions = []JSONParserProduction{
-	{lhs: asts.NodeType("__pgpg_start_3"), rhsCount: 1},
-	{lhs: asts.NodeType("Json"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Value"), rhsCount: 1},
-	{lhs: asts.NodeType("Object"), rhsCount: 3},
-	{lhs: asts.NodeType("Object"), rhsCount: 2},
-	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0},
-	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 3},
-	{lhs: asts.NodeType("Members"), rhsCount: 2},
-	{lhs: asts.NodeType("Member"), rhsCount: 3},
-	{lhs: asts.NodeType("Array"), rhsCount: 3},
-	{lhs: asts.NodeType("Array"), rhsCount: 2},
-	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 0},
-	{lhs: asts.NodeType("__pgpg_repeat_2"), rhsCount: 3},
-	{lhs: asts.NodeType("Elements"), rhsCount: 2},
+	{lhs: asts.NodeType("__pgpg_start_1"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Json"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Object"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}, nodeType: asts.NodeType("object")},
+	{lhs: asts.NodeType("Object"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{1}, nodeType: asts.NodeType("object")},
+	{lhs: asts.NodeType("Members"), rhsCount: 1, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{temp}", childIndices: []int{0}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Members"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: true, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{2}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Member"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 1, passthroughIndex: 0, parentLiteral: "", childIndices: []int{0, 2}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Array"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}, nodeType: asts.NodeType("array")},
+	{lhs: asts.NodeType("Array"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{1}, nodeType: asts.NodeType("array")},
+	{lhs: asts.NodeType("Elements"), rhsCount: 1, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[temp]", childIndices: []int{0}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Elements"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: true, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{2}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
 }

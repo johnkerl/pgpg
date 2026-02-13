@@ -21,7 +21,8 @@ func usage() {
 }
 
 func main() {
-	// TODO: -v flag
+	var verbose bool
+	flag.BoolVar(&verbose, "v", false, "Print AST before evaluation")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -34,13 +35,13 @@ func main() {
 	switch mode {
 	case "expr":
 		for _, arg := range args {
-			if err := runParserOnce(arg); err != nil {
+			if err := runParserOnce(arg, verbose); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
 		}
 	case "file":
-		if err := runParserOnFiles(args); err != nil {
+		if err := runParserOnFiles(args, verbose); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -49,27 +50,27 @@ func main() {
 	}
 }
 
-func runParserOnFiles(filenames []string) error {
+func runParserOnFiles(filenames []string, verbose bool) error {
 	for _, filename := range filenames {
 		content, err := os.ReadFile(filename)
 		if err != nil {
 			return err
 		}
-		if err := runParserOnce(string(content)); err != nil {
+		if err := runParserOnce(string(content), verbose); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func runParserOnce(input string) error {
+func runParserOnce(input string, verbose bool) error {
 	lexer := generatedlexers.NewPEMDASLexer(input)
 	parser := generatedparsers.NewPEMDASParser()
-	ast, err := parser.Parse(lexer)
+	ast, err := parser.Parse(lexer, "")
 	if err != nil {
 		return err
 	}
-	v, err := evaluateAST(ast)
+	v, err := evaluateAST(ast, verbose)
 	if err != nil {
 		return err
 	}
@@ -77,9 +78,10 @@ func runParserOnce(input string) error {
 	return nil
 }
 
-func evaluateAST(ast *asts.AST) (int, error) {
-	ast.Print()
-	//fmt.Println()
+func evaluateAST(ast *asts.AST, verbose bool) (int, error) {
+	if verbose {
+		ast.Print()
+	}
 
 	if ast.RootNode == nil {
 		fmt.Println("(nil AST)")
