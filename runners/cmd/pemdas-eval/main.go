@@ -66,7 +66,7 @@ func runParserOnFiles(filenames []string, verbose bool) error {
 func runParserOnce(input string, verbose bool) error {
 	lexer := generatedlexers.NewPEMDASLexer(input)
 	parser := generatedparsers.NewPEMDASParser()
-	ast, err := parser.Parse(lexer)
+	ast, err := parser.Parse(lexer, "")
 	if err != nil {
 		return err
 	}
