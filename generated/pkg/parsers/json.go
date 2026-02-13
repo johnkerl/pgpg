@@ -80,6 +80,81 @@ func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer, astMode string
 				useFullTree := (astMode == "fullast")
 				if !useFullTree && prod.hasPassthrough {
 					node = rhsNodes[prod.passthroughIndex]
+				} else if !useFullTree && prod.hasWithAppendedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					for _, ci := range prod.withAppendedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithPrependedChildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withPrependedChildren {
+						newChildren = append(newChildren, rhsNodes[ci])
+					}
+					if parent != nil && parent.Children != nil {
+						newChildren = append(newChildren, parent.Children...)
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
+				} else if !useFullTree && prod.hasWithAdoptedGrandchildren {
+					var parent *asts.ASTNode
+					var parentToken *tokens.Token
+					var parentType asts.NodeType
+					if prod.hasParentLiteral {
+						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+						parentType = asts.NodeType(prod.parentLiteral)
+						parent = nil
+					} else {
+						parent = rhsNodes[prod.parentIndex]
+						parentToken = parent.Token
+						parentType = parent.Type
+					}
+					nodeType := prod.nodeType
+					if nodeType == "" {
+						nodeType = parentType
+					}
+					newChildren := make([]*asts.ASTNode, 0)
+					for _, ci := range prod.withAdoptedGrandchildren {
+						childNode := rhsNodes[ci]
+						if childNode != nil && childNode.Children != nil {
+							newChildren = append(newChildren, childNode.Children...)
+						}
+					}
+					node = asts.NewASTNode(parentToken, nodeType, newChildren)
 				} else if !useFullTree && prod.hasHint {
 					nodeType := prod.nodeType
 					if nodeType == "" {
@@ -229,16 +304,22 @@ func formatJSONParserAction(action JSONParserAction) string {
 }
 
 type JSONParserProduction struct {
-	lhs              asts.NodeType
-	rhsCount         int
-	hasHint          bool
-	hasPassthrough   bool
-	hasParentLiteral bool
-	parentIndex      int
-	passthroughIndex int
-	parentLiteral    string
-	childIndices     []int
-	nodeType         asts.NodeType
+	lhs                         asts.NodeType
+	rhsCount                    int
+	hasHint                     bool
+	hasPassthrough              bool
+	hasParentLiteral            bool
+	hasWithAppendedChildren     bool
+	hasWithPrependedChildren    bool
+	hasWithAdoptedGrandchildren bool
+	parentIndex                 int
+	passthroughIndex            int
+	parentLiteral               string
+	childIndices                []int
+	withAppendedChildren        []int
+	withPrependedChildren       []int
+	withAdoptedGrandchildren    []int
+	nodeType                    asts.NodeType
 }
 
 var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
@@ -297,14 +378,15 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 3},
 	},
 	13: {
-		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 28},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 28},
+		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 29},
 	},
 	14: {
 		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 2},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 2},
 	},
 	15: {
-		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 29},
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 16},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 16},
 	},
 	16: {
@@ -345,10 +427,11 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 6},
 	},
 	24: {
-		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 11},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 11},
 	},
 	25: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 35},
 	},
 	26: {
@@ -358,9 +441,6 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("colon"): {Kind: JSONParserActionShift, Target: 36},
 	},
 	28: {
-		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 15},
-	},
-	29: {
 		tokens.TokenType("false"):    {Kind: JSONParserActionShift, Target: 16},
 		tokens.TokenType("lbracket"): {Kind: JSONParserActionShift, Target: 17},
 		tokens.TokenType("lcurly"):   {Kind: JSONParserActionShift, Target: 18},
@@ -369,7 +449,11 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("string"):   {Kind: JSONParserActionShift, Target: 22},
 		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 23},
 	},
+	29: {
+		tokens.TokenTypeEOF: {Kind: JSONParserActionReduce, Target: 15},
+	},
 	30: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 28},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 38},
 	},
 	31: {
@@ -377,6 +461,7 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 14},
 	},
 	32: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 39},
 	},
 	33: {
@@ -399,6 +484,7 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("true"):     {Kind: JSONParserActionShift, Target: 50},
 	},
 	37: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionReduce, Target: 17},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 17},
 	},
 	38: {
@@ -410,6 +496,7 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionReduce, Target: 10},
 	},
 	40: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionReduce, Target: 12},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 12},
 	},
 	41: {
@@ -459,6 +546,7 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 6},
 	},
 	51: {
+		tokens.TokenType("comma"):    {Kind: JSONParserActionShift, Target: 28},
 		tokens.TokenType("rbracket"): {Kind: JSONParserActionShift, Target: 55},
 	},
 	52: {
@@ -466,6 +554,7 @@ var JSONParserActions = map[int]map[tokens.TokenType]JSONParserAction{
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionReduce, Target: 14},
 	},
 	53: {
+		tokens.TokenType("comma"):  {Kind: JSONParserActionShift, Target: 34},
 		tokens.TokenType("rcurly"): {Kind: JSONParserActionShift, Target: 56},
 	},
 	54: {
@@ -509,15 +598,13 @@ var JSONParserGotos = map[int]map[asts.NodeType]int{
 		asts.NodeType("Member"):  24,
 		asts.NodeType("Members"): 32,
 	},
-	29: {
-		asts.NodeType("Array"):    12,
-		asts.NodeType("Elements"): 37,
-		asts.NodeType("Object"):   14,
-		asts.NodeType("Value"):    15,
+	28: {
+		asts.NodeType("Array"):  12,
+		asts.NodeType("Object"): 14,
+		asts.NodeType("Value"):  37,
 	},
 	34: {
-		asts.NodeType("Member"):  24,
-		asts.NodeType("Members"): 40,
+		asts.NodeType("Member"): 40,
 	},
 	36: {
 		asts.NodeType("Array"):  41,
@@ -537,22 +624,22 @@ var JSONParserGotos = map[int]map[asts.NodeType]int{
 }
 
 var JSONParserProductions = []JSONParserProduction{
-	{lhs: asts.NodeType("__pgpg_start_1"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Json"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Object"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{}},
-	{lhs: asts.NodeType("Object"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{1}},
-	{lhs: asts.NodeType("Members"), rhsCount: 1, hasHint: false, hasPassthrough: true, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Members"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, parentIndex: 1, passthroughIndex: 0, parentLiteral: "", childIndices: []int{0, 2}},
-	{lhs: asts.NodeType("Member"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, parentIndex: 1, passthroughIndex: 0, parentLiteral: "", childIndices: []int{0, 2}},
-	{lhs: asts.NodeType("Array"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{}},
-	{lhs: asts.NodeType("Array"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{1}},
-	{lhs: asts.NodeType("Elements"), rhsCount: 1, hasHint: false, hasPassthrough: true, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}},
-	{lhs: asts.NodeType("Elements"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{2}},
+	{lhs: asts.NodeType("__pgpg_start_1"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Json"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Value"), rhsCount: 1, hasHint: false, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Object"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}, nodeType: asts.NodeType("object")},
+	{lhs: asts.NodeType("Object"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{}", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{1}, nodeType: asts.NodeType("object")},
+	{lhs: asts.NodeType("Members"), rhsCount: 1, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "{temp}", childIndices: []int{0}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Members"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: true, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{2}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Member"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 1, passthroughIndex: 0, parentLiteral: "", childIndices: []int{0, 2}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Array"), rhsCount: 2, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}, nodeType: asts.NodeType("array")},
+	{lhs: asts.NodeType("Array"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: true, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[]", childIndices: []int{}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{1}, nodeType: asts.NodeType("array")},
+	{lhs: asts.NodeType("Elements"), rhsCount: 1, hasHint: true, hasPassthrough: false, hasParentLiteral: true, hasWithAppendedChildren: false, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "[temp]", childIndices: []int{0}, withAppendedChildren: []int{}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
+	{lhs: asts.NodeType("Elements"), rhsCount: 3, hasHint: true, hasPassthrough: false, hasParentLiteral: false, hasWithAppendedChildren: true, hasWithPrependedChildren: false, hasWithAdoptedGrandchildren: false, parentIndex: 0, passthroughIndex: 0, parentLiteral: "", childIndices: []int{}, withAppendedChildren: []int{2}, withPrependedChildren: []int{}, withAdoptedGrandchildren: []int{}},
 }

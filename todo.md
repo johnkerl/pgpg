@@ -4,6 +4,8 @@
 * Plain/hinted json.bnf
 * prohibit any parent/child indices the same
 * document -noast and -fullast
+* draft, and test, a parser-generator for Python
+* draft, and test, a parser-generator for JavaScript
 
 # Top of list
 

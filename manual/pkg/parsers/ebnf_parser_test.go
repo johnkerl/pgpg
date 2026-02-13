@@ -128,3 +128,54 @@ func TestEBNFParserNoHintStillWorks(t *testing.T) {
 	expr := rule.Children[1]
 	assertEBNFNodeType(t, expr, EBNFParserNodeTypeSequence)
 }
+
+func TestEBNFParserHintWithAppendedChildren(t *testing.T) {
+	parser := NewEBNFParser()
+	ast, err := parser.Parse(`A ::= B C D E -> { "parent": 1, "with_appended_children": [2, 3] };`)
+	assert.NoError(t, err)
+
+	root := ast.RootNode
+	rule := root.Children[0]
+	expr := rule.Children[1]
+	assertEBNFNodeType(t, expr, EBNFParserNodeTypeHintedSequence)
+	assert.Len(t, expr.Children, 2)
+
+	hint := expr.Children[1]
+	assertEBNFNodeType(t, hint, EBNFParserNodeTypeHint)
+	// Hint should have two fields: parent and with_appended_children
+	assert.Len(t, hint.Children, 2)
+}
+
+func TestEBNFParserHintWithPrependedChildren(t *testing.T) {
+	parser := NewEBNFParser()
+	ast, err := parser.Parse(`A ::= B C D E -> { "parent": 1, "with_prepended_children": [0, 2] };`)
+	assert.NoError(t, err)
+
+	root := ast.RootNode
+	rule := root.Children[0]
+	expr := rule.Children[1]
+	assertEBNFNodeType(t, expr, EBNFParserNodeTypeHintedSequence)
+	assert.Len(t, expr.Children, 2)
+
+	hint := expr.Children[1]
+	assertEBNFNodeType(t, hint, EBNFParserNodeTypeHint)
+	// Hint should have two fields: parent and with_prepended_children
+	assert.Len(t, hint.Children, 2)
+}
+
+func TestEBNFParserHintWithAdoptedGrandchildren(t *testing.T) {
+	parser := NewEBNFParser()
+	ast, err := parser.Parse(`A ::= B C D -> { "parent": 1, "with_adopted_grandchildren": [0, 2] };`)
+	assert.NoError(t, err)
+
+	root := ast.RootNode
+	rule := root.Children[0]
+	expr := rule.Children[1]
+	assertEBNFNodeType(t, expr, EBNFParserNodeTypeHintedSequence)
+	assert.Len(t, expr.Children, 2)
+
+	hint := expr.Children[1]
+	assertEBNFNodeType(t, hint, EBNFParserNodeTypeHint)
+	// Hint should have two fields: parent and with_adopted_grandchildren
+	assert.Len(t, hint.Children, 2)
+}

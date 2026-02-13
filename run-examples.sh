@@ -13,10 +13,11 @@ echo; ./runners/tryparse g:lisp    expr '(+ 1 (* 2 3) (* 4 5)) ; comment here'
 
 echo; echo ----------------------------------------------------------------
 
-echo; ./runners/tryparse g:json    expr '{"a":1}'
-echo; ./runners/tryparse g:json    expr '{"a":1, "b":2}'
-echo; ./runners/tryparse g:json    expr '{"a":1, "b":2, "c":3}'
 echo; ./runners/tryparse g:json    expr '[]'
 echo; ./runners/tryparse g:json    expr '[1]'
 echo; ./runners/tryparse g:json    expr '[1,2]'
 echo; ./runners/tryparse g:json    expr '[1,2,3]'
+echo; ./runners/tryparse g:json    expr '{}'
+echo; ./runners/tryparse g:json    expr '{"a":1}'
+echo; ./runners/tryparse g:json    expr '{"a":1, "b":2}'
+echo; ./runners/tryparse g:json    expr '{"a":1, "b":2, "c":3}'

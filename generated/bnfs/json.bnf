@@ -38,17 +38,17 @@ Value ::= Object | Array | string | number | true | false | null;
 # * with-adopted-children
 
 Object
-  ::= lcurly rcurly -> { "parent_literal": "{}", "children": [] }
-  |   lcurly Members rcurly -> { "parent_literal": "{}", "children": [1] };
+  ::= lcurly rcurly -> { "parent_literal": "{}", "children": [], "type": "object" }
+  |   lcurly Members rcurly -> { "parent_literal": "{}", "with_adopted_grandchildren": [1] , "type": "object" };
 Members  ::=
-    Member -> { "pass-through": 0 }
-  | Member comma Members -> { "parent": 1, "children": [0, 2] };
+    Member -> { "parent_literal": "{temp}", "children": [0] }
+  | Members comma Member -> { "parent": 0, "with_appended_children": [2] };
 Member
   ::= string colon Value -> { "parent": 1, "children": [0, 2] };
 
 Array
-  ::= lbracket rbracket -> { "parent_literal": "[]", "children": [] }
-  |   lbracket Elements rbracket -> { "parent_literal": "[]", "children": [1] };
+  ::= lbracket rbracket -> { "parent_literal": "[]", "children": [] , "type": "array"}
+  |   lbracket Elements rbracket -> { "parent_literal": "[]", "with_adopted_grandchildren": [1] , "type": "array" };
 Elements
-  ::= Value -> { "pass-through": 0 }
-  |   Value comma Elements -> { "parent": 0, "children": [2] };
+  ::= Value -> { "parent_literal": "[temp]", "children": [0] }
+  |   Elements comma Value -> { "parent": 0, "with_appended_children": [2] };

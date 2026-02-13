@@ -139,9 +139,13 @@
       }
     },
     "13": {
-      "rbracket": {
+      "comma": {
         "type": "shift",
         "target": 28
+      },
+      "rbracket": {
+        "type": "shift",
+        "target": 29
       }
     },
     "14": {
@@ -156,8 +160,8 @@
     },
     "15": {
       "comma": {
-        "type": "shift",
-        "target": 29
+        "type": "reduce",
+        "target": 16
       },
       "rbracket": {
         "type": "reduce",
@@ -266,8 +270,8 @@
     },
     "24": {
       "comma": {
-        "type": "shift",
-        "target": 34
+        "type": "reduce",
+        "target": 11
       },
       "rcurly": {
         "type": "reduce",
@@ -275,6 +279,10 @@
       }
     },
     "25": {
+      "comma": {
+        "type": "shift",
+        "target": 34
+      },
       "rcurly": {
         "type": "shift",
         "target": 35
@@ -293,12 +301,6 @@
       }
     },
     "28": {
-      "EOF": {
-        "type": "reduce",
-        "target": 15
-      }
-    },
-    "29": {
       "false": {
         "type": "shift",
         "target": 16
@@ -328,7 +330,17 @@
         "target": 23
       }
     },
+    "29": {
+      "EOF": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
     "30": {
+      "comma": {
+        "type": "shift",
+        "target": 28
+      },
       "rbracket": {
         "type": "shift",
         "target": 38
@@ -345,6 +357,10 @@
       }
     },
     "32": {
+      "comma": {
+        "type": "shift",
+        "target": 34
+      },
       "rcurly": {
         "type": "shift",
         "target": 39
@@ -403,6 +419,10 @@
       }
     },
     "37": {
+      "comma": {
+        "type": "reduce",
+        "target": 17
+      },
       "rbracket": {
         "type": "reduce",
         "target": 17
@@ -429,6 +449,10 @@
       }
     },
     "40": {
+      "comma": {
+        "type": "reduce",
+        "target": 12
+      },
       "rcurly": {
         "type": "reduce",
         "target": 12
@@ -559,6 +583,10 @@
       }
     },
     "51": {
+      "comma": {
+        "type": "shift",
+        "target": 28
+      },
       "rbracket": {
         "type": "shift",
         "target": 55
@@ -575,6 +603,10 @@
       }
     },
     "53": {
+      "comma": {
+        "type": "shift",
+        "target": 34
+      },
       "rcurly": {
         "type": "shift",
         "target": 56
@@ -638,15 +670,13 @@
       "Member": 24,
       "Members": 32
     },
-    "29": {
+    "28": {
       "Array": 12,
-      "Elements": 37,
       "Object": 14,
-      "Value": 15
+      "Value": 37
     },
     "34": {
-      "Member": 24,
-      "Members": 40
+      "Member": 40
     },
     "36": {
       "Array": 41,
@@ -761,7 +791,8 @@
       "hint": {
         "parent": 0,
         "children": [],
-        "parent_literal": "{}"
+        "parent_literal": "{}",
+        "type": "object"
       }
     },
     {
@@ -782,10 +813,12 @@
       ],
       "hint": {
         "parent": 0,
-        "children": [
+        "children": null,
+        "with_adopted_grandchildren": [
           1
         ],
-        "parent_literal": "{}"
+        "parent_literal": "{}",
+        "type": "object"
       }
     },
     {
@@ -798,15 +831,17 @@
       ],
       "hint": {
         "parent": 0,
-        "children": null,
-        "pass-through": 0
+        "children": [
+          0
+        ],
+        "parent_literal": "{temp}"
       }
     },
     {
       "lhs": "Members",
       "rhs": [
         {
-          "name": "Member",
+          "name": "Members",
           "terminal": false
         },
         {
@@ -814,14 +849,14 @@
           "terminal": true
         },
         {
-          "name": "Members",
+          "name": "Member",
           "terminal": false
         }
       ],
       "hint": {
-        "parent": 1,
-        "children": [
-          0,
+        "parent": 0,
+        "children": null,
+        "with_appended_children": [
           2
         ]
       }
@@ -865,7 +900,8 @@
       "hint": {
         "parent": 0,
         "children": [],
-        "parent_literal": "[]"
+        "parent_literal": "[]",
+        "type": "array"
       }
     },
     {
@@ -886,15 +922,41 @@
       ],
       "hint": {
         "parent": 0,
-        "children": [
+        "children": null,
+        "with_adopted_grandchildren": [
           1
         ],
-        "parent_literal": "[]"
+        "parent_literal": "[]",
+        "type": "array"
       }
     },
     {
       "lhs": "Elements",
       "rhs": [
+        {
+          "name": "Value",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          0
+        ],
+        "parent_literal": "[temp]"
+      }
+    },
+    {
+      "lhs": "Elements",
+      "rhs": [
+        {
+          "name": "Elements",
+          "terminal": false
+        },
+        {
+          "name": "comma",
+          "terminal": true
+        },
         {
           "name": "Value",
           "terminal": false
@@ -903,28 +965,7 @@
       "hint": {
         "parent": 0,
         "children": null,
-        "pass-through": 0
-      }
-    },
-    {
-      "lhs": "Elements",
-      "rhs": [
-        {
-          "name": "Value",
-          "terminal": false
-        },
-        {
-          "name": "comma",
-          "terminal": true
-        },
-        {
-          "name": "Elements",
-          "terminal": false
-        }
-      ],
-      "hint": {
-        "parent": 0,
-        "children": [
+        "with_appended_children": [
           2
         ]
       }
