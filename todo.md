@@ -1,9 +1,9 @@
 # ASTGEN THING
 
 * pemdas-eval with -v
-* Flag to skip hints and show raw parse tree
 * Plain/hinted json.bnf
 * prohibit any parent/child indices the same
+* document -noast and -fullast
 
 # Top of list
 
