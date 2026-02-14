@@ -116,14 +116,14 @@ func evaluateASTNode(node *asts.ASTNode) (int, error) {
 		return v, nil
 
 	case "operator":
-		v, err := evaluateOperatorNode(node)
+		v, err := evaluateBinaryOperatorNode(node)
 		if err != nil {
 			return -1, err
 		}
 		return v, nil
 
 	case "unary":
-		v, err := evaluateUnaryNode(node)
+		v, err := evaluateUnaryOperatorNode(node)
 		if err != nil {
 			return -1, err
 		}
@@ -156,7 +156,7 @@ func intPower(base, exp int) int {
 	return out
 }
 
-func evaluateOperatorNode(node *asts.ASTNode) (int, error) {
+func evaluateBinaryOperatorNode(node *asts.ASTNode) (int, error) {
 	op := string(node.Token.Lexeme)
 	if len(node.Children) != 2 {
 		return -1, fmt.Errorf("Expected two operands for operator \"%s\"; got %d",
@@ -191,7 +191,7 @@ func evaluateOperatorNode(node *asts.ASTNode) (int, error) {
 	}
 }
 
-func evaluateUnaryNode(node *asts.ASTNode) (int, error) {
+func evaluateUnaryOperatorNode(node *asts.ASTNode) (int, error) {
 	op := string(node.Token.Lexeme)
 	if len(node.Children) != 1 {
 		return -1, fmt.Errorf("Expected one operand for unary \"%s\"; got %d",

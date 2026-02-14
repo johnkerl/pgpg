@@ -81,9 +81,9 @@ def evaluate_ast_node(node) -> int:
     if node.type == "int_literal":
         return _evaluate_literal(node)
     if node.type == "operator":
-        return _evaluate_operator(node)
+        return _evaluate_binary_operator(node)
     if node.type == "unary":
-        return _evaluate_unary(node)
+        return _evaluate_unary_operator(node)
     raise ValueError(f'Unhandled node type "{node.type}"')
 
 
@@ -93,7 +93,7 @@ def _evaluate_literal(node) -> int:
     return int(node.token.lexeme)
 
 
-def _evaluate_operator(node) -> int:
+def _evaluate_binary_operator(node) -> int:
     op = node.token.lexeme if node.token else ""
     if len(node.children) != 2:
         raise ValueError(
@@ -118,7 +118,7 @@ def _evaluate_operator(node) -> int:
     raise ValueError(f'Unhandled operator "{op}"')
 
 
-def _evaluate_unary(node) -> int:
+def _evaluate_unary_operator(node) -> int:
     op = node.token.lexeme if node.token else ""
     if len(node.children) != 1:
         raise ValueError(
