@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-# Add generated_py so we can import codegen and runtime
+# Add generator_py so we can import codegen and runtime
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from codegen.parsegen_code import main

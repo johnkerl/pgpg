@@ -1,5 +1,5 @@
 # PGPG Python runtime: Token, AST, and lexer protocol for generated parsers/lexers.
-# Use with PYTHONPATH including the parent of this package (e.g. generated_py).
+# Use with PYTHONPATH including the parent of this package (e.g. generator_py).
 from runtime.token import Location, Token
 from runtime.ast import AST, ASTNode
 from runtime.lexer import AbstractLexer

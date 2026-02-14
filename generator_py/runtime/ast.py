@@ -2,7 +2,7 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from runtime.token import Token  # noqa: I001 (runtime is a top-level package when PYTHONPATH=generated_py)
+from runtime.token import Token  # noqa: I001 (runtime is a top-level package when PYTHONPATH=generator_py)
 
 
 @dataclass
