@@ -3,7 +3,6 @@
 * `pemdas-eval` with `-v`
 * Prohibit any parent/child indices the same
 * Port manuals to JavaScript
-* Put `**` operator into pemdas everywhere
 
 # Top of list
 
