@@ -11,7 +11,7 @@ hand-written recursive-descent parsers and a full generator pipeline.
 ## Build Commands
 
 ```bash
-# Build everything (manual, generator, generated, runners) and run tests
+# Build everything (manual, generator, generated, apps/go) and run tests
 make
 make -C manual test
 make -C generators/go test
@@ -22,13 +22,13 @@ make -C manual test     # Run manual tests
 make -C generators/go     # Build generator executables
 make -C generators/go test  # Run generator tests
 make -C generated       # Generate lexers and parsers from BNF source
-make -C runners         # Build CLI runner tools
+make -C apps/go         # Build CLI runner tools
 
 # Format code
 make -C manual fmt
 make -C generators/go fmt
 make -C generated fmt
-make -C runners fmt
+make -C apps/go fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
 make -C generators/go staticcheck
@@ -49,20 +49,20 @@ cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 
 ```bash
 # Manual (hand-written) parsers: prefix "m:"
-./runners/tryparse m:pemdas expr '1*2+3'
-./runners/tryparse m:vic expr 'x = x + 1'
+./apps/go/tryparse m:pemdas expr '1*2+3'
+./apps/go/tryparse m:vic expr 'x = x + 1'
 
 # Generated parsers: prefix "g:"
-./runners/tryparse g:pemdas expr '1+2*3'
-./runners/tryparse g:json expr '{"a": [1, 2, 3]}'
-./runners/tryparse g:lisp expr '(+ 1 (* 2 3))'
+./apps/go/tryparse g:pemdas expr '1+2*3'
+./apps/go/tryparse g:json expr '{"a": [1, 2, 3]}'
+./apps/go/tryparse g:lisp expr '(+ 1 (* 2 3))'
 
 # Debug flags
-./runners/tryparse -tokens -states -stack g:pemdas expr '1+2'
+./apps/go/tryparse -tokens -states -stack g:pemdas expr '1+2'
 
 # Test lexers
-./runners/trylex m:pemdas expr '1+2*3'
-./runners/trylex g:pemdas expr '1+2*3'
+./apps/go/trylex m:pemdas expr '1+2*3'
+./apps/go/trylex g:pemdas expr '1+2*3'
 ```
 
 ## Architecture
@@ -73,7 +73,7 @@ The repo is a Go monorepo with four separate Go modules connected via `replace` 
 manual/       → Core libraries (tokens, lexers, parsers, AST). No external deps except testify.
 generators/go/ → Code generation tools. Depends on manual.
 generated/    → Output of generators/go (pre-generated lexers/parsers from BNF grammars). Depends on manual.
-runners/      → CLI tools (trylex, tryparse, tryast). Depends on manual + generated.
+apps/go/      → CLI tools (trylex, tryparse, tryast). Depends on manual + generated.
 ```
 
 ### Generator Pipeline
@@ -97,7 +97,7 @@ The JSON intermediate format is intentionally language-independent to allow futu
 - **`generators/go/bnfs/`** — Grammar files to have lexers/parsers generated from
 - **`generators/go/pkg/lexers/`** — Auto-generated lexers from `generators/go/bnfs`
 - **`generators/go/pkg/parsers/`** — Auto-generated parsers from `generators/go/bnfs`
-- **`runners/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
+- **`apps/go/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
 
 ### BNF Grammars
 

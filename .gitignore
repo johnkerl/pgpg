@@ -10,7 +10,7 @@ tags
 /generators/go/parsegen-code
 /generators/go/parsegen-tables
 
-/runners/tryast
-/runners/trylex
-/runners/tryparse
-/runners/pemdas-eval
+/apps/go/tryast
+/apps/go/trylex
+/apps/go/tryparse
+/apps/go/pemdas-eval
