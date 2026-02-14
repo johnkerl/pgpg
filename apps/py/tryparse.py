@@ -34,20 +34,34 @@ def main() -> int:
     from parsers import json_parser
     from parsers import pemdas_parser
 
-    def make_run_json(trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str):
+    def make_run_json(
+        trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str
+    ):
         def run(s: str):
             lex = json_lexer.pgpg_JSONLexer(s)
             p = json_parser.pgpg_JSONParser()
-            p.attach_cli_trace(trace_tokens=trace_tokens, trace_states=trace_states, trace_stack=trace_stack)
+            p.attach_cli_trace(
+                trace_tokens=trace_tokens,
+                trace_states=trace_states,
+                trace_stack=trace_stack,
+            )
             return p.parse(lex, ast_mode=ast_mode)
+
         return run
 
-    def make_run_pemdas(trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str):
+    def make_run_pemdas(
+        trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str
+    ):
         def run(s: str):
             lex = pemdas_lexer.pgpg_PEMDASLexer(s)
             p = pemdas_parser.pgpg_PEMDASParser()
-            p.attach_cli_trace(trace_tokens=trace_tokens, trace_states=trace_states, trace_stack=trace_stack)
+            p.attach_cli_trace(
+                trace_tokens=trace_tokens,
+                trace_states=trace_states,
+                trace_stack=trace_stack,
+            )
             return p.parse(lex, ast_mode=ast_mode)
+
         return run
 
     parsers_help = {
@@ -58,16 +72,35 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Run a generated parser on expr strings or files.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="Parser names:\n" + "\n".join(f"  {k:<10} {v}" for k, v in sorted(parsers_help.items())),
+        epilog="Parser names:\n"
+        + "\n".join(f"  {k:<10} {v}" for k, v in sorted(parsers_help.items())),
     )
-    parser.add_argument("-tokens", action="store_true", help="Print tokens as they're read")
-    parser.add_argument("-states", action="store_true", help="Show parser state transitions")
-    parser.add_argument("-stack", action="store_true", help="Show parser stack after each action")
-    parser.add_argument("-noast", action="store_true", help="Syntax-only: do not build or print AST")
-    parser.add_argument("-fullast", action="store_true", help="Ignore AST hints and build full parse tree")
+    parser.add_argument(
+        "-tokens", action="store_true", help="Print tokens as they're read"
+    )
+    parser.add_argument(
+        "-states", action="store_true", help="Show parser state transitions"
+    )
+    parser.add_argument(
+        "-stack", action="store_true", help="Show parser stack after each action"
+    )
+    parser.add_argument(
+        "-noast", action="store_true", help="Syntax-only: do not build or print AST"
+    )
+    parser.add_argument(
+        "-fullast",
+        action="store_true",
+        help="Ignore AST hints and build full parse tree",
+    )
     parser.add_argument("parser_name", choices=list(parsers_help), help="Parser to use")
-    parser.add_argument("mode", choices=["expr", "file"], help="expr = strings as args; file = read filenames")
-    parser.add_argument("args", nargs="+", help="Strings to parse (expr) or filenames (file)")
+    parser.add_argument(
+        "mode",
+        choices=["expr", "file"],
+        help="expr = strings as args; file = read filenames",
+    )
+    parser.add_argument(
+        "args", nargs="+", help="Strings to parse (expr) or filenames (file)"
+    )
     args = parser.parse_args()
 
     if args.noast and args.fullast:

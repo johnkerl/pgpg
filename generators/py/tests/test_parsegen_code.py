@@ -39,18 +39,19 @@ class TestParsegenCode(unittest.TestCase):
             ],
             "hint_mode": "hints",
         }
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".json", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
             json.dump(tables, f)
             json_path = Path(f.name)
         try:
             out_path = Path(tempfile.gettempdir()) / "test_array_parser_py_pgpg.py"
             argv = [
                 "parsegen_code.py",
-                "-o", str(out_path),
-                "-c", "ArrayParser",
-                "--prefix", "",
+                "-o",
+                str(out_path),
+                "-c",
+                "ArrayParser",
+                "--prefix",
+                "",
                 str(json_path),
             ]
             old_argv = sys.argv

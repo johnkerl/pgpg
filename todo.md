@@ -1,11 +1,12 @@
 # ASTGEN THING
 
-* pemdas-eval with -v
-* prohibit any parent/child indices the same
-* document -noast and -fullast
-* draft, and test, a parser-generator for Python
-* draft, and test, a parser-generator for JavaScript
-* README.md for make/test/etc for all languages
+* `pemdas-eval` with `-v`
+* Prohibit any parent/child indices the same
+* Document `-noast` and `-fullast`
+* `README.md` for make/test/etc for all languages
+* Port manuals to Python
+* Port manuals to JavaScript
+* A `make fmt` rule to `black` the Python files
 
 # Top of list
 

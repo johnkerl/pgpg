@@ -3,4 +3,7 @@
 test:
 	PYTHONPATH=. python3 -m unittest discover -s tests -v
 
-.PHONY: test
+fmt:
+	black .
+
+.PHONY: test fmt

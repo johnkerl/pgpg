@@ -2,12 +2,15 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
-from runtime.token import Token  # noqa: I001 (runtime is a top-level package when PYTHONPATH=generators/py)
+from runtime.token import (
+    Token,
+)  # noqa: I001 (runtime is a top-level package when PYTHONPATH=generators/py)
 
 
 @dataclass
 class ASTNode:
     """A single node in the abstract syntax tree."""
+
     token: Optional[Token]
     type: str  # node_type in Go; 'type' is reserved in some contexts
     children: list["ASTNode"] = field(default_factory=list)
@@ -33,6 +36,7 @@ def new_ast_node_terminal(token: Token, node_type: str) -> ASTNode:
 @dataclass
 class AST:
     """Root of an abstract syntax tree."""
+
     root_node: ASTNode
 
     def print_tree(self, indent: int = 0) -> None:
@@ -41,7 +45,7 @@ class AST:
         node = self.root_node
         if node.token:
             lexeme = node.token.lexeme.replace("\n", "\\n")
-            print(f'{pad}{lexeme!r} [tt:{node.token.type}] [nt:{node.type}]')
+            print(f"{pad}{lexeme!r} [tt:{node.token.type}] [nt:{node.type}]")
         else:
             print(f"{pad}[nt:{node.type}]")
         for child in node.children:

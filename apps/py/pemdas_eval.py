@@ -16,6 +16,53 @@ sys.path.insert(0, str(_REPO_ROOT / "generators" / "py"))
 sys.path.insert(0, str(_REPO_ROOT / "generated" / "py"))
 
 
+def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Parse and evaluate PEMDAS arithmetic expressions."
+    )
+    parser.add_argument("-v", action="store_true", help="Print AST before evaluation")
+    parser.add_argument(
+        "mode",
+        choices=["expr", "file"],
+        help="expr = strings as args; file = read filenames",
+    )
+    parser.add_argument(
+        "args", nargs="+", help="Strings to parse (expr) or filenames (file)"
+    )
+    args = parser.parse_args()
+
+    try:
+        if args.mode == "expr":
+            for s in args.args:
+                run_once(s, args.v)
+        else:
+            for filename in args.args:
+                path = Path(filename)
+                if not path.exists():
+                    print(f"pemdas_eval: {filename}: no such file", file=sys.stderr)
+                    return 1
+                run_once(path.read_text(), args.v)
+    except ValueError as e:
+        print(f"pemdas_eval: {e}", file=sys.stderr)
+        return 1
+    return 0
+
+
+def run_once(input_str: str, verbose: bool) -> None:
+    from lexers import pemdas_lexer
+    from parsers import pemdas_parser
+
+    lex = pemdas_lexer.pgpg_PEMDASLexer(input_str)
+    parser = pemdas_parser.pgpg_PEMDASParser()
+    ast = parser.parse(lex, "")
+    if ast is None:
+        raise ValueError("(nil AST)")
+    if verbose:
+        ast.print_tree()
+    v = evaluate_ast_node(ast.root_node)
+    print(v)
+
+
 def evaluate_ast_node(node) -> int:
     """Evaluate a single AST node; returns integer value."""
     if node.type == "int_literal":
@@ -36,7 +83,9 @@ def _evaluate_literal(node) -> int:
 def _evaluate_operator(node) -> int:
     op = node.token.lexeme if node.token else ""
     if len(node.children) != 2:
-        raise ValueError(f'Expected two operands for operator "{op}"; got {len(node.children)}')
+        raise ValueError(
+            f'Expected two operands for operator "{op}"; got {len(node.children)}'
+        )
     c1 = evaluate_ast_node(node.children[0])
     c2 = evaluate_ast_node(node.children[1])
     if op == "+":
@@ -55,52 +104,15 @@ def _evaluate_operator(node) -> int:
 def _evaluate_unary(node) -> int:
     op = node.token.lexeme if node.token else ""
     if len(node.children) != 1:
-        raise ValueError(f'Expected one operand for unary "{op}"; got {len(node.children)}')
+        raise ValueError(
+            f'Expected one operand for unary "{op}"; got {len(node.children)}'
+        )
     v = evaluate_ast_node(node.children[0])
     if op == "+":
         return v
     if op == "-":
         return -v
     raise ValueError(f'Unhandled unary operator "{op}"')
-
-
-def run_once(input_str: str, verbose: bool) -> None:
-    from lexers import pemdas_lexer
-    from parsers import pemdas_parser
-
-    lex = pemdas_lexer.pgpg_PEMDASLexer(input_str)
-    parser = pemdas_parser.pgpg_PEMDASParser()
-    ast = parser.parse(lex, "")
-    if ast is None:
-        raise ValueError("(nil AST)")
-    if verbose:
-        ast.print_tree()
-    v = evaluate_ast_node(ast.root_node)
-    print(v)
-
-
-def main() -> int:
-    parser = argparse.ArgumentParser(description="Parse and evaluate PEMDAS arithmetic expressions.")
-    parser.add_argument("-v", action="store_true", help="Print AST before evaluation")
-    parser.add_argument("mode", choices=["expr", "file"], help="expr = strings as args; file = read filenames")
-    parser.add_argument("args", nargs="+", help="Strings to parse (expr) or filenames (file)")
-    args = parser.parse_args()
-
-    try:
-        if args.mode == "expr":
-            for s in args.args:
-                run_once(s, args.v)
-        else:
-            for filename in args.args:
-                path = Path(filename)
-                if not path.exists():
-                    print(f"pemdas_eval: {filename}: no such file", file=sys.stderr)
-                    return 1
-                run_once(path.read_text(), args.v)
-    except ValueError as e:
-        print(f"pemdas_eval: {e}", file=sys.stderr)
-        return 1
-    return 0
 
 
 if __name__ == "__main__":

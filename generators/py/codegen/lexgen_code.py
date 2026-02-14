@@ -25,11 +25,13 @@ def build_transitions(raw: dict) -> list[dict]:
         state = int(state_str)
         ranges = []
         for tr in transitions[state_str]:
-            ranges.append({
-                "from": tr["from"],
-                "to": tr["to"],
-                "next": tr["next"],
-            })
+            ranges.append(
+                {
+                    "from": tr["from"],
+                    "to": tr["to"],
+                    "next": tr["next"],
+                }
+            )
         out.append({"state": state, "ranges": ranges})
     return out
 
@@ -38,19 +40,27 @@ def build_actions(raw: dict) -> list[dict]:
     actions = raw.get("actions", {})
     out = []
     for state_str in sorted(actions.keys(), key=int):
-        out.append({
-            "state": int(state_str),
-            "token_type": actions[state_str],
-        })
+        out.append(
+            {
+                "state": int(state_str),
+                "token_type": actions[state_str],
+            }
+        )
     return out
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Generate Python lexer from lexgen JSON tables")
+    ap = argparse.ArgumentParser(
+        description="Generate Python lexer from lexgen JSON tables"
+    )
     ap.add_argument("json_file", type=Path, help="Path to *-lex.json")
     ap.add_argument("-o", "--output", type=Path, required=True, help="Output .py file")
-    ap.add_argument("-c", "--class-name", required=True, help="Lexer class name (e.g. JSONLexer)")
-    ap.add_argument("--prefix", default="pgpg_", help="Prefix for class name (default: pgpg_)")
+    ap.add_argument(
+        "-c", "--class-name", required=True, help="Lexer class name (e.g. JSONLexer)"
+    )
+    ap.add_argument(
+        "--prefix", default="pgpg_", help="Prefix for class name (default: pgpg_)"
+    )
     args = ap.parse_args()
 
     raw = load_tables(args.json_file)
@@ -75,7 +85,9 @@ def main() -> int:
         return 1
 
     template_dir = Path(__file__).resolve().parent / "templates"
-    env = Environment(loader=FileSystemLoader(str(template_dir)), keep_trailing_newline=True)
+    env = Environment(
+        loader=FileSystemLoader(str(template_dir)), keep_trailing_newline=True
+    )
     env.filters["repr"] = repr
     template = env.get_template("lexer.py.j2")
     out_text = template.render(**ctx)

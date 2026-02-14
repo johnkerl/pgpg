@@ -6,6 +6,7 @@ from typing import Optional
 @dataclass(frozen=True)
 class Location:
     """Source location (line, column, byte offset)."""
+
     line: int = 1
     column: int = 1
     byte_offset: int = 0
@@ -19,16 +20,23 @@ TOKEN_TYPE_EOF = "EOF"
 @dataclass
 class Token:
     """A single token from the lexer."""
+
     type: str
     lexeme: str
     location: Optional[Location] = None
 
     def __repr__(self) -> str:
-        loc = f" line={self.location.line} col={self.location.column}" if self.location else ""
+        loc = (
+            f" line={self.location.line} col={self.location.column}"
+            if self.location
+            else ""
+        )
         return f"Token({self.type!r}, {self.lexeme!r}{loc})"
 
 
-def new_token(lexeme: str, token_type: str, location: Optional[Location] = None) -> Token:
+def new_token(
+    lexeme: str, token_type: str, location: Optional[Location] = None
+) -> Token:
     """Build a token (for parser-constructed tokens, e.g. parent_literal)."""
     return Token(type=token_type, lexeme=lexeme, location=location)
 

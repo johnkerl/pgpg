@@ -1,7 +1,10 @@
 # PGPG Python apps. Run from repo root: make -C apps/py [target]
 # Requires: make -C generated/py all (so lexers/parsers exist)
 
-.PHONY: test
+fmt:
+	black .
+
+.PHONY: test fmt
 test:
 	python3 trylex.py g:json expr '[1]'
 	python3 tryparse.py g:json expr '[1]'

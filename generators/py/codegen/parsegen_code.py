@@ -28,15 +28,19 @@ def build_actions(raw: dict) -> list[dict]:
             act = actions[state_str][term]
             kind = act["type"]
             target = act.get("target", 0)
-            kind_literal = f"ActionKind.SHIFT" if kind == "shift" else (
-                f"ActionKind.REDUCE" if kind == "reduce" else "ActionKind.ACCEPT"
+            kind_literal = (
+                f"ActionKind.SHIFT"
+                if kind == "shift"
+                else (f"ActionKind.REDUCE" if kind == "reduce" else "ActionKind.ACCEPT")
             )
-            entries.append({
-                "terminal_literal": repr(term),
-                "kind_literal": kind_literal,
-                "target": target,
-                "has_target": kind in ("shift", "reduce"),
-            })
+            entries.append(
+                {
+                    "terminal_literal": repr(term),
+                    "kind_literal": kind_literal,
+                    "target": target,
+                    "has_target": kind in ("shift", "reduce"),
+                }
+            )
         out.append({"state": state, "entries": entries})
     return out
 
@@ -49,10 +53,12 @@ def build_gotos(raw: dict) -> list[dict]:
         entries = []
         for nonterm in sorted(gotos[state_str].keys()):
             target = gotos[state_str][nonterm]
-            entries.append({
-                "nonterm_literal": repr(nonterm),
-                "target": target,
-            })
+            entries.append(
+                {
+                    "nonterm_literal": repr(nonterm),
+                    "target": target,
+                }
+            )
         out.append({"state": state, "entries": entries})
     return out
 
@@ -98,23 +104,41 @@ def build_productions(raw: dict) -> list[dict]:
                 else:
                     info["parent_index"] = hint.get("parent", 0)
                 info["child_indices"] = _list_or_empty(hint.get("children"))
-                info["with_appended_children"] = _list_or_empty(hint.get("with_appended_children"))
-                info["has_with_appended_children"] = len(info["with_appended_children"]) > 0
-                info["with_prepended_children"] = _list_or_empty(hint.get("with_prepended_children"))
-                info["has_with_prepended_children"] = len(info["with_prepended_children"]) > 0
-                info["with_adopted_grandchildren"] = _list_or_empty(hint.get("with_adopted_grandchildren"))
-                info["has_with_adopted_grandchildren"] = len(info["with_adopted_grandchildren"]) > 0
+                info["with_appended_children"] = _list_or_empty(
+                    hint.get("with_appended_children")
+                )
+                info["has_with_appended_children"] = (
+                    len(info["with_appended_children"]) > 0
+                )
+                info["with_prepended_children"] = _list_or_empty(
+                    hint.get("with_prepended_children")
+                )
+                info["has_with_prepended_children"] = (
+                    len(info["with_prepended_children"]) > 0
+                )
+                info["with_adopted_grandchildren"] = _list_or_empty(
+                    hint.get("with_adopted_grandchildren")
+                )
+                info["has_with_adopted_grandchildren"] = (
+                    len(info["with_adopted_grandchildren"]) > 0
+                )
                 info["node_type"] = hint.get("type", "")
         out.append(info)
     return out
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Generate Python parser from parsegen JSON tables")
+    ap = argparse.ArgumentParser(
+        description="Generate Python parser from parsegen JSON tables"
+    )
     ap.add_argument("json_file", type=Path, help="Path to *-parse.json")
     ap.add_argument("-o", "--output", type=Path, required=True, help="Output .py file")
-    ap.add_argument("-c", "--class-name", required=True, help="Parser class name (e.g. JSONParser)")
-    ap.add_argument("--prefix", default="pgpg_", help="Prefix for class name (default: pgpg_)")
+    ap.add_argument(
+        "-c", "--class-name", required=True, help="Parser class name (e.g. JSONParser)"
+    )
+    ap.add_argument(
+        "--prefix", default="pgpg_", help="Prefix for class name (default: pgpg_)"
+    )
     args = ap.parse_args()
 
     raw = load_tables(args.json_file)
@@ -137,7 +161,9 @@ def main() -> int:
         return 1
 
     template_dir = Path(__file__).resolve().parent / "templates"
-    env = Environment(loader=FileSystemLoader(str(template_dir)), keep_trailing_newline=True)
+    env = Environment(
+        loader=FileSystemLoader(str(template_dir)), keep_trailing_newline=True
+    )
     env.filters["repr"] = repr
 
     template = env.get_template("parser.py.j2")

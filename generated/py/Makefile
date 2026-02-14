@@ -38,4 +38,7 @@ all: json pemdas
 test:
 	$(MAKE) -C $(GEN_PY) test
 
-.PHONY: all json json-lexer json-parser pemdas pemdas-lexer pemdas-parser test
+fmt:
+	black .
+
+.PHONY: all json json-lexer json-parser pemdas pemdas-lexer pemdas-parser test fmt
