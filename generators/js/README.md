@@ -4,7 +4,7 @@
 - **runtime/** — Token, Location, ASTNode, AST (used by generated lexers and parsers).
 - **tests/** — Unit tests for codegen.
 
-Generated output is written to **../generated_js** (lexers/, parsers/). Generated files import from `../../generators/js/runtime/index.js`, so run from repo root or ensure that path resolves.
+Generated output is written to **../generated/js** (lexers/, parsers/). Generated files import from `../../generators/js/runtime/index.js`, so run from repo root or ensure that path resolves.
 
 ## Tests
 

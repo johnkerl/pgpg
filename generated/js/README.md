@@ -17,26 +17,26 @@ Use the **same** JSON tables produced by the Go tools (`parsegen-tables`, `lexge
 From the **repository root**:
 
 ```bash
-make -C generated_js json
+make -C generated/js json
 ```
 
-Or from **generated_js/**:
+Or from **generated/js/**:
 
 ```bash
 make json
 ```
 
-To run codegen by hand (from repo root, or from generated_js with paths adjusted):
+To run codegen by hand (from repo root, or from generated/js with paths adjusted):
 
 ```bash
 # Parser (default class prefix is pgpg_)
 node generators/js/codegen/parsegen_code.js \
-  -o generated_js/parsers/json_parser.js -c JSONParser \
+  -o generated/js/parsers/json_parser.js -c JSONParser \
   generated/jsons/json-parse.json
 
 # Lexer
 node generators/js/codegen/lexgen_code.js \
-  -o generated_js/lexers/json_lexer.js -c JSONLexer \
+  -o generated/js/lexers/json_lexer.js -c JSONLexer \
   generated/jsons/json-lex.json
 ```
 
@@ -47,8 +47,8 @@ node generators/js/codegen/lexgen_code.js \
 Generated lexers and parsers import the runtime from `../../generators/js/runtime/index.js`, so run from the **repository root** (or ensure Node resolves that path). Example from repo root:
 
 ```javascript
-import { pgpg_JSONLexer } from "./generated_js/lexers/json_lexer.js";
-import { pgpg_JSONParser } from "./generated_js/parsers/json_parser.js";
+import { pgpg_JSONLexer } from "./generated/js/lexers/json_lexer.js";
+import { pgpg_JSONParser } from "./generated/js/parsers/json_parser.js";
 
 const lex = new pgpg_JSONLexer("[1]");
 const parser = new pgpg_JSONParser();
@@ -67,7 +67,7 @@ const ast = parser.parse(lex, "");
 
 ## Tests
 
-Tests live in **generators/js**. From **generated_js/**:
+Tests live in **generators/js**. From **generated/js/**:
 
 ```bash
 make test
