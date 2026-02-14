@@ -94,14 +94,14 @@ The JSON intermediate format is intentionally language-independent to allow futu
 - **`manual/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
 - **`generators/go/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
 - **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
-- **`generators/go/bnfs/`** — Grammar files to have lexers/parsers generated from
-- **`generated/go/pkg/lexers/`** — Auto-generated lexers from `generators/go/bnfs`
-- **`generated/go/pkg/parsers/`** — Auto-generated parsers from `generators/go/bnfs`
+- **`bnfs/`** — Grammar files to have lexers/parsers generated from
+- **`generated/go/pkg/lexers/`** — Auto-generated lexers from `bnfs/`
+- **`generated/go/pkg/parsers/`** — Auto-generated parsers from `bnfs/`
 - **`apps/go/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
 
 ### BNF Grammars
 
-Grammar files live in `generated/bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
+Grammar files live in `bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
 
 ## Profiling
 

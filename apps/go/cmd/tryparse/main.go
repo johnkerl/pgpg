@@ -32,13 +32,13 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:vic":          {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
 	"m:vbc":          {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
 	"m:ebnf":         {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
-	"g:pemdas-plain": {run: runGeneratedPEMDASPlainParser, help: "Generated arithmetic parser from generated/bnfs/pemdas-plain.bnf."},
-	"g:pemdas":       {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser with AST hints from generated/bnfs/pemdas.bnf."},
+	"g:pemdas-plain": {run: runGeneratedPEMDASPlainParser, help: "Generated arithmetic parser from bnfs/pemdas-plain.bnf."},
+	"g:pemdas":       {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser with AST hints from bnfs/pemdas.bnf."},
 	"g:stmts":        {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
 	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
-	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from generated/bnfs/lisp.bnf."},
-	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from generated/bnfs/json.bnf."},
-	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from generated/bnfs/json_plain.bnf."},
+	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from bnfs/lisp.bnf."},
+	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from bnfs/json.bnf."},
+	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from bnfs/json_plain.bnf."},
 }
 
 func usage() {

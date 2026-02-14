@@ -21,7 +21,7 @@ go/pkg/lexers/$(1).go: jsons/$(1)-lex.json
 endef
 
 define LEX_JSON_RULE
-jsons/$(1)-lex.json: bnfs/$(1).bnf
+jsons/$(1)-lex.json: ../bnfs/$(1).bnf
 	../generators/go/lexgen-tables -o $$@ $$<
 endef
 
@@ -31,7 +31,7 @@ go/pkg/parsers/$(1).go: jsons/$(1)-parse.json
 endef
 
 define PARSE_JSON_RULE
-jsons/$(1)-parse.json: bnfs/$(1).bnf
+jsons/$(1)-parse.json: ../bnfs/$(1).bnf
 	../generators/go/parsegen-tables -o $$@ $$<
 endef
 
