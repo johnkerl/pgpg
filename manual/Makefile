@@ -7,7 +7,7 @@ check test:
 # Formatting
 # go fmt ./... finds Python files which we want to ignore.
 fmt:
-	-go fmt ./pkg/...
+	-go fmt ./go/pkg/...
 
 # ----------------------------------------------------------------
 # Static analysis

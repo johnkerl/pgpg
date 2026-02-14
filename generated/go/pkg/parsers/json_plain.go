@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/johnkerl/pgpg/manual/pkg/asts"
-	manuallexers "github.com/johnkerl/pgpg/manual/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
+	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
 )
 
 type JSONPlainParser struct {

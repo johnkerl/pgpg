@@ -4,7 +4,7 @@
 
 package asts
 
-import "github.com/johnkerl/pgpg/manual/pkg/tokens"
+import "github.com/johnkerl/pgpg/manual/go/pkg/tokens"
 
 type AST struct {
 	RootNode *ASTNode

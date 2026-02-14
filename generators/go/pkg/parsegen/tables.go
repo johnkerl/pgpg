@@ -9,8 +9,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/johnkerl/pgpg/manual/pkg/asts"
-	"github.com/johnkerl/pgpg/manual/pkg/parsers"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/go/pkg/parsers"
 )
 
 const eofSymbol = "EOF"

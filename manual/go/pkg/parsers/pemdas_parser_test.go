@@ -3,9 +3,9 @@ package parsers
 import (
 	"testing"
 
-	"github.com/johnkerl/pgpg/manual/pkg/asts"
-	"github.com/johnkerl/pgpg/manual/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
 	"github.com/stretchr/testify/assert"
 )
 

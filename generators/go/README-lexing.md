@@ -13,7 +13,7 @@ implemented in `generators/go/pkg/lexgen`.
 
 ## Inputs and Rule Selection
 
-- Input grammar is EBNF parsed by `manual/pkg/parsers` (same as before).
+- Input grammar is EBNF parsed by `manual/go/pkg/parsers` (same as before).
 - Lexer rules are selected by name:
   - Names starting with `_` or a lowercase letter are treated as lexer rules.
   - Names starting with `!` are treated as lexer rules that should be ignored.

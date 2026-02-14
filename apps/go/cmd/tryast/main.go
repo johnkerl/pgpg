@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/johnkerl/pgpg/manual/pkg/asts"
-	"github.com/johnkerl/pgpg/manual/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
 )
 
 func main() {

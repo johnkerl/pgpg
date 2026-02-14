@@ -6,8 +6,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/johnkerl/pgpg/manual/pkg/asts"
-	"github.com/johnkerl/pgpg/manual/pkg/parsers"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/go/pkg/parsers"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/johnkerl/pgpg/manual/pkg/tokens"
+	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
 	"unicode"
 	"unicode/utf8"
 )

@@ -41,7 +41,7 @@ make -C generators/go dev
 ## Running a Single Test
 
 ```bash
-cd manual    && go test ./pkg/lexers/ -run TestPEMDASLexer
+cd manual    && go test ./go/pkg/lexers/ -run TestPEMDASLexer
 cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 ```
 
@@ -88,10 +88,10 @@ The JSON intermediate format is intentionally language-independent to allow futu
 
 ### Key Packages
 
-- **`manual/pkg/tokens/`** — Token type, location tracking
-- **`manual/pkg/lexers/`** — `AbstractLexer` interface + hand-written lexers (pemdas, vic, vbc, seng, ebnf, etc.)
-- **`manual/pkg/parsers/`** — `AbstractParser` interface + hand-written recursive-descent parsers
-- **`manual/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
+- **`manual/go/pkg/tokens/`** — Token type, location tracking
+- **`manual/go/pkg/lexers/`** — `AbstractLexer` interface + hand-written lexers (pemdas, vic, vbc, seng, ebnf, etc.)
+- **`manual/go/pkg/parsers/`** — `AbstractParser` interface + hand-written recursive-descent parsers
+- **`manual/go/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
 - **`generators/go/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
 - **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
 - **`bnfs/`** — Grammar files to have lexers/parsers generated from

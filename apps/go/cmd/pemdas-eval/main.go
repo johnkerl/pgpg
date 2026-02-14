@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/johnkerl/pgpg/manual/pkg/asts"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"

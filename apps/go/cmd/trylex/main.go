@@ -7,7 +7,7 @@ import (
 	"os"
 	"sort"
 
-	"github.com/johnkerl/pgpg/manual/pkg/lexers"
+	"github.com/johnkerl/pgpg/manual/go/pkg/lexers"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 )
