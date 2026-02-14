@@ -44,7 +44,7 @@ node generators/js/codegen/lexgen_code.js \
 
 ## Running generated parsers
 
-Generated lexers and parsers import the runtime from `../../generators/js/runtime/index.js`, so run from the **repository root** (or ensure Node resolves that path). Example from repo root:
+Generated lexers and parsers import the runtime from `../../../generators/js/runtime/index.js`, so run from the **repository root** (or ensure Node resolves that path). Example from repo root:
 
 ```javascript
 import { pgpg_JSONLexer } from "./generated/js/lexers/json_lexer.js";

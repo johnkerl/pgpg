@@ -25,10 +25,10 @@ Use the **same** JSON tables produced by the Go tools (`parsegen-tables`, `lexge
 From the **repository root**:
 
 ```bash
-make -C generated_py json
+make -C generated/py json
 ```
 
-Or from **generated_py/** (output goes into this directory):
+Or from **generated/py/** (output goes into this directory):
 
 ```bash
 make json
@@ -39,12 +39,12 @@ To run codegen by hand (from repo root):
 ```bash
 # Parser (default class prefix is pgpg_)
 PYTHONPATH=generators/py python3 generators/py/codegen/parsegen_code.py \
-  -o generated_py/parsers/json_parser.py -c JSONParser \
+  -o generated/py/parsers/json_parser.py -c JSONParser \
   generated/jsons/json-parse.json
 
 # Lexer
 PYTHONPATH=generators/py python3 generators/py/codegen/lexgen_code.py \
-  -o generated_py/lexers/json_lexer.py -c JSONLexer \
+  -o generated/py/lexers/json_lexer.py -c JSONLexer \
   generated/jsons/json-lex.json
 ```
 
@@ -52,7 +52,7 @@ PYTHONPATH=generators/py python3 generators/py/codegen/lexgen_code.py \
 
 ## Running generated parsers
 
-Set `PYTHONPATH` so that **generators/py** (runtime) and **generated_py** (lexers, parsers) are on the path, e.g. from repo root: `PYTHONPATH=generators/py:generated_py`.
+Set `PYTHONPATH` so that **generators/py** (runtime) and **generated/py** (lexers, parsers) are on the path, e.g. from repo root: `PYTHONPATH=generators/py:generated/py`.
 
 ```python
 from lexers.json_lexer import pgpg_JSONLexer
@@ -76,7 +76,7 @@ ast = parser.parse(lex, "")
 
 ## Tests
 
-Tests live in **generators/py**. From **generated_py/**:
+Tests live in **generators/py**. From **generated/py/**:
 
 ```bash
 make test

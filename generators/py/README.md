@@ -4,7 +4,7 @@
 - **runtime/** — Token, ASTNode, AST, AbstractLexer (used by generated lexers and parsers).
 - **tests/** — Unit tests for codegen.
 
-Generated output is written to **../generated_py** (lexers/, parsers/). Use `PYTHONPATH=generators/py` when running codegen so that templates and runtime are found; when running generated code, use `PYTHONPATH=generators/py:generated_py`.
+Generated output is written to **../generated/py** (lexers/, parsers/). Use `PYTHONPATH=generators/py` when running codegen so that templates and runtime are found; when running generated code, use `PYTHONPATH=generators/py:generated/py`.
 
 ## Dependencies
 
