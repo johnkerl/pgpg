@@ -36,3 +36,60 @@ As of February 2026 I'm picking this back up again, making significant use of Cu
 * I would like to ultimately use this in [Miller](https://github.com/johnkerl/miller)
 * I'd love to get the latency lowered and flexibility increased to the point where I can
   simply play around with language design at will.
+
+## Build commands
+
+```bash
+# Build everything (manual, generator, generated, apps/go) and run tests
+make
+make -C manual test
+make -C generators/go test
+
+# Build and test individual modules
+make -C manual          # Build manual module (core libraries)
+make -C manual test     # Run manual tests
+make -C generators/go     # Build generator executables
+make -C generators/go test  # Run generator tests
+make -C generated       # Generate lexers and parsers from BNF source
+make -C apps/go         # Build CLI runner tools
+
+# Format code
+make -C manual fmt
+make -C generators/go fmt
+make -C generated fmt
+make -C apps/go fmt
+
+# Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
+make -C generators/go staticcheck
+
+# Pre-push check (fmt + build + test)
+make -C manual dev
+make -C generators/go dev
+```
+
+## Running a single test
+
+```bash
+cd manual    && go test ./go/pkg/lexers/ -run TestPEMDASLexer
+cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
+```
+
+## Testing parsers interactively
+
+```bash
+# Manual (hand-written) parsers: prefix "m:"
+./apps/go/tryparse m:pemdas expr '1*2+3'
+./apps/go/tryparse m:vic expr 'x = x + 1'
+
+# Generated parsers: prefix "g:"
+./apps/go/tryparse g:pemdas expr '1+2*3'
+./apps/go/tryparse g:json expr '{"a": [1, 2, 3]}'
+./apps/go/tryparse g:lisp expr '(+ 1 (* 2 3))'
+
+# Debug flags
+./apps/go/tryparse -tokens -states -stack g:pemdas expr '1+2'
+
+# Test lexers
+./apps/go/trylex m:pemdas expr '1+2*3'
+./apps/go/trylex g:pemdas expr '1+2*3'
+```
