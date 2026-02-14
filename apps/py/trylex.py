@@ -2,7 +2,7 @@
 """
 Trylex: run a generated Python lexer on expr strings or files.
 Usage: trylex.py {lexer name} expr {one or more strings to lex ...}
-       trylex.py {lexer name} file {one or more filenames}
+       trylex.py {lexer name} file [one or more filenames]  (none = stdin)
 """
 from __future__ import annotations
 
@@ -47,23 +47,31 @@ def main() -> int:
         help="expr = strings as args; file = read filenames",
     )
     argparser.add_argument(
-        "args", nargs="+", help="Strings to lex (expr) or filenames (file)"
+        "args",
+        nargs="*",
+        help="Strings to lex (expr) or filenames (file); file with none reads stdin",
     )
     args = argparser.parse_args()
 
     maker, _ = lexers[args.lexer_name]
 
     if args.mode == "expr":
+        if not args.args:
+            print("trylex: expr requires at least one string", file=sys.stderr)
+            return 1
         for s in args.args:
             run_lexer(maker(s))
     else:
-        for filename in args.args:
-            path = Path(filename)
-            if not path.exists():
-                print(f"trylex: {filename}: no such file", file=sys.stderr)
-                return 1
-            for line in path.read_text().splitlines():
-                run_lexer(maker(line))
+        if not args.args:
+            run_lexer(maker(sys.stdin.read()))
+        else:
+            for filename in args.args:
+                path = Path(filename)
+                if not path.exists():
+                    print(f"trylex: {filename}: no such file", file=sys.stderr)
+                    return 1
+                for line in path.read_text().splitlines():
+                    run_lexer(maker(line))
     return 0
 
 

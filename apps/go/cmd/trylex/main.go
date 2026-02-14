@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 
@@ -41,7 +42,7 @@ var lexerMakerTable = map[string]lexerInfoT{
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} expr {one or more strings to lex ...}\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} file {one or more filenames}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} file [one or more filenames]  (none = stdin)\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Lexer names:\n")
 	names := make([]string, 0, len(lexerMakerTable))
@@ -60,7 +61,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	if flag.NArg() < 3 {
+	if flag.NArg() < 2 {
 		usage()
 	}
 	lexerName := flag.Arg(0)
@@ -75,6 +76,9 @@ func main() {
 
 	switch mode {
 	case "expr":
+		if len(args) == 0 {
+			usage()
+		}
 		for _, arg := range args {
 			if err := runLexerOnce(lexerMaker, arg); err != nil {
 				fmt.Fprintln(os.Stderr, err)
@@ -82,7 +86,17 @@ func main() {
 			}
 		}
 	case "file":
-		if err := runLexerOnFiles(lexerMaker, args); err != nil {
+		if len(args) == 0 {
+			content, err := io.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			if err := runLexerOnce(lexerMaker, string(content)); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		} else if err := runLexerOnFiles(lexerMaker, args); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

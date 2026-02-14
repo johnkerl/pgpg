@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 
@@ -14,7 +15,7 @@ import (
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] expr {one or more strings to parse ...}\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] file {one or more filenames}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] file [one or more filenames]  (none = stdin)\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Parser names:\n")
 	os.Exit(1)
@@ -26,7 +27,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	if flag.NArg() < 2 {
+	if flag.NArg() < 1 {
 		usage()
 	}
 	mode := flag.Arg(0)
@@ -34,6 +35,9 @@ func main() {
 
 	switch mode {
 	case "expr":
+		if len(args) == 0 {
+			usage()
+		}
 		for _, arg := range args {
 			if err := runParserOnce(arg, verbose); err != nil {
 				fmt.Fprintln(os.Stderr, err)
@@ -41,7 +45,17 @@ func main() {
 			}
 		}
 	case "file":
-		if err := runParserOnFiles(args, verbose); err != nil {
+		if len(args) == 0 {
+			content, err := io.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			if err := runParserOnce(string(content), verbose); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		} else if err := runParserOnFiles(args, verbose); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

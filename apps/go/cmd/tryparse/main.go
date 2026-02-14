@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"sort"
 
@@ -43,7 +44,7 @@ var parserMakerTable = map[string]parserInfoT{
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} expr {one or more strings to parse ...}\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} file {one or more filenames}\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} file [one or more filenames]  (none = stdin)\n", os.Args[0])
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Parser names:\n")
 	names := make([]string, 0, len(parserMakerTable))
@@ -83,7 +84,7 @@ func main() {
 		astMode = "fullast"
 	}
 
-	if flag.NArg() < 3 {
+	if flag.NArg() < 2 {
 		usage()
 	}
 	parserName := flag.Arg(0)
@@ -104,6 +105,9 @@ func main() {
 
 	switch mode {
 	case "expr":
+		if len(args) == 0 {
+			usage()
+		}
 		for _, arg := range args {
 			if err := runParserOnce(run, arg, opts); err != nil {
 				fmt.Fprintln(os.Stderr, err)
@@ -111,7 +115,17 @@ func main() {
 			}
 		}
 	case "file":
-		if err := runParserOnFiles(run, args, opts); err != nil {
+		if len(args) == 0 {
+			content, err := io.ReadAll(os.Stdin)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			if err := runParserOnce(run, string(content), opts); err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+		} else if err := runParserOnFiles(run, args, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}

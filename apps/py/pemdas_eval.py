@@ -2,7 +2,7 @@
 """
 Pemdas-eval: parse PEMDAS arithmetic expressions and evaluate them.
 Usage: pemdas_eval.py [options] expr {one or more strings to parse ...}
-       pemdas_eval.py [options] file {one or more filenames}
+       pemdas_eval.py [options] file [one or more filenames]  (none = stdin)
 """
 from __future__ import annotations
 
@@ -29,21 +29,32 @@ def main() -> int:
         help="expr = strings as args; file = read filenames",
     )
     argparser.add_argument(
-        "args", nargs="+", help="Strings to parse (expr) or filenames (file)"
+        "args",
+        nargs="*",
+        help="Strings to parse (expr) or filenames (file); file with none reads stdin",
     )
     args = argparser.parse_args()
 
     try:
         if args.mode == "expr":
+            if not args.args:
+                print("pemdas_eval: expr requires at least one string", file=sys.stderr)
+                return 1
             for s in args.args:
                 run_once(s, args.v)
         else:
-            for filename in args.args:
-                path = Path(filename)
-                if not path.exists():
-                    print(f"pemdas_eval: {filename}: no such file", file=sys.stderr)
-                    return 1
-                run_once(path.read_text(), args.v)
+            if not args.args:
+                run_once(sys.stdin.read(), args.v)
+            else:
+                for filename in args.args:
+                    path = Path(filename)
+                    if not path.exists():
+                        print(
+                            f"pemdas_eval: {filename}: no such file",
+                            file=sys.stderr,
+                        )
+                        return 1
+                    run_once(path.read_text(), args.v)
     except ValueError as e:
         print(f"pemdas_eval: {e}", file=sys.stderr)
         return 1

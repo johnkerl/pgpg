@@ -2,7 +2,7 @@
 """
 Tryparse: run a generated Python parser on expr strings or files.
 Usage: tryparse.py [options] {parser name} expr {one or more strings to parse ...}
-       tryparse.py [options] {parser name} file {one or more filenames}
+       tryparse.py [options] {parser name} file [one or more filenames]  (none = stdin)
 """
 from __future__ import annotations
 
@@ -60,7 +60,9 @@ def main() -> int:
         help="expr = strings as args; file = read filenames",
     )
     argparser.add_argument(
-        "args", nargs="+", help="Strings to parse (expr) or filenames (file)"
+        "args",
+        nargs="*",
+        help="Strings to parse (expr) or filenames (file); file with none reads stdin",
     )
     args = argparser.parse_args()
 
@@ -76,6 +78,9 @@ def main() -> int:
         parser = make_pemdas_parser(args.tokens, args.states, args.stack, ast_mode)
 
     if args.mode == "expr":
+        if not args.args:
+            print("tryparse: expr requires at least one string", file=sys.stderr)
+            return 1
         for arg in args.args:
             try:
                 run_parser_once(parser, arg)
@@ -83,16 +88,23 @@ def main() -> int:
                 print(f"tryparse: {e}", file=sys.stderr)
                 return 1
     else:
-        for filename in args.args:
-            path = Path(filename)
-            if not path.exists():
-                print(f"tryparse: {filename}: no such file", file=sys.stderr)
-                return 1
+        if not args.args:
             try:
-                run_parser_once(parser, path.read_text())
+                run_parser_once(parser, sys.stdin.read())
             except ValueError as e:
                 print(f"tryparse: {e}", file=sys.stderr)
                 return 1
+        else:
+            for filename in args.args:
+                path = Path(filename)
+                if not path.exists():
+                    print(f"tryparse: {filename}: no such file", file=sys.stderr)
+                    return 1
+                try:
+                    run_parser_once(parser, path.read_text())
+                except ValueError as e:
+                    print(f"tryparse: {e}", file=sys.stderr)
+                    return 1
     return 0
 
 
