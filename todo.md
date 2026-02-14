@@ -3,6 +3,11 @@
 * `pemdas-eval` with `-v`
 * Prohibit any parent/child indices the same
 * Port manuals to JavaScript
+* Hex literals into some grammars ...
+* Simple calculator:
+  * Prompt string or no
+  * Handle stdin
+  * Types: int, float; then modular int, f2polys ...
 
 # Top of list
 
