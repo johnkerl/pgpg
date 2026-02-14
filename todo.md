@@ -5,6 +5,7 @@
 * document -noast and -fullast
 * draft, and test, a parser-generator for Python
 * draft, and test, a parser-generator for JavaScript
+* README.md for make/test/etc for all languages
 
 # Top of list
 

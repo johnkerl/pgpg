@@ -5,12 +5,14 @@ tags
 *~
 
 # Executables
-/generator/lexgen-code
-/generator/lexgen-tables
-/generator/parsegen-code
-/generator/parsegen-tables
+/generators/go/lexgen-code
+/generators/go/lexgen-tables
+/generators/go/parsegen-code
+/generators/go/parsegen-tables
 
-/runners/tryast
-/runners/trylex
-/runners/tryparse
-/runners/pemdas-eval
+/apps/go/tryast
+/apps/go/trylex
+/apps/go/tryparse
+/apps/go/pemdas-eval
+
+__pycache__

@@ -3,14 +3,14 @@
 set -xeuo pipefail
 
 #make -C ../manual
-#make -C ../generator
+#make -C ../generators/go
 
 #mkdir -p jsons
-#mkdir -p pkg/lexers
-#mkdir -p pkg/parsers
+#mkdir -p go/pkg/lexers
+#mkdir -p go/pkg/parsers
 
-../generator/lexgen-tables   -o jsons/pascal-lex.json   bnfs/pascal.bnf
-../generator/parsegen-tables -o jsons/pascal-parse.json bnfs/pascal.bnf
+../generators/go/lexgen-tables   -o jsons/pascal-lex.json   ../bnfs/pascal.bnf
+../generators/go/parsegen-tables -o jsons/pascal-parse.json ../bnfs/pascal.bnf
 
 echo
 echo DONE

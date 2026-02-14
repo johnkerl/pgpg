@@ -11,58 +11,58 @@ hand-written recursive-descent parsers and a full generator pipeline.
 ## Build Commands
 
 ```bash
-# Build everything (manual, generator, generated, runners) and run tests
+# Build everything (manual, generator, generated, apps/go) and run tests
 make
 make -C manual test
-make -C generator test
+make -C generators/go test
 
 # Build and test individual modules
 make -C manual          # Build manual module (core libraries)
 make -C manual test     # Run manual tests
-make -C generator       # Build generator executables
-make -C generator test  # Run generator tests
+make -C generators/go     # Build generator executables
+make -C generators/go test  # Run generator tests
 make -C generated       # Generate lexers and parsers from BNF source
-make -C runners         # Build CLI runner tools
+make -C apps/go         # Build CLI runner tools
 
 # Format code
 make -C manual fmt
-make -C generator fmt
+make -C generators/go fmt
 make -C generated fmt
-make -C runners fmt
+make -C apps/go fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
-make -C generator staticcheck
+make -C generators/go staticcheck
 
 # Pre-push check (fmt + build + test)
 make -C manual dev
-make -C generator dev
+make -C generators/go dev
 ```
 
 ## Running a Single Test
 
 ```bash
-cd manual    && go test ./pkg/lexers/ -run TestPEMDASLexer
-cd generator && go test ./pkg/lexgen/ -run TestCodegen
+cd manual    && go test ./go/pkg/lexers/ -run TestPEMDASLexer
+cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 ```
 
 ## Testing Parsers Interactively
 
 ```bash
 # Manual (hand-written) parsers: prefix "m:"
-./runners/tryparse m:pemdas expr '1*2+3'
-./runners/tryparse m:vic expr 'x = x + 1'
+./apps/go/tryparse m:pemdas expr '1*2+3'
+./apps/go/tryparse m:vic expr 'x = x + 1'
 
 # Generated parsers: prefix "g:"
-./runners/tryparse g:pemdas expr '1+2*3'
-./runners/tryparse g:json expr '{"a": [1, 2, 3]}'
-./runners/tryparse g:lisp expr '(+ 1 (* 2 3))'
+./apps/go/tryparse g:pemdas expr '1+2*3'
+./apps/go/tryparse g:json expr '{"a": [1, 2, 3]}'
+./apps/go/tryparse g:lisp expr '(+ 1 (* 2 3))'
 
 # Debug flags
-./runners/tryparse -tokens -states -stack g:pemdas expr '1+2'
+./apps/go/tryparse -tokens -states -stack g:pemdas expr '1+2'
 
 # Test lexers
-./runners/trylex m:pemdas expr '1+2*3'
-./runners/trylex g:pemdas expr '1+2*3'
+./apps/go/trylex m:pemdas expr '1+2*3'
+./apps/go/trylex g:pemdas expr '1+2*3'
 ```
 
 ## Architecture
@@ -71,9 +71,9 @@ The repo is a Go monorepo with four separate Go modules connected via `replace` 
 
 ```
 manual/       → Core libraries (tokens, lexers, parsers, AST). No external deps except testify.
-generator/    → Code generation tools. Depends on manual.
-generated/    → Output of generator (pre-generated lexers/parsers from BNF grammars). Depends on manual.
-runners/      → CLI tools (trylex, tryparse, tryast). Depends on manual + generated.
+generators/go/ → Code generation tools. Depends on manual.
+generated/    → Output of generators/go (pre-generated lexers/parsers from BNF grammars). Depends on manual.
+apps/go/      → CLI tools (trylex, tryparse, tryast). Depends on manual + generated.
 ```
 
 ### Generator Pipeline
@@ -88,25 +88,25 @@ The JSON intermediate format is intentionally language-independent to allow futu
 
 ### Key Packages
 
-- **`manual/pkg/tokens/`** — Token type, location tracking
-- **`manual/pkg/lexers/`** — `AbstractLexer` interface + hand-written lexers (pemdas, vic, vbc, seng, ebnf, etc.)
-- **`manual/pkg/parsers/`** — `AbstractParser` interface + hand-written recursive-descent parsers
-- **`manual/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
-- **`generator/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
-- **`generator/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
-- **`generator/bnfs/`** — Grammar files to have lexers/parsers generated from
-- **`generator/pkg/lexers/`** — Auto-generated lexers from `generator/bnfs`
-- **`generator/pkg/parsers/`** — Auto-generated parsers from `generator/bnfs`
-- **`runners/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
+- **`manual/go/pkg/tokens/`** — Token type, location tracking
+- **`manual/go/pkg/lexers/`** — `AbstractLexer` interface + hand-written lexers (pemdas, vic, vbc, seng, ebnf, etc.)
+- **`manual/go/pkg/parsers/`** — `AbstractParser` interface + hand-written recursive-descent parsers
+- **`manual/go/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
+- **`generators/go/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
+- **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
+- **`bnfs/`** — Grammar files to have lexers/parsers generated from
+- **`generated/go/pkg/lexers/`** — Auto-generated lexers from `bnfs/`
+- **`generated/go/pkg/parsers/`** — Auto-generated parsers from `bnfs/`
+- **`apps/go/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
 
 ### BNF Grammars
 
-Grammar files live in `generated/bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.) and `grammar-check/bnfs/` (for validation with GOCC).
+Grammar files live in `bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
 
 ## Profiling
 
 ```bash
-./generator/parsegen-tables \
+./generators/go/parsegen-tables \
   -cpuprofile cpu.pprof -memprofile mem.pprof -trace trace.out \
   -o output.json grammar.bnf
 go tool pprof -http=:8082 cpu.pprof

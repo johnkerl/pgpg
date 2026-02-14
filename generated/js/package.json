@@ -1,0 +1,8 @@
+{
+  "name": "pgpg-generated-js",
+  "description": "Generated JavaScript lexers and parsers from PGPG JSON tables",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/"
+  }
+}
