@@ -1099,7 +1099,7 @@ class pgpg_JSONParser:
             def on_action(state: int, action: Action, lookahead: Optional[Token]) -> None:
                 kind_str = "shift" if action.kind == ActionKind.SHIFT else ("reduce" if action.kind == ActionKind.REDUCE else "accept")
                 target = f"({action.target})" if action.kind != ActionKind.ACCEPT else ""
-                la_type = lookahead.type if lookahead else "<nil>"
+                la_type = lookahead.type if lookahead else ""
                 la_lex = lookahead.lexeme if lookahead else ""
                 print(f"STATE {state} {kind_str}{target} on {la_type}({la_lex!r})", file=sys.stderr)
             self.trace.on_action = on_action
