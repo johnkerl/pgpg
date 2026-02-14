@@ -6,4 +6,7 @@ test:
 fmt:
 	black .
 
-.PHONY: test fmt
+clean:
+	@:
+
+.PHONY: test fmt clean

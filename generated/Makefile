@@ -42,6 +42,14 @@ $(foreach spec,$(PARSE_SPECS),$(eval $(call PARSE_JSON_RULE,$(firstword $(subst 
 
 
 # ----------------------------------------------------------------
+clean:
+
+genclean:
+	rm -rf jsons
+	rm -rf go/pkg/lexers
+	rm -rf go/pkg/parsers
+
+# ----------------------------------------------------------------
 # Formatting
 # go fmt ./... finds Python files which we want to ignore.
 fmt:
@@ -55,4 +63,4 @@ staticcheck:
 
 # ================================================================
 # Go does its own dependency management, outside of make.
-.PHONY: build check fmt staticcheck dev
+.PHONY: build check fmt staticcheck dev clean

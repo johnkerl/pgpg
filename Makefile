@@ -9,6 +9,11 @@ clean:
 	make -C generators/go clean
 	make -C generated     clean
 	make -C apps/go       clean
+	make -C generators/py clean
+	make -C generated/py  clean
+	make -C generators/js clean
+	make -C generated/js  clean
+	make -C apps/py       clean
 
 fmt:
 	make -C manual        fmt

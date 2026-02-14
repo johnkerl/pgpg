@@ -4,7 +4,10 @@
 fmt:
 	black .
 
-.PHONY: test fmt
+clean:
+	@:
+
+.PHONY: test fmt clean
 test:
 	python3 trylex.py g:json expr '[1]'
 	python3 tryparse.py g:json expr '[1]'

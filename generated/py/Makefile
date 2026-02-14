@@ -41,4 +41,7 @@ test:
 fmt:
 	black .
 
-.PHONY: all json json-lexer json-parser pemdas pemdas-lexer pemdas-parser test fmt
+clean:
+	@:
+
+.PHONY: all json json-lexer json-parser pemdas pemdas-lexer pemdas-parser test fmt clean

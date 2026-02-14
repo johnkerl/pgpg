@@ -18,4 +18,7 @@ all: json
 test:
 	$(MAKE) -C $(GEN_JS) test
 
-.PHONY: all json json-lexer json-parser test
+clean:
+	@:
+
+.PHONY: all json json-lexer json-parser test clean

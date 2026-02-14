@@ -24,6 +24,10 @@ dev:
 	make check
 	@echo DONE
 
+# ----------------------------------------------------------------
+clean:
+	@:
+
 # ================================================================
 # Go does its own dependency management, outside of make.
-.PHONY: build check fmt staticcheck dev
+.PHONY: build check fmt staticcheck dev clean

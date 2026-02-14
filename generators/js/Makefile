@@ -3,4 +3,7 @@
 test:
 	node --test tests/test_parsegen_code.js
 
-.PHONY: test
+clean:
+	@:
+
+.PHONY: test clean
