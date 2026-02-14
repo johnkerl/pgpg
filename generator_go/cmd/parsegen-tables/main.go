@@ -9,7 +9,7 @@ import (
 	"runtime/pprof"
 	"runtime/trace"
 
-	"github.com/johnkerl/pgpg/generator/pkg/parsegen"
+	"github.com/johnkerl/pgpg/generator_go/pkg/parsegen"
 )
 
 func usage() {

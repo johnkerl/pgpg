@@ -5,10 +5,10 @@ tags
 *~
 
 # Executables
-/generator/lexgen-code
-/generator/lexgen-tables
-/generator/parsegen-code
-/generator/parsegen-tables
+/generator_go/lexgen-code
+/generator_go/lexgen-tables
+/generator_go/parsegen-code
+/generator_go/parsegen-tables
 
 /runners/tryast
 /runners/trylex

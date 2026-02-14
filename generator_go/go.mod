@@ -1,4 +1,4 @@
-module github.com/johnkerl/pgpg/generator
+module github.com/johnkerl/pgpg/generator_go
 
 go 1.19
 

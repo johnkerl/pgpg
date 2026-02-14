@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/johnkerl/pgpg/generator/pkg/lexgen"
+	"github.com/johnkerl/pgpg/generator_go/pkg/lexgen"
 )
 
 func usage() {

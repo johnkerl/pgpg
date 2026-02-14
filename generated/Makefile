@@ -17,22 +17,22 @@ dirs:
 # ----------------------------------------------------------------
 define LEX_GO_RULE
 pkg/lexers/$(1).go: jsons/$(1)-lex.json
-	../generator/lexgen-code -o $$@ -type $(2)Lexer $$<
+	../generator_go/lexgen-code -o $$@ -type $(2)Lexer $$<
 endef
 
 define LEX_JSON_RULE
 jsons/$(1)-lex.json: bnfs/$(1).bnf
-	../generator/lexgen-tables -o $$@ $$<
+	../generator_go/lexgen-tables -o $$@ $$<
 endef
 
 define PARSE_GO_RULE
 pkg/parsers/$(1).go: jsons/$(1)-parse.json
-	../generator/parsegen-code -o $$@ -package parsers -type $(2)Parser $$<
+	../generator_go/parsegen-code -o $$@ -package parsers -type $(2)Parser $$<
 endef
 
 define PARSE_JSON_RULE
 jsons/$(1)-parse.json: bnfs/$(1).bnf
-	../generator/parsegen-tables -o $$@ $$<
+	../generator_go/parsegen-tables -o $$@ $$<
 endef
 
 $(foreach spec,$(LEX_SPECS),$(eval $(call LEX_GO_RULE,$(firstword $(subst |, ,$(spec))),$(word 2,$(subst |, ,$(spec))))))
