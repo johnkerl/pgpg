@@ -8,8 +8,8 @@ import (
 
 	"github.com/johnkerl/pgpg/manual/pkg/asts"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
-	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
+	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
+	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
 )
 
 func usage() {

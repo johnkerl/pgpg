@@ -4,19 +4,19 @@
 LEX_SPECS=sign-digit|SignDigit pemdas|PEMDAS pemdas_plain|PEMDASPlain statements|Statements seng|SENG lisp|LISP json|JSON json_plain|JSONPlain
 PARSE_SPECS=pemdas|PEMDAS pemdas_plain|PEMDASPlain statements|Statements seng|SENG lisp|LISP json|JSON json_plain|JSONPlain
 
-LEXGENS=$(foreach spec,$(LEX_SPECS),pkg/lexers/$(firstword $(subst |, ,$(spec))).go)
-PARSEGENS=$(foreach spec,$(PARSE_SPECS),pkg/parsers/$(firstword $(subst |, ,$(spec))).go)
+LEXGENS=$(foreach spec,$(LEX_SPECS),go/pkg/lexers/$(firstword $(subst |, ,$(spec))).go)
+PARSEGENS=$(foreach spec,$(PARSE_SPECS),go/pkg/parsers/$(firstword $(subst |, ,$(spec))).go)
 
 all: dirs $(LEXGENS) $(PARSEGENS)
 
 dirs:
 	@mkdir -p jsons
-	@mkdir -p pkg/lexers
-	@mkdir -p pkg/parsers
+	@mkdir -p go/pkg/lexers
+	@mkdir -p go/pkg/parsers
 
 # ----------------------------------------------------------------
 define LEX_GO_RULE
-pkg/lexers/$(1).go: jsons/$(1)-lex.json
+go/pkg/lexers/$(1).go: jsons/$(1)-lex.json
 	../generators/go/lexgen-code -o $$@ -type $(2)Lexer $$<
 endef
 
@@ -26,7 +26,7 @@ jsons/$(1)-lex.json: bnfs/$(1).bnf
 endef
 
 define PARSE_GO_RULE
-pkg/parsers/$(1).go: jsons/$(1)-parse.json
+go/pkg/parsers/$(1).go: jsons/$(1)-parse.json
 	../generators/go/parsegen-code -o $$@ -package parsers -type $(2)Parser $$<
 endef
 
@@ -45,7 +45,7 @@ $(foreach spec,$(PARSE_SPECS),$(eval $(call PARSE_JSON_RULE,$(firstword $(subst 
 # Formatting
 # go fmt ./... finds Python files which we want to ignore.
 fmt:
-	-go fmt ./pkg/...
+	-go fmt ./go/pkg/...
 
 # ----------------------------------------------------------------
 # Needs first: go install honnef.co/go/tools/cmd/staticcheck@latest

@@ -9,7 +9,7 @@ import (
 
 	"github.com/johnkerl/pgpg/manual/pkg/lexers"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
+	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 )
 
 type lexerMaker func(string) lexers.AbstractLexer
