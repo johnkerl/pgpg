@@ -2,13 +2,13 @@
 
 Python 3.10+.
 
-This directory holds **generated** lexers and parsers only. Codegen scripts, runtime (Token, AST, AbstractLexer), and tests live in **../generator_py**.
+This directory holds **generated** lexers and parsers only. Codegen scripts, runtime (Token, AST, AbstractLexer), and tests live in **../generators/py**.
 
 ## Layout
 
 - **lexers/** — Generated DFA lexers (from `*-lex.json`).
 - **parsers/** — Generated LR(1) parsers (from `*-parse.json`).
-- **Makefile** — Targets to generate (via generator_py codegen) and run tests.
+- **Makefile** — Targets to generate (via generators/py codegen) and run tests.
 
 ## Dependencies
 
@@ -16,7 +16,7 @@ This directory holds **generated** lexers and parsers only. Codegen scripts, run
 pip install -r requirements.txt
 ```
 
-(Jinja2 is required for codegen; install from generator_py if you run codegen directly.)
+(Jinja2 is required for codegen; install from generators/py if you run codegen directly.)
 
 ## Generating parsers and lexers
 
@@ -38,12 +38,12 @@ To run codegen by hand (from repo root):
 
 ```bash
 # Parser (default class prefix is pgpg_)
-PYTHONPATH=generator_py python3 generator_py/codegen/parsegen_code.py \
+PYTHONPATH=generators/py python3 generators/py/codegen/parsegen_code.py \
   -o generated_py/parsers/json_parser.py -c JSONParser \
   generated/jsons/json-parse.json
 
 # Lexer
-PYTHONPATH=generator_py python3 generator_py/codegen/lexgen_code.py \
+PYTHONPATH=generators/py python3 generators/py/codegen/lexgen_code.py \
   -o generated_py/lexers/json_lexer.py -c JSONLexer \
   generated/jsons/json-lex.json
 ```
@@ -52,7 +52,7 @@ PYTHONPATH=generator_py python3 generator_py/codegen/lexgen_code.py \
 
 ## Running generated parsers
 
-Set `PYTHONPATH` so that **generator_py** (runtime) and **generated_py** (lexers, parsers) are on the path, e.g. from repo root: `PYTHONPATH=generator_py:generated_py`.
+Set `PYTHONPATH` so that **generators/py** (runtime) and **generated_py** (lexers, parsers) are on the path, e.g. from repo root: `PYTHONPATH=generators/py:generated_py`.
 
 ```python
 from lexers.json_lexer import pgpg_JSONLexer
@@ -76,20 +76,20 @@ ast = parser.parse(lex, "")
 
 ## Tests
 
-Tests live in **generator_py**. From **generated_py/**:
+Tests live in **generators/py**. From **generated_py/**:
 
 ```bash
 make test
 ```
 
-Or from **generator_py/**:
+Or from **generators/py/**:
 
 ```bash
-make -C generator_py test
+make -C generators/py test
 ```
 
 Or run a single test file:
 
 ```bash
-PYTHONPATH=generator_py python3 generator_py/tests/test_parsegen_code.py -v
+PYTHONPATH=generators/py python3 generators/py/tests/test_parsegen_code.py -v
 ```
