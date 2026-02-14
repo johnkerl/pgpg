@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/johnkerl/pgpg/generator_go/pkg/lexgen"
+	"github.com/johnkerl/pgpg/generators/go/pkg/parsegen"
 )
 
 func usage() {
@@ -20,8 +20,8 @@ func main() {
 	var typeName string
 	var debug bool
 	flag.StringVar(&outputPath, "o", "", "Output Go file (default stdout)")
-	flag.StringVar(&packageName, "package", "lexers", "Package name for generated lexer")
-	flag.StringVar(&typeName, "type", "GeneratedLexer", "Lexer type name")
+	flag.StringVar(&packageName, "package", "parsers", "Package name for generated parser")
+	flag.StringVar(&typeName, "type", "GeneratedParser", "Parser type name")
 	flag.BoolVar(&debug, "debug", false, "Write unformatted code to stderr")
 	flag.Usage = usage
 	flag.Parse()
@@ -37,14 +37,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	tables, err := lexgen.DecodeTables(inputBytes)
+	tables, err := parsegen.DecodeTables(inputBytes)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	if debug {
-		raw, err := lexgen.GenerateGoLexerCodeRaw(tables, packageName, typeName)
+		raw, err := parsegen.GenerateGoParserCodeRaw(tables, packageName, typeName)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -53,7 +53,7 @@ func main() {
 		_, _ = os.Stderr.Write([]byte("\n"))
 	}
 
-	code, err := lexgen.GenerateGoLexerCode(tables, packageName, typeName)
+	code, err := parsegen.GenerateGoParserCode(tables, packageName, typeName)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

@@ -1,7 +1,7 @@
 # Lexgen: Regex/NFA/DFA Lexer Generation
 
 This document captures the design choices for the regex-capable lexer generator
-implemented in `generator_go/pkg/lexgen`.
+implemented in `generators/go/pkg/lexgen`.
 
 ## Goals
 
