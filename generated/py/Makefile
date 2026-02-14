@@ -19,11 +19,23 @@ json-parser:
 		-o parsers/json_parser.py -c JSONParser \
 		$(JSON_PATH)/json-parse.json
 
+pemdas: pemdas-lexer pemdas-parser
+
+pemdas-lexer:
+	PYTHONPATH=$(GEN_PY) python3 $(GEN_PY)/codegen/lexgen_code.py \
+		-o lexers/pemdas_lexer.py -c PEMDASLexer \
+		$(JSON_PATH)/pemdas-lex.json
+
+pemdas-parser:
+	PYTHONPATH=$(GEN_PY) python3 $(GEN_PY)/codegen/parsegen_code.py \
+		-o parsers/pemdas_parser.py -c PEMDASParser \
+		$(JSON_PATH)/pemdas-parse.json
+
 # Regenerate all parsers/lexers that have JSON in generated/jsons
-all: json
-	@echo "Add more grammar targets as needed (e.g. pemdas, lisp)."
+all: json pemdas
+	@echo "Add more grammar targets as needed (e.g. lisp)."
 
 test:
 	$(MAKE) -C $(GEN_PY) test
 
-.PHONY: all json json-lexer json-parser test
+.PHONY: all json json-lexer json-parser pemdas pemdas-lexer pemdas-parser test
