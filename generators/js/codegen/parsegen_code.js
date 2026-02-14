@@ -241,7 +241,7 @@ import {
   AST,
   TOKEN_TYPE_EOF,
   TOKEN_TYPE_ERROR,
-} from "../../generator_js/runtime/index.js";
+} from "../../generators/js/runtime/index.js";
 
 const ActionKind = { SHIFT: 0, REDUCE: 1, ACCEPT: 2 };
 

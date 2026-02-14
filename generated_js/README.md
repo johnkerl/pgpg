@@ -2,13 +2,13 @@
 
 ES modules; Node 18+ (or modern bundler).
 
-This directory holds **generated** lexers and parsers only. Codegen scripts and runtime (Token, AST, AbstractLexer) live in **../generator_js**.
+This directory holds **generated** lexers and parsers only. Codegen scripts and runtime (Token, AST, AbstractLexer) live in **../generators/js**.
 
 ## Layout
 
 - **lexers/** — Generated DFA lexers (from `*-lex.json`).
 - **parsers/** — Generated LR(1) parsers (from `*-parse.json`).
-- **Makefile** — Targets to generate (via generator_js codegen) and run tests.
+- **Makefile** — Targets to generate (via generators/js codegen) and run tests.
 
 ## Generating parsers and lexers
 
@@ -30,12 +30,12 @@ To run codegen by hand (from repo root, or from generated_js with paths adjusted
 
 ```bash
 # Parser (default class prefix is pgpg_)
-node generator_js/codegen/parsegen_code.js \
+node generators/js/codegen/parsegen_code.js \
   -o generated_js/parsers/json_parser.js -c JSONParser \
   generated/jsons/json-parse.json
 
 # Lexer
-node generator_js/codegen/lexgen_code.js \
+node generators/js/codegen/lexgen_code.js \
   -o generated_js/lexers/json_lexer.js -c JSONLexer \
   generated/jsons/json-lex.json
 ```
@@ -44,7 +44,7 @@ node generator_js/codegen/lexgen_code.js \
 
 ## Running generated parsers
 
-Generated lexers and parsers import the runtime from `../../generator_js/runtime/index.js`, so run from the **repository root** (or ensure Node resolves that path). Example from repo root:
+Generated lexers and parsers import the runtime from `../../generators/js/runtime/index.js`, so run from the **repository root** (or ensure Node resolves that path). Example from repo root:
 
 ```javascript
 import { pgpg_JSONLexer } from "./generated_js/lexers/json_lexer.js";
@@ -67,20 +67,20 @@ const ast = parser.parse(lex, "");
 
 ## Tests
 
-Tests live in **generator_js**. From **generated_js/**:
+Tests live in **generators/js**. From **generated_js/**:
 
 ```bash
 make test
 ```
 
-Or from **generator_js/**:
+Or from **generators/js/**:
 
 ```bash
-make -C generator_js test
+make -C generators/js test
 ```
 
 Or run a single test file:
 
 ```bash
-node --test generator_js/tests/test_parsegen_code.js
+node --test generators/js/tests/test_parsegen_code.js
 ```
