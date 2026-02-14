@@ -111,6 +111,10 @@ def _evaluate_operator(node) -> int:
         return c1 // c2
     if op == "%":
         return c1 % c2
+    if op == "**":
+        if c2 < 0:
+            return 0
+        return pow(c1, c2)
     raise ValueError(f'Unhandled operator "{op}"')
 
 

@@ -145,6 +145,17 @@ func evaluateLiteralNode(node *asts.ASTNode) (int, error) {
 	return v, nil
 }
 
+func intPower(base, exp int) int {
+	if exp < 0 {
+		return 0
+	}
+	out := 1
+	for i := 0; i < exp; i++ {
+		out *= base
+	}
+	return out
+}
+
 func evaluateOperatorNode(node *asts.ASTNode) (int, error) {
 	op := string(node.Token.Lexeme)
 	if len(node.Children) != 2 {
@@ -173,6 +184,8 @@ func evaluateOperatorNode(node *asts.ASTNode) (int, error) {
 		return c1 / c2, nil
 	case "%":
 		return c1 % c2, nil
+	case "**":
+		return intPower(c1, c2), nil
 	default:
 		return -1, fmt.Errorf("Unhandled operator \"%s\"", op)
 	}
