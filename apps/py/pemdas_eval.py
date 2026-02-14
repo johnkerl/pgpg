@@ -17,19 +17,21 @@ sys.path.insert(0, str(_REPO_ROOT / "generated" / "py"))
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
+    argparser = argparse.ArgumentParser(
         description="Parse and evaluate PEMDAS arithmetic expressions."
     )
-    parser.add_argument("-v", action="store_true", help="Print AST before evaluation")
-    parser.add_argument(
+    argparser.add_argument(
+        "-v", action="store_true", help="Print AST before evaluation"
+    )
+    argparser.add_argument(
         "mode",
         choices=["expr", "file"],
         help="expr = strings as args; file = read filenames",
     )
-    parser.add_argument(
+    argparser.add_argument(
         "args", nargs="+", help="Strings to parse (expr) or filenames (file)"
     )
-    args = parser.parse_args()
+    args = argparser.parse_args()
 
     try:
         if args.mode == "expr":
@@ -52,9 +54,9 @@ def run_once(input_str: str, verbose: bool) -> None:
     from lexers import pemdas_lexer
     from parsers import pemdas_parser
 
-    lex = pemdas_lexer.pgpg_PEMDASLexer(input_str)
+    lexer = pemdas_lexer.pgpg_PEMDASLexer(input_str)
     parser = pemdas_parser.pgpg_PEMDASParser()
-    ast = parser.parse(lex, "")
+    ast = parser.parse(lexer, "")
     if ast is None:
         raise ValueError("(nil AST)")
     if verbose:

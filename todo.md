@@ -2,10 +2,8 @@
 
 * `pemdas-eval` with `-v`
 * Prohibit any parent/child indices the same
-* Document `-noast` and `-fullast`
-* `README.md` for make/test/etc for all languages
 * Port manuals to JavaScript
-* Top-level `Makefile` for `test` and `fmt` (at least)
+* Put `**` operator into pemdas everywhere
 
 # Top of list
 

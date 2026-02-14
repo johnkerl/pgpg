@@ -32,22 +32,24 @@ def main() -> int:
         ),
     }
 
-    parser = argparse.ArgumentParser(
+    argparser = argparse.ArgumentParser(
         description="Run a generated lexer on expr strings or files.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="Lexer names:\n"
         + "\n".join(f"  {k:<10} {v[1]}" for k, v in sorted(lexers.items())),
     )
-    parser.add_argument("lexer_name", choices=list(lexers.keys()), help="Lexer to use")
-    parser.add_argument(
+    argparser.add_argument(
+        "lexer_name", choices=list(lexers.keys()), help="Lexer to use"
+    )
+    argparser.add_argument(
         "mode",
         choices=["expr", "file"],
         help="expr = strings as args; file = read filenames",
     )
-    parser.add_argument(
+    argparser.add_argument(
         "args", nargs="+", help="Strings to lex (expr) or filenames (file)"
     )
-    args = parser.parse_args()
+    args = argparser.parse_args()
 
     maker, _ = lexers[args.lexer_name]
 
