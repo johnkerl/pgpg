@@ -116,7 +116,7 @@ type parserGotoEntry struct {
 }
 
 type parserProductionInfo struct {
-	LHSLiteral                 string
+	LHSLiteral                  string
 	RHSCount                    int
 	HasHint                     bool
 	HasPassthrough              bool
@@ -128,7 +128,7 @@ type parserProductionInfo struct {
 	PassthroughIndex            int
 	ParentLiteral               string
 	ChildIndices                []int
-	WithAppendedChildren       []int
+	WithAppendedChildren        []int
 	WithPrependedChildren       []int
 	WithAdoptedGrandchildren    []int
 	NodeType                    string

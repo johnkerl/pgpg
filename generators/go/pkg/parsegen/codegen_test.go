@@ -188,9 +188,9 @@ func TestGenerateGoParserCodeWithAdoptedGrandchildrenRespectsType(t *testing.T) 
 					{Name: "rbracket", Terminal: true},
 				},
 				Hint: &ASTHint{
-					ParentLiteral:             strPtr("[]"),
+					ParentLiteral:            strPtr("[]"),
 					WithAdoptedGrandchildren: []int{1},
-					NodeType:                  "array",
+					NodeType:                 "array",
 				},
 			},
 		},

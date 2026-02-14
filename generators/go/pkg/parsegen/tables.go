@@ -43,14 +43,14 @@ type Production struct {
 
 // ASTHint captures AST-construction directives for a production.
 type ASTHint struct {
-	ParentIndex               int     `json:"parent"`
-	ChildIndices              []int   `json:"children"`
-	WithAppendedChildren      []int   `json:"with_appended_children,omitempty"`
-	WithPrependedChildren     []int   `json:"with_prepended_children,omitempty"`
-	WithAdoptedGrandchildren  []int   `json:"with_adopted_grandchildren,omitempty"`
-	ParentLiteral             *string `json:"parent_literal,omitempty"`
-	PassthroughIndex          *int    `json:"pass-through,omitempty"`
-	NodeType                  string  `json:"type,omitempty"`
+	ParentIndex              int     `json:"parent"`
+	ChildIndices             []int   `json:"children"`
+	WithAppendedChildren     []int   `json:"with_appended_children,omitempty"`
+	WithPrependedChildren    []int   `json:"with_prepended_children,omitempty"`
+	WithAdoptedGrandchildren []int   `json:"with_adopted_grandchildren,omitempty"`
+	ParentLiteral            *string `json:"parent_literal,omitempty"`
+	PassthroughIndex         *int    `json:"pass-through,omitempty"`
+	NodeType                 string  `json:"type,omitempty"`
 }
 
 type Symbol struct {
