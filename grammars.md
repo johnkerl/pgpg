@@ -4,13 +4,9 @@
 
 This is add and multiply of integers, with equal precedence.
 
-GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/ame.bnf)
-
 ## AMNE
 
 This is add and multiply of integers, with unequal precedence.
-
-GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/amne.bnf)
 
 ## PEMDAS
 
@@ -19,8 +15,6 @@ Arithmetic with PEMDAS rules.
 ## VIC
 
 Variables-and-integers calculator.
-
-GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/vic.bnf)
 
 ## VBC
 
@@ -39,8 +33,6 @@ Simple English statements:
 * subject/object/verb or imperative object/verb
 * articles, adjectives, adverbs
 * explicit terminal wordlists -- no morphological type-inference e.g. ends with `-ly` meaning it must be an adverb
-
-GOCC grammar: [https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf](https://github.com/johnkerl/pgpg/blob/main/grammar-check/bnfs/seng.bnf)
 
 Examples:
 

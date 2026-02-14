@@ -101,7 +101,7 @@ The JSON intermediate format is intentionally language-independent to allow futu
 
 ### BNF Grammars
 
-Grammar files live in `generated/bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.) and `grammar-check/bnfs/` (for validation with GOCC).
+Grammar files live in `generated/bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
 
 ## Profiling
 
