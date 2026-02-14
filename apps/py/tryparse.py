@@ -16,54 +16,13 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO_ROOT / "generators" / "py"))
 sys.path.insert(0, str(_REPO_ROOT / "generated" / "py"))
 
-
-def run_parser_once(
-    run: Callable[[str], Optional[object]],
-    input_str: str,
-) -> None:
-    """Run parser on one string; print input and AST."""
-    print(input_str)
-    ast = run(input_str)
-    if ast is not None:
-        ast.print_tree()
+from lexers import json_lexer
+from lexers import pemdas_lexer
+from parsers import json_parser
+from parsers import pemdas_parser
 
 
 def main() -> int:
-    from lexers import json_lexer
-    from lexers import pemdas_lexer
-    from parsers import json_parser
-    from parsers import pemdas_parser
-
-    def make_run_json(
-        trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str
-    ):
-        def run(s: str):
-            lex = json_lexer.pgpg_JSONLexer(s)
-            p = json_parser.pgpg_JSONParser()
-            p.attach_cli_trace(
-                trace_tokens=trace_tokens,
-                trace_states=trace_states,
-                trace_stack=trace_stack,
-            )
-            return p.parse(lex, ast_mode=ast_mode)
-
-        return run
-
-    def make_run_pemdas(
-        trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str
-    ):
-        def run(s: str):
-            lex = pemdas_lexer.pgpg_PEMDASLexer(s)
-            p = pemdas_parser.pgpg_PEMDASParser()
-            p.attach_cli_trace(
-                trace_tokens=trace_tokens,
-                trace_states=trace_states,
-                trace_stack=trace_stack,
-            )
-            return p.parse(lex, ast_mode=ast_mode)
-
-        return run
-
     parsers_help = {
         "g:json": "Generated JSON parser from bnfs/json.bnf.",
         "g:pemdas": "Generated PEMDAS parser from bnfs/pemdas.bnf.",
@@ -133,6 +92,49 @@ def main() -> int:
                 print(f"tryparse: {e}", file=sys.stderr)
                 return 1
     return 0
+
+
+def make_run_json(
+    trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str
+):
+    def run(s: str):
+        lex = json_lexer.pgpg_JSONLexer(s)
+        p = json_parser.pgpg_JSONParser()
+        p.attach_cli_trace(
+            trace_tokens=trace_tokens,
+            trace_states=trace_states,
+            trace_stack=trace_stack,
+        )
+        return p.parse(lex, ast_mode=ast_mode)
+
+    return run
+
+
+def make_run_pemdas(
+    trace_tokens: bool, trace_states: bool, trace_stack: bool, ast_mode: str
+):
+    def run(s: str):
+        lex = pemdas_lexer.pgpg_PEMDASLexer(s)
+        p = pemdas_parser.pgpg_PEMDASParser()
+        p.attach_cli_trace(
+            trace_tokens=trace_tokens,
+            trace_states=trace_states,
+            trace_stack=trace_stack,
+        )
+        return p.parse(lex, ast_mode=ast_mode)
+
+    return run
+
+
+def run_parser_once(
+    run: Callable[[str], Optional[object]],
+    input_str: str,
+) -> None:
+    """Run parser on one string; print input and AST."""
+    print(input_str)
+    ast = run(input_str)
+    if ast is not None:
+        ast.print_tree()
 
 
 if __name__ == "__main__":

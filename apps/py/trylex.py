@@ -16,26 +16,11 @@ sys.path.insert(0, str(_REPO_ROOT / "generators" / "py"))
 sys.path.insert(0, str(_REPO_ROOT / "generated" / "py"))
 
 from runtime.token import TOKEN_TYPE_EOF, TOKEN_TYPE_ERROR
-
-
-def run_lexer(lexer) -> None:
-    """Print tokens from lexer until EOF or error."""
-    while True:
-        token = lexer.scan()
-        loc = token.location
-        line = loc.line if loc else 0
-        col = loc.column if loc else 0
-        print(
-            f"Line {line:4d} column {col:4d} type {token.type:<16} token <<{token.lexeme!s}>>"
-        )
-        if token.type == TOKEN_TYPE_EOF or token.type == TOKEN_TYPE_ERROR:
-            break
+from lexers import json_lexer
+from lexers import pemdas_lexer
 
 
 def main() -> int:
-    from lexers import json_lexer
-    from lexers import pemdas_lexer
-
     lexers = {
         "g:json": (
             lambda s: json_lexer.pgpg_JSONLexer(s),
@@ -78,6 +63,20 @@ def main() -> int:
             for line in path.read_text().splitlines():
                 run_lexer(maker(line))
     return 0
+
+
+def run_lexer(lexer) -> None:
+    """Print tokens from lexer until EOF or error."""
+    while True:
+        token = lexer.scan()
+        loc = token.location
+        line = loc.line if loc else 0
+        col = loc.column if loc else 0
+        print(
+            f"Line {line:4d} column {col:4d} type {token.type:<16} token <<{token.lexeme!s}>>"
+        )
+        if token.type == TOKEN_TYPE_EOF or token.type == TOKEN_TYPE_ERROR:
+            break
 
 
 if __name__ == "__main__":

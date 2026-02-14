@@ -4,9 +4,8 @@
 * Prohibit any parent/child indices the same
 * Document `-noast` and `-fullast`
 * `README.md` for make/test/etc for all languages
-* Port manuals to Python
 * Port manuals to JavaScript
-* A `make fmt` rule to `black` the Python files
+* Top-level `Makefile` for `test` and `fmt` (at least)
 
 # Top of list
 
