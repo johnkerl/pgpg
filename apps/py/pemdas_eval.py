@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
 Pemdas-eval: parse PEMDAS arithmetic expressions and evaluate them.
-Usage: pemdas_eval.py [options] expr {one or more strings to parse ...}
-       pemdas_eval.py [options] file [one or more filenames]  (none = stdin)
+Usage: pemdas_eval.py [options] [-e] [file ...]
+  With -e: one or more arguments are expressions to parse (error if none).
+  Without -e: zero arguments = read from stdin; one or more = read from those files.
 """
 from __future__ import annotations
 
@@ -24,21 +25,21 @@ def main() -> int:
         "-v", action="store_true", help="Print AST before evaluation"
     )
     argparser.add_argument(
-        "mode",
-        choices=["expr", "file"],
-        help="expr = strings as args; file = read filenames",
+        "-e",
+        action="store_true",
+        help="Arguments are expressions to parse (at least one required)",
     )
     argparser.add_argument(
         "args",
         nargs="*",
-        help="Strings to parse (expr) or filenames (file); file with none reads stdin",
+        help="Expressions (-e) or filenames; with no -e and no args, read stdin",
     )
     args = argparser.parse_args()
 
     try:
-        if args.mode == "expr":
+        if args.e:
             if not args.args:
-                print("pemdas_eval: expr requires at least one string", file=sys.stderr)
+                print("pemdas_eval: -e requires at least one argument", file=sys.stderr)
                 return 1
             for s in args.args:
                 run_once(s, args.v)

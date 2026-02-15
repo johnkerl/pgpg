@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Tryparse: run a generated Python parser on expr strings or files.
-Usage: tryparse.py [options] {parser name} expr {one or more strings to parse ...}
-       tryparse.py [options] {parser name} file [one or more filenames]  (none = stdin)
+Tryparse: run a generated Python parser on expressions or files.
+Usage: tryparse.py [options] {parser name} [-e] [file ...]
+  With -e: one or more arguments are expressions to parse (error if none).
+  Without -e: zero arguments = read from stdin; one or more = read from those files.
 """
 from __future__ import annotations
 
@@ -52,17 +53,17 @@ def main() -> int:
         help="Ignore AST hints and build full parse tree",
     )
     argparser.add_argument(
-        "parser_name", choices=list(parsers_help), help="Parser to use"
+        "-e",
+        action="store_true",
+        help="Arguments are expressions to parse (at least one required)",
     )
     argparser.add_argument(
-        "mode",
-        choices=["expr", "file"],
-        help="expr = strings as args; file = read filenames",
+        "parser_name", choices=list(parsers_help), help="Parser to use"
     )
     argparser.add_argument(
         "args",
         nargs="*",
-        help="Strings to parse (expr) or filenames (file); file with none reads stdin",
+        help="Expressions (-e) or filenames; with no -e and no args, read stdin",
     )
     args = argparser.parse_args()
 
@@ -77,9 +78,9 @@ def main() -> int:
     else:
         parser = make_pemdas_parser(args.tokens, args.states, args.stack, ast_mode)
 
-    if args.mode == "expr":
+    if args.e:
         if not args.args:
-            print("tryparse: expr requires at least one string", file=sys.stderr)
+            print("tryparse: -e requires at least one argument", file=sys.stderr)
             return 1
         for arg in args.args:
             try:
