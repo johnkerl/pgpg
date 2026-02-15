@@ -14,29 +14,27 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] expr {one or more strings to parse ...}\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] file [one or more filenames]  (none = stdin)\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] [-e] [file ...]\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "  With -e: one or more arguments are expressions to parse (error if none).\n")
+	fmt.Fprintf(os.Stderr, "  Without -e: zero arguments = read from stdin; one or more = read from those files.\n")
 	flag.PrintDefaults()
-	fmt.Fprintf(os.Stderr, "Parser names:\n")
 	os.Exit(1)
 }
 
 func main() {
 	var verbose bool
+	var exprMode bool
 	flag.BoolVar(&verbose, "v", false, "Print AST before evaluation")
+	flag.BoolVar(&exprMode, "e", false, "Arguments are expressions to parse (at least one required)")
 	flag.Usage = usage
 	flag.Parse()
 
-	if flag.NArg() < 1 {
-		usage()
-	}
-	mode := flag.Arg(0)
-	args := flag.Args()[1:]
+	args := flag.Args()
 
-	switch mode {
-	case "expr":
+	if exprMode {
 		if len(args) == 0 {
-			usage()
+			fmt.Fprintln(os.Stderr, "pemdas-eval: -e requires at least one argument")
+			os.Exit(1)
 		}
 		for _, arg := range args {
 			if err := runParserOnce(arg, verbose); err != nil {
@@ -44,7 +42,7 @@ func main() {
 				os.Exit(1)
 			}
 		}
-	case "file":
+	} else {
 		if len(args) == 0 {
 			content, err := io.ReadAll(os.Stdin)
 			if err != nil {
@@ -59,8 +57,6 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	default:
-		usage()
 	}
 }
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Trylex: run a generated Python lexer on expr strings or files.
-Usage: trylex.py {lexer name} expr {one or more strings to lex ...}
-       trylex.py {lexer name} file [one or more filenames]  (none = stdin)
+Trylex: run a generated Python lexer on expressions or files.
+Usage: trylex.py {lexer name} [-e] [file ...]
+  With -e: one or more arguments are expressions to lex (error if none).
+  Without -e: zero arguments = read from stdin; one or more = read from those files.
 """
 from __future__ import annotations
 
@@ -39,25 +40,25 @@ def main() -> int:
         + "\n".join(f"  {k:<10} {v[1]}" for k, v in sorted(lexers.items())),
     )
     argparser.add_argument(
-        "lexer_name", choices=list(lexers.keys()), help="Lexer to use"
+        "-e",
+        action="store_true",
+        help="Arguments are expressions to lex (at least one required)",
     )
     argparser.add_argument(
-        "mode",
-        choices=["expr", "file"],
-        help="expr = strings as args; file = read filenames",
+        "lexer_name", choices=list(lexers.keys()), help="Lexer to use"
     )
     argparser.add_argument(
         "args",
         nargs="*",
-        help="Strings to lex (expr) or filenames (file); file with none reads stdin",
+        help="Expressions (-e) or filenames; with no -e and no args, read stdin",
     )
     args = argparser.parse_args()
 
     maker, _ = lexers[args.lexer_name]
 
-    if args.mode == "expr":
+    if args.e:
         if not args.args:
-            print("trylex: expr requires at least one string", file=sys.stderr)
+            print("trylex: -e requires at least one argument", file=sys.stderr)
             return 1
         for s in args.args:
             run_lexer(maker(s))

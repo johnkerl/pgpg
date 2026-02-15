@@ -49,20 +49,20 @@ cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 
 ```bash
 # Manual (hand-written) parsers: prefix "m:"
-./apps/go/tryparse m:pemdas expr '1*2+3'
-./apps/go/tryparse m:vic expr 'x = x + 1'
+./apps/go/tryparse -e m:pemdas '1*2+3'
+./apps/go/tryparse -e m:vic 'x = x + 1'
 
 # Generated parsers: prefix "g:"
-./apps/go/tryparse g:pemdas expr '1+2*3'
-./apps/go/tryparse g:json expr '{"a": [1, 2, 3]}'
-./apps/go/tryparse g:lisp expr '(+ 1 (* 2 3))'
+./apps/go/tryparse -e g:pemdas '1+2*3'
+./apps/go/tryparse -e g:json '{"a": [1, 2, 3]}'
+./apps/go/tryparse -e g:lisp '(+ 1 (* 2 3))'
 
-# Debug flags
-./apps/go/tryparse -tokens -states -stack g:pemdas expr '1+2'
+# Debug flags (flags before parser name)
+./apps/go/tryparse -tokens -states -stack -e g:pemdas '1+2'
 
 # Test lexers
-./apps/go/trylex m:pemdas expr '1+2*3'
-./apps/go/trylex g:pemdas expr '1+2*3'
+./apps/go/trylex -e m:pemdas '1+2*3'
+./apps/go/trylex -e g:pemdas '1+2*3'
 ```
 
 ## Architecture

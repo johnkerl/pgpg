@@ -43,8 +43,9 @@ var parserMakerTable = map[string]parserInfoT{
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} expr {one or more strings to parse ...}\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} file [one or more filenames]  (none = stdin)\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] {parser name} [file ...]\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "  With -e (before parser name): one or more positional args are expressions (error if none).\n")
+	fmt.Fprintf(os.Stderr, "  Without -e: zero args = read from stdin; one or more = read from those files.\n")
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Parser names:\n")
 	names := make([]string, 0, len(parserMakerTable))
@@ -65,11 +66,13 @@ func main() {
 	var traceStack bool
 	var noast bool
 	var fullast bool
+	var exprMode bool
 	flag.BoolVar(&traceTokens, "tokens", false, "Print tokens as they're read")
 	flag.BoolVar(&traceStates, "states", false, "Show parser state transitions")
 	flag.BoolVar(&traceStack, "stack", false, "Show parser stack after each action")
 	flag.BoolVar(&noast, "noast", false, "Syntax-only: do not build or print AST (generated parsers only)")
 	flag.BoolVar(&fullast, "fullast", false, "Ignore AST hints and build full parse tree (generated parsers only)")
+	flag.BoolVar(&exprMode, "e", false, "Arguments are expressions to parse (at least one required)")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -84,12 +87,11 @@ func main() {
 		astMode = "fullast"
 	}
 
-	if flag.NArg() < 2 {
+	if flag.NArg() < 1 {
 		usage()
 	}
 	parserName := flag.Arg(0)
-	mode := flag.Arg(1)
-	args := flag.Args()[2:]
+	args := flag.Args()[1:]
 
 	parserInfo, ok := parserMakerTable[parserName]
 	if !ok {
@@ -103,10 +105,10 @@ func main() {
 		astMode: astMode,
 	}
 
-	switch mode {
-	case "expr":
+	if exprMode {
 		if len(args) == 0 {
-			usage()
+			fmt.Fprintln(os.Stderr, "tryparse: -e requires at least one argument")
+			os.Exit(1)
 		}
 		for _, arg := range args {
 			if err := runParserOnce(run, arg, opts); err != nil {
@@ -114,7 +116,7 @@ func main() {
 				os.Exit(1)
 			}
 		}
-	case "file":
+	} else {
 		if len(args) == 0 {
 			content, err := io.ReadAll(os.Stdin)
 			if err != nil {
@@ -129,8 +131,6 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	default:
-		usage()
 	}
 }
 

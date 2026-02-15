@@ -41,8 +41,9 @@ var lexerMakerTable = map[string]lexerInfoT{
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} expr {one or more strings to lex ...}\n", os.Args[0])
-	fmt.Fprintf(os.Stderr, "Usage: %s {lexer name} file [one or more filenames]  (none = stdin)\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s [options] {lexer name} [file ...]\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "  With -e (before lexer name): one or more positional args are expressions (error if none).\n")
+	fmt.Fprintf(os.Stderr, "  Without -e: zero args = read from stdin; one or more = read from those files.\n")
 	flag.PrintDefaults()
 	fmt.Fprintf(os.Stderr, "Lexer names:\n")
 	names := make([]string, 0, len(lexerMakerTable))
@@ -58,15 +59,16 @@ func usage() {
 }
 
 func main() {
+	var exprMode bool
+	flag.BoolVar(&exprMode, "e", false, "Arguments are expressions to lex (at least one required)")
 	flag.Usage = usage
 	flag.Parse()
 
-	if flag.NArg() < 2 {
+	if flag.NArg() < 1 {
 		usage()
 	}
 	lexerName := flag.Arg(0)
-	mode := flag.Arg(1)
-	args := flag.Args()[2:]
+	args := flag.Args()[1:]
 
 	lexerInfo, ok := lexerMakerTable[lexerName]
 	if !ok {
@@ -74,10 +76,10 @@ func main() {
 	}
 	lexerMaker := lexerInfo.maker
 
-	switch mode {
-	case "expr":
+	if exprMode {
 		if len(args) == 0 {
-			usage()
+			fmt.Fprintln(os.Stderr, "trylex: -e requires at least one argument")
+			os.Exit(1)
 		}
 		for _, arg := range args {
 			if err := runLexerOnce(lexerMaker, arg); err != nil {
@@ -85,7 +87,7 @@ func main() {
 				os.Exit(1)
 			}
 		}
-	case "file":
+	} else {
 		if len(args) == 0 {
 			content, err := io.ReadAll(os.Stdin)
 			if err != nil {
@@ -100,8 +102,6 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-	default:
-		usage()
 	}
 }
 
