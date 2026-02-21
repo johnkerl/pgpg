@@ -1,0 +1,61 @@
+# PEMDAS arithmetic: hex literals only for F2[x], F2[x]/m(x).
+# No 0x or 0b prefix; literals are raw hex digits (e.g. "1fe", "0", "a").
+
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+
+_decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+_hexdig ::= _decdig | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F";
+
+plus           ::= "+";
+minus          ::= "-";
+exponentiation ::= "**";
+times          ::= "*";
+divide         ::= "/";
+modulo         ::= "%";
+lparen         ::= "(";
+rparen         ::= ")";
+
+hex_literal ::= _hexdig { _hexdig };
+
+# ----------------------------------------------------------------
+# Parsing rules with AST hints
+
+Root ::= Rvalue;
+
+Rvalue ::= PrecedenceChainStart;
+
+PrecedenceChainStart ::= AddSubTerm;
+
+AddSubTerm ::=
+    AddSubTerm plus  MulDivTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | AddSubTerm minus MulDivTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm
+;
+
+MulDivTerm ::=
+    MulDivTerm times  UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm divide UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm modulo UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | UnaryTerm
+;
+
+UnaryTerm ::=
+    plus  ExponentiationTerm -> { "parent": 0, "children": [1], "type": "unary" }
+  | minus UnaryTerm          -> { "parent": 0, "children": [1], "type": "unary" }
+  | ExponentiationTerm
+;
+
+ExponentiationTerm ::=
+    ParenTerm exponentiation       ExponentiationTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | ParenTerm exponentiation minus ExponentiationTerm -> { "parent": 1, "children": [0, 3], "type": "operator" }
+  | ParenTerm
+;
+
+ParenTerm ::=
+    lparen PrecedenceChainStart rparen -> { "pass-through": 1 }
+  | PrecedenceChainEnd
+;
+
+PrecedenceChainEnd ::=
+    hex_literal  -> {"parent": 0, "children": [], "type": "hex_literal"};

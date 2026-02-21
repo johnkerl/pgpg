@@ -22,7 +22,7 @@ func evaluateAST[T, E any](ast *asts.AST, numeric Numeric[T, E], verbose bool) (
 func evaluateNode[T, E any](node *asts.ASTNode, numeric Numeric[T, E]) (T, error) {
 	var zero T
 	switch node.Type {
-	case "int_literal", "hex_literal", "float_literal":
+	case "int_literal", "hex_literal", "float_literal", "bin_literal":
 		return evaluateLiteralNode(node, numeric)
 	case "operator":
 		return evaluateBinaryOperatorNode(node, numeric)

@@ -1,0 +1,64 @@
+# PEMDAS arithmetic: integer and hex literals (for Z/nZ: mod, intmod).
+# Order: hex before int so 0x1a is one token.
+
+!whitespace ::= ' ' | '\t' | '\n' | '\r' ;
+
+_decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+_hexdig ::= _decdig | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F";
+
+plus           ::= "+";
+minus          ::= "-";
+exponentiation ::= "**";
+times          ::= "*";
+divide         ::= "/";
+modulo         ::= "%";
+lparen         ::= "(";
+rparen         ::= ")";
+
+hex_literal ::= "0" "x" _hexdig { _hexdig } | "0" "X" _hexdig { _hexdig };
+
+int_literal ::= _decdig { _decdig } ;
+
+# ----------------------------------------------------------------
+# Parsing rules with AST hints
+
+Root ::= Rvalue;
+
+Rvalue ::= PrecedenceChainStart;
+
+PrecedenceChainStart ::= AddSubTerm;
+
+AddSubTerm ::=
+    AddSubTerm plus  MulDivTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | AddSubTerm minus MulDivTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm
+;
+
+MulDivTerm ::=
+    MulDivTerm times  UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm divide UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | MulDivTerm modulo UnaryTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | UnaryTerm
+;
+
+UnaryTerm ::=
+    plus  ExponentiationTerm -> { "parent": 0, "children": [1], "type": "unary" }
+  | minus UnaryTerm          -> { "parent": 0, "children": [1], "type": "unary" }
+  | ExponentiationTerm
+;
+
+ExponentiationTerm ::=
+    ParenTerm exponentiation       ExponentiationTerm -> { "parent": 1, "children": [0, 2], "type": "operator" }
+  | ParenTerm exponentiation minus ExponentiationTerm -> { "parent": 1, "children": [0, 3], "type": "operator" }
+  | ParenTerm
+;
+
+ParenTerm ::=
+    lparen PrecedenceChainStart rparen -> { "pass-through": 1 }
+  | PrecedenceChainEnd
+;
+
+PrecedenceChainEnd ::=
+    int_literal  -> {"parent": 0, "children": [], "type": "int_literal"}
+  | hex_literal  -> {"parent": 0, "children": [], "type": "hex_literal"};
