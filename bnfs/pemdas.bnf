@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------
 # Lexing rules
+# Order matters: hex and float are tried before int (0x..., 1., .2, 3e-7).
 
 !whitespace ::= ' ' | '\t' | '\n' | '\r' ;
 
 _decdig ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
+_hexdig ::= _decdig | "a" | "A" | "b" | "B" | "c" | "C" | "d" | "D" | "e" | "E" | "f" | "F";
 
 plus           ::= "+";
 minus          ::= "-";
@@ -13,6 +16,19 @@ divide         ::= "/";
 modulo         ::= "%";
 lparen         ::= "(";
 rparen         ::= ")";
+
+# Hex: 0x or 0X followed by at least one hex digit
+hex_literal ::= "0" "x" _hexdig { _hexdig } | "0" "X" _hexdig { _hexdig };
+
+# Float: digits.digits, digits., .digits, or exponent form (3e-7, 1.2e3, etc.)
+_exp_part   ::= ( "e" | "E" ) ( "+" | "-" ) _decdig { _decdig } | ( "e" | "E" ) _decdig { _decdig };
+_opt_frac   ::= "." { _decdig };
+_frac_part  ::= "." _decdig { _decdig };
+float_literal ::= _decdig { _decdig } _opt_frac _exp_part
+                | _decdig { _decdig } _opt_frac
+                | _decdig { _decdig } _exp_part
+                | _frac_part _exp_part
+                | _frac_part;
 
 int_literal ::= _decdig { _decdig } ;
 
@@ -58,4 +74,7 @@ ParenTerm ::=
   | PrecedenceChainEnd
 ;
 
-PrecedenceChainEnd ::= int_literal -> {"parent": 0, "children": [], "type": "int_literal"};
+PrecedenceChainEnd ::=
+    int_literal  -> {"parent": 0, "children": [], "type": "int_literal"}
+  | hex_literal  -> {"parent": 0, "children": [], "type": "hex_literal"}
+  | float_literal -> {"parent": 0, "children": [], "type": "float_literal"};

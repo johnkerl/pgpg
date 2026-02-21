@@ -25,7 +25,8 @@ type Numeric[T, E any] interface {
 type IntBackend struct{}
 
 func (IntBackend) FromString(s string) (int, error) {
-	return strconv.Atoi(s)
+	v, err := strconv.ParseInt(s, 0, 64)
+	return int(v), err
 }
 
 func (IntBackend) String(t int) string {
@@ -119,11 +120,11 @@ func NewModBackend(n int) (*ModBackend, error) {
 }
 
 func (b *ModBackend) FromString(s string) (ModInt, error) {
-	v, err := strconv.Atoi(s)
+	v, err := strconv.ParseInt(s, 0, 64)
 	if err != nil {
 		return ModInt{}, err
 	}
-	return b.normalize(v), nil
+	return b.normalize(int(v)), nil
 }
 
 func (b *ModBackend) normalize(v int) ModInt {
