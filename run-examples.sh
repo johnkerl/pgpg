@@ -24,3 +24,6 @@ echo; ./apps/go/tryparse -e g:json  '{}'
 echo; ./apps/go/tryparse -e g:json  '{"a":1}'
 echo; ./apps/go/tryparse -e g:json  '{"a":1, "b":2}'
 echo; ./apps/go/tryparse -e g:json  '{"a":1, "b":2, "c":3}'
+
+echo; echo ----------------------------------------------------------------
+echo; echo DONE

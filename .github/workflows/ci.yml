@@ -37,7 +37,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -r generators/py/requirements.txt
-          pip install -r generated/py/requirements.txt
+          pip install -r apps/generated/py/requirements.txt
 
       - name: Build
         env:
@@ -76,7 +76,7 @@ jobs:
           GOWORK: off
         run: |
           set +e
-          OUT=$(gofmt -l manual/go generators/go generated/go apps/go 2>/dev/null | grep -v '^$')
+          OUT=$(gofmt -l manual/go generators/go apps/generated/go apps/go 2>/dev/null | grep -v '^$')
           if [ -n "$OUT" ]; then
             echo "needs_format=1" >> "$GITHUB_OUTPUT"
             echo "go_files<<EOF" >> "$GITHUB_OUTPUT"
@@ -89,7 +89,7 @@ jobs:
       - name: Check Python formatting
         id: py-fmt
         run: |
-          if black --check generators/py generated/py apps/py 2>/dev/null; then
+          if black --check generators/py apps/generated/py apps/py 2>/dev/null; then
             echo "needs_format=0" >> "$GITHUB_OUTPUT"
           else
             echo "needs_format=1" >> "$GITHUB_OUTPUT"

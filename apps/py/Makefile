@@ -1,5 +1,5 @@
 # PGPG Python apps. Run from repo root: make -C apps/py [target]
-# Requires: make -C generated/py all (so lexers/parsers exist)
+# Requires: make -C apps/generated/py all (so lexers/parsers exist)
 
 fmt:
 	black .

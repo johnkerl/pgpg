@@ -9,4 +9,4 @@ require (
 
 replace github.com/johnkerl/pgpg/manual => ../../manual
 
-replace github.com/johnkerl/pgpg/generated => ../../generated
+replace github.com/johnkerl/pgpg/generated => ../generated

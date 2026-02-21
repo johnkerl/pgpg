@@ -1,8 +1,8 @@
 # Generated JavaScript lexers and parsers from JSON tables (produced by Go lexgen-tables / parsegen-tables).
-# Run from repo root: make -C generated/js [target]
-# Codegen and runtime live in ../../generators/js.
+# Run from repo root: make -C apps/generated/js [target]
+# Codegen and runtime live in ../../../generators/js.
 
-GEN_JS ?= ../../generators/js
+GEN_JS ?= ../../../generators/js
 JSON_PATH ?= ../jsons
 
 json: json-lexer json-parser

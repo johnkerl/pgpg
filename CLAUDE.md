@@ -11,7 +11,7 @@ hand-written recursive-descent parsers and a full generator pipeline.
 ## Build Commands
 
 ```bash
-# Build everything (manual, generator, generated, apps/go) and run tests
+# Build everything (manual, generator, apps/generated, apps/go) and run tests
 make
 make -C manual test
 make -C generators/go test
@@ -21,13 +21,13 @@ make -C manual          # Build manual module (core libraries)
 make -C manual test     # Run manual tests
 make -C generators/go     # Build generator executables
 make -C generators/go test  # Run generator tests
-make -C generated       # Generate lexers and parsers from BNF source
+make -C apps/generated  # Generate lexers and parsers from BNF source
 make -C apps/go         # Build CLI runner tools
 
 # Format code
 make -C manual fmt
 make -C generators/go fmt
-make -C generated fmt
+make -C apps/generated fmt
 make -C apps/go fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
@@ -70,10 +70,10 @@ cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 The repo is a Go monorepo with four separate Go modules connected via `replace` directives:
 
 ```
-manual/       → Core libraries (tokens, lexers, parsers, AST). No external deps except testify.
-generators/go/ → Code generation tools. Depends on manual.
-generated/    → Output of generators/go (pre-generated lexers/parsers from BNF grammars). Depends on manual.
-apps/go/      → CLI tools (trylex, tryparse, tryast). Depends on manual + generated.
+manual/         → Core libraries (tokens, lexers, parsers, AST). No external deps except testify.
+generators/go/  → Code generation tools. Depends on manual.
+apps/generated/ → Output of generators/go (pre-generated lexers/parsers from BNF grammars). Depends on manual.
+apps/go/        → CLI tools (trylex, tryparse, tryast). Depends on manual + generated.
 ```
 
 ### Generator Pipeline
@@ -95,14 +95,14 @@ The JSON intermediate format is intentionally language-independent to allow futu
 - **`generators/go/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
 - **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
 - **`generators/go/pkg/run/`** — File I/O wrappers for one-call-per-step: `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode`
-- **`bnfs/`** — Grammar files to have lexers/parsers generated from
-- **`generated/go/pkg/lexers/`** — Auto-generated lexers from `bnfs/`
-- **`generated/go/pkg/parsers/`** — Auto-generated parsers from `bnfs/`
+- **`apps/bnfs/`** — Grammar files to have lexers/parsers generated from
+- **`apps/generated/go/pkg/lexers/`** — Auto-generated lexers from `apps/bnfs/`
+- **`apps/generated/go/pkg/parsers/`** — Auto-generated parsers from `apps/bnfs/`
 - **`apps/go/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
 
 ### BNF Grammars
 
-Grammar files live in `bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
+Grammar files live in `apps/bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
 
 ### Using the generators as a library
 

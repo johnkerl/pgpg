@@ -1,16 +1,16 @@
 ```
 make
 
-justtime ./generators/go/parsegen-tables -o miller-temp.json bnfs/miller-temp.bnf
+justtime ./generators/go/parsegen-tables -o miller-temp.json apps/bnfs/miller-temp.bnf
 
-justtime ./generators/go/parsegen-tables -nosort -o miller-temp.json bnfs/miller-temp.bnf
+justtime ./generators/go/parsegen-tables -nosort -o miller-temp.json apps/bnfs/miller-temp.bnf
 
 ./generators/go/parsegen-tables \
   -cpuprofile cpu.pprof \
   -memprofile mem.pprof \
   -trace trace.out \
   -o miller-temp.json \
-  bnfs/miller-temp.bnf
+  apps/bnfs/miller-temp.bnf
 
 ./generators/go/parsegen-tables \
   -nosort \
@@ -18,7 +18,7 @@ justtime ./generators/go/parsegen-tables -nosort -o miller-temp.json bnfs/miller
   -memprofile mem.pprof \
   -trace trace.out \
   -o miller-temp.json \
-  bnfs/miller-temp.bnf
+  apps/bnfs/miller-temp.bnf
 
 go tool pprof -http=:8082 cpu.pprof
 ```

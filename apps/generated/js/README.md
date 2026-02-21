@@ -2,7 +2,7 @@
 
 ES modules; Node 18+ (or modern bundler).
 
-This directory holds **generated** lexers and parsers only. Codegen scripts and runtime (Token, AST, AbstractLexer) live in **../generators/js**.
+This directory holds **generated** lexers and parsers only. Codegen scripts and runtime (Token, AST, AbstractLexer) live in **../../generators/js**.
 
 ## Layout
 
@@ -17,27 +17,27 @@ Use the **same** JSON tables produced by the Go tools (`parsegen-tables`, `lexge
 From the **repository root**:
 
 ```bash
-make -C generated/js json
+make -C apps/generated/js json
 ```
 
-Or from **generated/js/**:
+Or from **apps/generated/js/**:
 
 ```bash
 make json
 ```
 
-To run codegen by hand (from repo root, or from generated/js with paths adjusted):
+To run codegen by hand (from repo root, or from apps/generated/js with paths adjusted):
 
 ```bash
 # Parser (default class prefix is pgpg_)
 node generators/js/codegen/parsegen_code.js \
-  -o generated/js/parsers/json_parser.js -c JSONParser \
-  generated/jsons/json-parse.json
+  -o apps/generated/js/parsers/json_parser.js -c JSONParser \
+  apps/generated/jsons/json-parse.json
 
 # Lexer
 node generators/js/codegen/lexgen_code.js \
-  -o generated/js/lexers/json_lexer.js -c JSONLexer \
-  generated/jsons/json-lex.json
+  -o apps/generated/js/lexers/json_lexer.js -c JSONLexer \
+  apps/generated/jsons/json-lex.json
 ```
 
 - **--prefix** (default: `pgpg_`) is prepended to the class name. Use `--prefix ""` for no prefix.
@@ -47,8 +47,8 @@ node generators/js/codegen/lexgen_code.js \
 Generated lexers and parsers import the runtime from `../../../generators/js/runtime/index.js`, so run from the **repository root** (or ensure Node resolves that path). Example from repo root:
 
 ```javascript
-import { pgpg_JSONLexer } from "./generated/js/lexers/json_lexer.js";
-import { pgpg_JSONParser } from "./generated/js/parsers/json_parser.js";
+import { pgpg_JSONLexer } from "./apps/generated/js/lexers/json_lexer.js";
+import { pgpg_JSONParser } from "./apps/generated/js/parsers/json_parser.js";
 
 const lex = new pgpg_JSONLexer("[1]");
 const parser = new pgpg_JSONParser();
@@ -67,7 +67,7 @@ const ast = parser.parse(lex, "");
 
 ## Tests
 
-Tests live in **generators/js**. From **generated/js/**:
+Tests live in **generators/js**. From **apps/generated/js/**:
 
 ```bash
 make test
