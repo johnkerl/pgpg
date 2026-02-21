@@ -7,7 +7,7 @@
 * Simple calculator:
   * Prompt string or no
   * Handle stdin
-  * Types: int, float; then modular int, f2polys ...
+  * Types: int, float; other things in GOFFL
 * Make sure we can handle sequences (e.g. lines but not necessarily); record-streams; CLI mode
 
 # Top of list
