@@ -14,6 +14,19 @@ import (
 	"github.com/johnkerl/pgpg/manual/go/pkg/parsers"
 )
 
+// LexTableOptions configures lexer table generation from a grammar.
+type LexTableOptions struct {
+	// SourceName is used in error messages (e.g. file path). Empty means "".
+	SourceName string
+}
+
+// EncodeOptions configures JSON encoding of tables.
+type EncodeOptions struct {
+	// Sort enables deterministic map key order for stable, diff-friendly output.
+	// When false, encoding is faster but key order is nondeterministic.
+	Sort bool
+}
+
 // Tables captures DFA transitions and accepting actions for a lexer.
 type Tables struct {
 	StartState  int                       `json:"start_state"`
@@ -32,6 +45,10 @@ type RangeTransition struct {
 
 // MarshalJSON ensures deterministic map ordering for stable output.
 func (tables *Tables) MarshalJSON() ([]byte, error) {
+	return marshalTablesDeterministic(tables)
+}
+
+func marshalTablesDeterministic(tables *Tables) ([]byte, error) {
 	if tables == nil {
 		return []byte("null"), nil
 	}
@@ -178,15 +195,16 @@ func marshalMapStringString(m map[string]string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// GenerateTablesFromEBNF parses an EBNF grammar and produces lexer tables.
+// GenerateTables parses an EBNF grammar and produces lexer tables.
 // Lexer rules must expand to regex-compatible forms; repeats and references are supported.
-func GenerateTablesFromEBNF(inputText string) (*Tables, error) {
-	return GenerateTablesFromEBNFWithSourceName(inputText, "")
-}
-
-func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (*Tables, error) {
+// opts may be nil; SourceName is then "".
+func GenerateTables(grammarText string, opts *LexTableOptions) (*Tables, error) {
+	sourceName := ""
+	if opts != nil {
+		sourceName = opts.SourceName
+	}
 	parser := parsers.NewEBNFParserWithSourceName(sourceName)
-	ast, err := parser.Parse(inputText)
+	ast, err := parser.Parse(grammarText)
 	if err != nil {
 		return nil, err
 	}
@@ -877,6 +895,23 @@ func regexToString(node *regexNode) string {
 }
 
 // EncodeTables returns pretty-printed JSON for tables.
-func EncodeTables(tables *Tables) ([]byte, error) {
-	return json.MarshalIndent(tables, "", "  ")
+// opts may be nil; default is deterministic key order (Sort: true).
+// When opts != nil and opts.Sort is false, encoding is faster but key order is nondeterministic.
+func EncodeTables(tables *Tables, opts *EncodeOptions) ([]byte, error) {
+	var b []byte
+	var err error
+	if opts != nil && !opts.Sort {
+		type tablesAlias Tables
+		b, err = json.Marshal((*tablesAlias)(tables))
+	} else {
+		b, err = marshalTablesDeterministic(tables)
+	}
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	if err := json.Indent(&buf, b, "", "  "); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }

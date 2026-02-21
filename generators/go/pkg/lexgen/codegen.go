@@ -41,6 +41,13 @@ var lexerTemplate = template.Must(
 	}).Parse(lexerTemplateText),
 )
 
+// LexCodegenOptions configures Go lexer code generation from tables.
+type LexCodegenOptions struct {
+	Package string // Go package name for generated code
+	Type    string // Go type name for the lexer
+	Format  bool   // run go/format.Source on output
+}
+
 // DecodeTables reads tables JSON into Tables.
 func DecodeTables(data []byte) (*Tables, error) {
 	var tables Tables
@@ -50,11 +57,24 @@ func DecodeTables(data []byte) (*Tables, error) {
 	return &tables, nil
 }
 
-// GenerateGoLexerCode creates Go source implementing a lexer from tables.
-func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([]byte, error) {
-	raw, err := GenerateGoLexerCodeRaw(tables, packageName, typeName)
+// GenerateCode creates Go source implementing a lexer from tables.
+// When opts.Format is true, output is run through go/format.Source.
+func GenerateCode(tables *Tables, opts LexCodegenOptions) ([]byte, error) {
+	if tables == nil {
+		return nil, fmt.Errorf("nil tables")
+	}
+	if opts.Package == "" {
+		return nil, fmt.Errorf("package name is required")
+	}
+	if opts.Type == "" {
+		return nil, fmt.Errorf("type name is required")
+	}
+	raw, err := generateCodeRaw(tables, opts.Package, opts.Type)
 	if err != nil {
 		return nil, err
+	}
+	if !opts.Format {
+		return raw, nil
 	}
 	formatted, err := format.Source(raw)
 	if err != nil {
@@ -63,18 +83,7 @@ func GenerateGoLexerCode(tables *Tables, packageName string, typeName string) ([
 	return formatted, nil
 }
 
-// GenerateGoLexerCodeRaw creates unformatted Go source implementing a lexer from tables.
-func GenerateGoLexerCodeRaw(tables *Tables, packageName string, typeName string) ([]byte, error) {
-	if tables == nil {
-		return nil, fmt.Errorf("nil tables")
-	}
-	if packageName == "" {
-		return nil, fmt.Errorf("package name is required")
-	}
-	if typeName == "" {
-		return nil, fmt.Errorf("type name is required")
-	}
-
+func generateCodeRaw(tables *Tables, packageName string, typeName string) ([]byte, error) {
 	hasIgnoredActions := false
 	for _, action := range tables.Actions {
 		if strings.HasPrefix(action, "!") {

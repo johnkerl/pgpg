@@ -38,13 +38,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	tables, err := lexgen.GenerateTablesFromEBNFWithSourceName(string(inputBytes), absPath)
+	tables, err := lexgen.GenerateTables(string(inputBytes), &lexgen.LexTableOptions{SourceName: absPath})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	jsonBytes, err := lexgen.EncodeTables(tables)
+	jsonBytes, err := lexgen.EncodeTables(tables, nil)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

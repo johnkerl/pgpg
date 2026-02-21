@@ -11,12 +11,12 @@ func TestGenerateGoLexerCodeFormats(t *testing.T) {
 		Transitions: map[int][]RangeTransition{},
 		Actions:     map[int]string{},
 	}
-	code, err := GenerateGoLexerCode(tables, "lexers", "TestLexer")
+	code, err := GenerateCode(tables, LexCodegenOptions{Package: "lexers", Type: "TestLexer", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoLexerCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	if len(code) == 0 {
-		t.Fatalf("GenerateGoLexerCode() returned empty code")
+		t.Fatalf("GenerateCode() returned empty code")
 	}
 	if !strings.Contains(string(code), "package lexers") {
 		t.Fatalf("generated code missing package declaration")
