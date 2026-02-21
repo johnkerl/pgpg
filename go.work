@@ -1,7 +1,6 @@
 go 1.25
 
 use (
-	../goffl
 	./apps/go
 	./generated
 	./generators/go
@@ -12,5 +11,3 @@ use (
 replace github.com/johnkerl/pgpg/manual v0.0.0 => ./manual
 
 replace github.com/johnkerl/pgpg/generated v0.0.0 => ./generated
-
-replace goffl v0.0.0 => ../goffl
