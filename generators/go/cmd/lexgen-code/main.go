@@ -43,8 +43,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	opts := lexgen.LexCodegenOptions{
+		Package: packageName,
+		Type:    typeName,
+		Format:  !debug,
+	}
 	if debug {
-		raw, err := lexgen.GenerateGoLexerCodeRaw(tables, packageName, typeName)
+		opts.Format = false
+		raw, err := lexgen.GenerateCode(tables, opts)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -53,7 +59,8 @@ func main() {
 		_, _ = os.Stderr.Write([]byte("\n"))
 	}
 
-	code, err := lexgen.GenerateGoLexerCode(tables, packageName, typeName)
+	opts.Format = true
+	code, err := lexgen.GenerateCode(tables, opts)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

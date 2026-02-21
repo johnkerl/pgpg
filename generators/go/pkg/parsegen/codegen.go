@@ -34,6 +34,13 @@ var parserTemplate = template.Must(
 	template.New("parser").Funcs(parserTemplateFuncs).Parse(parserTemplateText),
 )
 
+// ParseCodegenOptions configures Go parser code generation from tables.
+type ParseCodegenOptions struct {
+	Package string // Go package name for generated code
+	Type    string // Go type name for the parser
+	Format  bool   // run go/format.Source on output (default true when zero)
+}
+
 // DecodeTables reads tables JSON into Tables.
 func DecodeTables(data []byte) (*Tables, error) {
 	var tables Tables
@@ -43,11 +50,24 @@ func DecodeTables(data []byte) (*Tables, error) {
 	return &tables, nil
 }
 
-// GenerateGoParserCode creates Go source implementing an LR(1) parser from tables.
-func GenerateGoParserCode(tables *Tables, packageName string, typeName string) ([]byte, error) {
-	raw, err := GenerateGoParserCodeRaw(tables, packageName, typeName)
+// GenerateCode creates Go source implementing an LR(1) parser from tables.
+// When opts.Format is true, output is run through go/format.Source.
+func GenerateCode(tables *Tables, opts ParseCodegenOptions) ([]byte, error) {
+	if tables == nil {
+		return nil, fmt.Errorf("nil tables")
+	}
+	if opts.Package == "" {
+		return nil, fmt.Errorf("package name is required")
+	}
+	if opts.Type == "" {
+		return nil, fmt.Errorf("type name is required")
+	}
+	raw, err := generateCodeRaw(tables, opts.Package, opts.Type)
 	if err != nil {
 		return nil, err
+	}
+	if !opts.Format {
+		return raw, nil
 	}
 	formatted, err := format.Source(raw)
 	if err != nil {
@@ -56,18 +76,7 @@ func GenerateGoParserCode(tables *Tables, packageName string, typeName string) (
 	return formatted, nil
 }
 
-// GenerateGoParserCodeRaw creates unformatted Go source implementing an LR(1) parser from tables.
-func GenerateGoParserCodeRaw(tables *Tables, packageName string, typeName string) ([]byte, error) {
-	if tables == nil {
-		return nil, fmt.Errorf("nil tables")
-	}
-	if packageName == "" {
-		return nil, fmt.Errorf("package name is required")
-	}
-	if typeName == "" {
-		return nil, fmt.Errorf("type name is required")
-	}
-
+func generateCodeRaw(tables *Tables, packageName string, typeName string) ([]byte, error) {
 	data := parserTemplateData{
 		PackageName: packageName,
 		TypeName:    typeName,

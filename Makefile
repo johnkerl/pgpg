@@ -4,6 +4,25 @@ build:
 	make -C generated
 	make -C apps/go
 
+test:
+	make -C manual        test
+	make -C generators/go test
+	make -C apps/go       test
+	make -C generators/py test
+	make -C generated/py  test
+	make -C generators/js test
+	make -C generated/js  test
+	make -C apps/py       test
+
+fmt:
+	make -C manual        fmt
+	make -C generators/go fmt
+	make -C generated     fmt
+	make -C apps/go       fmt
+	make -C generators/py fmt
+	make -C generated/py  fmt
+	make -C apps/py       fmt
+
 clean:
 	make -C manual        clean
 	make -C generators/go clean
@@ -15,23 +34,4 @@ clean:
 	make -C generated/js  clean
 	make -C apps/py       clean
 
-fmt:
-	make -C manual        fmt
-	make -C generators/go fmt
-	make -C generated     fmt
-	make -C apps/go       fmt
-	make -C generators/py fmt
-	make -C generated/py  fmt
-	make -C apps/py       fmt
-
-test:
-	make -C manual        test
-	make -C generators/go test
-	make -C apps/go       test
-	make -C generators/py test
-	make -C generated/py  test
-	make -C generators/js test
-	make -C generated/js  test
-	make -C apps/py       test
-
-.PHONY: build clean fmt test
+.PHONY: build test fmt clean

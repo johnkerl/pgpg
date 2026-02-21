@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -15,10 +16,18 @@ import (
 
 const eofSymbol = "EOF"
 
-// SortOutput controls whether output is deterministically sorted.
-// When true (default), all maps and item sets are sorted for stable JSON output.
-// When false, sorting is skipped for faster table generation.
-var SortOutput = true
+// ParseTableOptions configures parser table generation from a grammar.
+type ParseTableOptions struct {
+	// SourceName is used in error messages (e.g. file path). Empty means "".
+	SourceName string
+}
+
+// EncodeOptions configures JSON encoding of tables.
+type EncodeOptions struct {
+	// Sort enables deterministic map key order for stable, diff-friendly output.
+	// When false, encoding is faster but key order is nondeterministic.
+	Sort bool
+}
 
 // Tables captures LR(1) parsing tables and productions.
 type Tables struct {
@@ -59,14 +68,13 @@ type Symbol struct {
 }
 
 // MarshalJSON ensures deterministic map ordering for stable output.
-// When SortOutput is false, falls back to standard JSON encoding for speed.
 func (tables *Tables) MarshalJSON() ([]byte, error) {
+	return marshalTablesDeterministic(tables)
+}
+
+func marshalTablesDeterministic(tables *Tables) ([]byte, error) {
 	if tables == nil {
 		return []byte("null"), nil
-	}
-	if !SortOutput {
-		type tablesAlias Tables
-		return json.Marshal((*tablesAlias)(tables))
 	}
 	var fields []jsonField
 
@@ -113,14 +121,26 @@ func (tables *Tables) MarshalJSON() ([]byte, error) {
 	return marshalOrderedFields(fields), nil
 }
 
-// GenerateTablesFromEBNF parses an EBNF grammar and produces LR(1) parser tables.
-func GenerateTablesFromEBNF(inputText string) (*Tables, error) {
-	return GenerateTablesFromEBNFWithSourceName(inputText, "")
+// GenerateTablesFromReader reads a BNF grammar from r and produces LR(1) parser tables.
+// It is a convenience for callers that have an io.Reader (e.g. HTTP body, open file, bytes.Buffer).
+// opts may be nil; SourceName is then "".
+func GenerateTablesFromReader(r io.Reader, opts *ParseTableOptions) (*Tables, error) {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return nil, fmt.Errorf("read grammar: %w", err)
+	}
+	return GenerateTables(string(b), opts)
 }
 
-func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (*Tables, error) {
+// GenerateTables parses an EBNF grammar and produces LR(1) parser tables.
+// opts may be nil; SourceName is then "".
+func GenerateTables(grammarText string, opts *ParseTableOptions) (*Tables, error) {
+	sourceName := ""
+	if opts != nil {
+		sourceName = opts.SourceName
+	}
 	parser := parsers.NewEBNFParserWithSourceName(sourceName)
-	ast, err := parser.Parse(inputText)
+	ast, err := parser.Parse(grammarText)
 	if err != nil {
 		return nil, err
 	}
@@ -180,8 +200,25 @@ func GenerateTablesFromEBNFWithSourceName(inputText string, sourceName string) (
 }
 
 // EncodeTables returns pretty-printed JSON for tables.
-func EncodeTables(tables *Tables) ([]byte, error) {
-	return json.MarshalIndent(tables, "", "  ")
+// opts may be nil; default is deterministic key order (Sort: true).
+// When opts != nil and opts.Sort is false, encoding is faster but key order is nondeterministic.
+func EncodeTables(tables *Tables, opts *EncodeOptions) ([]byte, error) {
+	var b []byte
+	var err error
+	if opts != nil && !opts.Sort {
+		type tablesAlias Tables
+		b, err = json.Marshal((*tablesAlias)(tables))
+	} else {
+		b, err = marshalTablesDeterministic(tables)
+	}
+	if err != nil {
+		return nil, err
+	}
+	var buf bytes.Buffer
+	if err := json.Indent(&buf, b, "", "  "); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
 }
 
 type jsonField struct {
@@ -1192,17 +1229,15 @@ func sortedItems(items map[item]struct{}) []item {
 	for it := range items {
 		out = append(out, it)
 	}
-	if SortOutput {
-		sort.Slice(out, func(i, j int) bool {
-			if out[i].prod != out[j].prod {
-				return out[i].prod < out[j].prod
-			}
-			if out[i].dot != out[j].dot {
-				return out[i].dot < out[j].dot
-			}
-			return out[i].lookahead < out[j].lookahead
-		})
-	}
+	sort.Slice(out, func(i, j int) bool {
+		if out[i].prod != out[j].prod {
+			return out[i].prod < out[j].prod
+		}
+		if out[i].dot != out[j].dot {
+			return out[i].dot < out[j].dot
+		}
+		return out[i].lookahead < out[j].lookahead
+	})
 	return out
 }
 
@@ -1211,17 +1246,15 @@ func sortedSymbols(transitions map[Symbol]map[item]struct{}) []Symbol {
 	for sym := range transitions {
 		syms = append(syms, sym)
 	}
-	if SortOutput {
-		sort.Slice(syms, func(i, j int) bool {
-			if syms[i].Terminal != syms[j].Terminal {
-				return !syms[i].Terminal && syms[j].Terminal
-			}
-			if syms[i].Name != syms[j].Name {
-				return syms[i].Name < syms[j].Name
-			}
-			return false
-		})
-	}
+	sort.Slice(syms, func(i, j int) bool {
+		if syms[i].Terminal != syms[j].Terminal {
+			return !syms[i].Terminal && syms[j].Terminal
+		}
+		if syms[i].Name != syms[j].Name {
+			return syms[i].Name < syms[j].Name
+		}
+		return false
+	})
 	return syms
 }
 
@@ -1345,8 +1378,6 @@ func sortedKeys(set map[string]bool) []string {
 	for key := range set {
 		keys = append(keys, key)
 	}
-	if SortOutput {
-		sort.Strings(keys)
-	}
+	sort.Strings(keys)
 	return keys
 }

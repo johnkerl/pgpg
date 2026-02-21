@@ -43,8 +43,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	opts := parsegen.ParseCodegenOptions{
+		Package: packageName,
+		Type:    typeName,
+		Format:  !debug,
+	}
 	if debug {
-		raw, err := parsegen.GenerateGoParserCodeRaw(tables, packageName, typeName)
+		opts.Format = false
+		raw, err := parsegen.GenerateCode(tables, opts)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
@@ -53,7 +59,8 @@ func main() {
 		_, _ = os.Stderr.Write([]byte("\n"))
 	}
 
-	code, err := parsegen.GenerateGoParserCode(tables, packageName, typeName)
+	opts.Format = true
+	code, err := parsegen.GenerateCode(tables, opts)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

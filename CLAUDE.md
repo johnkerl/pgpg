@@ -84,7 +84,7 @@ BNF grammar file (.bnf)
     → lexgen-code / parsegen-code     → Generated Go source files
 ```
 
-The JSON intermediate format is intentionally language-independent to allow future code generation targets beyond Go.
+The JSON intermediate format is intentionally language-independent to allow future code generation targets beyond Go. The same pipeline can be driven in process: see **Using the generators as a library** below.
 
 ### Key Packages
 
@@ -94,6 +94,7 @@ The JSON intermediate format is intentionally language-independent to allow futu
 - **`manual/go/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
 - **`generators/go/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
 - **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
+- **`generators/go/pkg/run/`** — File I/O wrappers for one-call-per-step: `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode`
 - **`bnfs/`** — Grammar files to have lexers/parsers generated from
 - **`generated/go/pkg/lexers/`** — Auto-generated lexers from `bnfs/`
 - **`generated/go/pkg/parsers/`** — Auto-generated parsers from `bnfs/`
@@ -102,6 +103,15 @@ The JSON intermediate format is intentionally language-independent to allow futu
 ### BNF Grammars
 
 Grammar files live in `bnfs/` (pemdas, lisp, json, seng, statements, pascal, etc.).
+
+### Using the generators as a library
+
+Other packages can use the generators in process (e.g. from `go generate`) instead of calling the CLI binaries. Add `github.com/johnkerl/pgpg/generators/go` to your module’s dependencies (and `replace` for local dev). The library surface is:
+
+- **`pkg/lexgen`** and **`pkg/parsegen`**: `GenerateTables(grammar, opts)`, `EncodeTables(tables, opts)`, `DecodeTables(data)`, `GenerateCode(tables, opts)`. All behavior is controlled by options structs; no globals.
+- **`pkg/run`**: `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode` — each does read → generate → write for one pipeline step; pass `""` or `"-"` as output path to write to stdout.
+
+See **`generators/go/LIBRARY.md`** for dependency setup, option types, and examples.
 
 ## Profiling
 
