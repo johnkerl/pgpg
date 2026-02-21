@@ -30,6 +30,11 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Install Python dependencies
+        run: |
+          pip install -r generators/py/requirements.txt
+          pip install -r generated/py/requirements.txt
+
       - name: Build
         run: make build
 
