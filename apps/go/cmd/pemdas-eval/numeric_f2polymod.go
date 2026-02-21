@@ -50,7 +50,7 @@ func (b *F2PolyModNumeric) String(t *f2polymod.F2PolyMod) string {
 	return t.Residue.String()
 }
 
-func (b *F2PolyModNumeric) Add(a, c *f2polymod.F2PolyMod) *f2polymod.F2PolyMod   { return a.Add(c) }
+func (b *F2PolyModNumeric) Add(a, c *f2polymod.F2PolyMod) *f2polymod.F2PolyMod      { return a.Add(c) }
 func (b *F2PolyModNumeric) Subtract(a, c *f2polymod.F2PolyMod) *f2polymod.F2PolyMod { return a.Sub(c) }
 func (b *F2PolyModNumeric) Multiply(a, c *f2polymod.F2PolyMod) *f2polymod.F2PolyMod { return a.Mul(c) }
 

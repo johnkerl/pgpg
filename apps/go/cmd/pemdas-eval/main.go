@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
 	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
+	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
 
 	"goffl/pkg/f2poly"
 	"goffl/pkg/f2polymod"

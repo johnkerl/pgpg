@@ -39,7 +39,7 @@ func (b *IntModNumeric) String(t *intmod.IntMod) string {
 	return strconv.FormatInt(t.Residue, 10)
 }
 
-func (b *IntModNumeric) Add(a, c *intmod.IntMod) *intmod.IntMod { return a.Add(c) }
+func (b *IntModNumeric) Add(a, c *intmod.IntMod) *intmod.IntMod      { return a.Add(c) }
 func (b *IntModNumeric) Subtract(a, c *intmod.IntMod) *intmod.IntMod { return a.Sub(c) }
 func (b *IntModNumeric) Multiply(a, c *intmod.IntMod) *intmod.IntMod { return a.Mul(c) }
 

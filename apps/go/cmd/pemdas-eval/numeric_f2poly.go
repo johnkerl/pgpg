@@ -39,7 +39,7 @@ func (F2PolyNumeric) String(t *f2poly.F2Poly) string {
 	return t.String()
 }
 
-func (F2PolyNumeric) Add(a, b *f2poly.F2Poly) *f2poly.F2Poly   { return a.Add(b) }
+func (F2PolyNumeric) Add(a, b *f2poly.F2Poly) *f2poly.F2Poly      { return a.Add(b) }
 func (F2PolyNumeric) Subtract(a, b *f2poly.F2Poly) *f2poly.F2Poly { return a.Sub(b) }
 func (F2PolyNumeric) Multiply(a, b *f2poly.F2Poly) *f2poly.F2Poly { return a.Mul(b) }
 
