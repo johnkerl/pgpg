@@ -19,6 +19,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [options] [-e | -l] [file ...]\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "  -e: arguments are expressions to parse (at least one required).\n")
 	fmt.Fprintf(os.Stderr, "  -l: read stdin line-by-line, evaluate each line, print result (REPL mode).\n")
+	fmt.Fprintf(os.Stderr, "  With -l and stdin a TTY, -p sets the prompt (default \"> \"); use -p \"\" to disable.\n")
 	fmt.Fprintf(os.Stderr, "  Without -e/-l: zero arguments = read from stdin; one or more = read from those files.\n")
 	flag.PrintDefaults()
 	os.Exit(1)
@@ -28,9 +29,11 @@ func main() {
 	var verbose bool
 	var exprMode bool
 	var lineMode bool
+	var prompt string
 	flag.BoolVar(&verbose, "v", false, "Print AST before evaluation")
 	flag.BoolVar(&exprMode, "e", false, "Arguments are expressions to parse (at least one required)")
 	flag.BoolVar(&lineMode, "l", false, "Read stdin line-by-line, evaluate each, print result (REPL)")
+	flag.StringVar(&prompt, "p", "> ", "In -l mode with TTY stdin, prompt string (default \"> \"; use \"\" to disable)")
 	flag.Usage = usage
 	flag.Parse()
 
@@ -41,7 +44,7 @@ func main() {
 			fmt.Fprintln(os.Stderr, "pemdas-eval: -e and -l are mutually exclusive")
 			os.Exit(1)
 		}
-		runREPL(verbose)
+		runREPL(verbose, prompt)
 		return
 	}
 
@@ -74,9 +77,25 @@ func main() {
 	}
 }
 
-func runREPL(verbose bool) {
+func stdinIsTTY() bool {
+	fi, err := os.Stdin.Stat()
+	if err != nil {
+		return false
+	}
+	return (fi.Mode() & os.ModeCharDevice) != 0
+}
+
+func runREPL(verbose bool, prompt string) {
+	usePrompt := stdinIsTTY() && prompt != ""
 	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
+	for {
+		if usePrompt {
+			fmt.Fprint(os.Stdout, prompt)
+			os.Stdout.Sync()
+		}
+		if !scanner.Scan() {
+			break
+		}
 		line := strings.TrimSpace(scanner.Text())
 		if line == "" {
 			continue
