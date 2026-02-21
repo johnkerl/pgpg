@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -118,6 +119,17 @@ func marshalTablesDeterministic(tables *Tables) ([]byte, error) {
 	}
 
 	return marshalOrderedFields(fields), nil
+}
+
+// GenerateTablesFromReader reads a BNF grammar from r and produces LR(1) parser tables.
+// It is a convenience for callers that have an io.Reader (e.g. HTTP body, open file, bytes.Buffer).
+// opts may be nil; SourceName is then "".
+func GenerateTablesFromReader(r io.Reader, opts *ParseTableOptions) (*Tables, error) {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return nil, fmt.Errorf("read grammar: %w", err)
+	}
+	return GenerateTables(string(b), opts)
 }
 
 // GenerateTables parses an EBNF grammar and produces LR(1) parser tables.

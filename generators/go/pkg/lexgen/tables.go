@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -193,6 +194,17 @@ func marshalMapStringString(m map[string]string) ([]byte, error) {
 	}
 	buf.WriteByte('}')
 	return buf.Bytes(), nil
+}
+
+// GenerateTablesFromReader reads a BNF grammar from r and produces lexer tables.
+// It is a convenience for callers that have an io.Reader (e.g. HTTP body, open file, bytes.Buffer).
+// opts may be nil; SourceName is then "".
+func GenerateTablesFromReader(r io.Reader, opts *LexTableOptions) (*Tables, error) {
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return nil, fmt.Errorf("read grammar: %w", err)
+	}
+	return GenerateTables(string(b), opts)
 }
 
 // GenerateTables parses an EBNF grammar and produces lexer tables.
