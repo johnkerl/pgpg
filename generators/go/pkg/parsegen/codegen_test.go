@@ -12,12 +12,12 @@ func TestGenerateGoParserCodeFormats(t *testing.T) {
 		Gotos:       map[int]map[string]int{},
 		Productions: []Production{{LHS: "Root", RHS: []Symbol{{Name: "EOF", Terminal: true}}}},
 	}
-	code, err := GenerateGoParserCode(tables, "parsers", "TestParser")
+	code, err := GenerateCode(tables, ParseCodegenOptions{Package: "parsers", Type: "TestParser", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoParserCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	if len(code) == 0 {
-		t.Fatalf("GenerateGoParserCode() returned empty code")
+		t.Fatalf("GenerateCode() returned empty code")
 	}
 	if !strings.Contains(string(code), "package parsers") {
 		t.Fatalf("generated code missing package declaration")
@@ -46,9 +46,9 @@ func TestGenerateGoParserCodeHintMode(t *testing.T) {
 		},
 		HintMode: "hints",
 	}
-	code, err := GenerateGoParserCode(tables, "parsers", "HintTestParser")
+	code, err := GenerateCode(tables, ParseCodegenOptions{Package: "parsers", Type: "HintTestParser", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoParserCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	codeStr := string(code)
 	if !strings.Contains(codeStr, "hasHint") {
@@ -87,9 +87,9 @@ func TestGenerateGoParserCodeWithAppendedChildrenHint(t *testing.T) {
 		},
 		HintMode: "hints",
 	}
-	code, err := GenerateGoParserCode(tables, "parsers", "AppendTestParser")
+	code, err := GenerateCode(tables, ParseCodegenOptions{Package: "parsers", Type: "AppendTestParser", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoParserCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	codeStr := string(code)
 	if !strings.Contains(codeStr, "hasWithAppendedChildren") {
@@ -122,9 +122,9 @@ func TestGenerateGoParserCodeWithPrependedChildrenHint(t *testing.T) {
 		},
 		HintMode: "hints",
 	}
-	code, err := GenerateGoParserCode(tables, "parsers", "PrependTestParser")
+	code, err := GenerateCode(tables, ParseCodegenOptions{Package: "parsers", Type: "PrependTestParser", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoParserCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	codeStr := string(code)
 	if !strings.Contains(codeStr, "hasWithPrependedChildren") {
@@ -157,9 +157,9 @@ func TestGenerateGoParserCodeWithAdoptedGrandchildrenHint(t *testing.T) {
 		},
 		HintMode: "hints",
 	}
-	code, err := GenerateGoParserCode(tables, "parsers", "AdoptTestParser")
+	code, err := GenerateCode(tables, ParseCodegenOptions{Package: "parsers", Type: "AdoptTestParser", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoParserCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	codeStr := string(code)
 	if !strings.Contains(codeStr, "hasWithAdoptedGrandchildren") {
@@ -196,9 +196,9 @@ func TestGenerateGoParserCodeWithAdoptedGrandchildrenRespectsType(t *testing.T) 
 		},
 		HintMode: "hints",
 	}
-	code, err := GenerateGoParserCode(tables, "parsers", "ArrayTypeParser")
+	code, err := GenerateCode(tables, ParseCodegenOptions{Package: "parsers", Type: "ArrayTypeParser", Format: true})
 	if err != nil {
-		t.Fatalf("GenerateGoParserCode() error: %v", err)
+		t.Fatalf("GenerateCode() error: %v", err)
 	}
 	codeStr := string(code)
 	// The template must apply prod.nodeType when set, so the result node gets type "array" not "[]".

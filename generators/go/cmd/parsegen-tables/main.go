@@ -32,8 +32,9 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
+	encodeOpts := &parsegen.EncodeOptions{Sort: true}
 	if nosort {
-		parsegen.SortOutput = false
+		encodeOpts.Sort = false
 	}
 
 	if flag.NArg() != 1 {
@@ -60,13 +61,13 @@ func main() {
 	}
 	defer stopProfile()
 
-	tables, err := parsegen.GenerateTablesFromEBNFWithSourceName(string(inputBytes), absPath)
+	tables, err := parsegen.GenerateTables(string(inputBytes), &parsegen.ParseTableOptions{SourceName: absPath})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
-	jsonBytes, err := parsegen.EncodeTables(tables)
+	jsonBytes, err := parsegen.EncodeTables(tables, encodeOpts)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
