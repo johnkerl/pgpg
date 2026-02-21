@@ -1,0 +1,13 @@
+go 1.25
+
+use (
+	./apps/go
+	./generated
+	./generators/go
+	./manual
+)
+
+// Satisfy workspace module requirements so resolution uses local paths (no network).
+replace github.com/johnkerl/pgpg/manual v0.0.0 => ./manual
+
+replace github.com/johnkerl/pgpg/generated v0.0.0 => ./generated

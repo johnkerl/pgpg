@@ -22,7 +22,7 @@ func evaluateAST[T, E any](ast *asts.AST, numeric Numeric[T, E], verbose bool) (
 func evaluateNode[T, E any](node *asts.ASTNode, numeric Numeric[T, E]) (T, error) {
 	var zero T
 	switch node.Type {
-	case "int_literal", "hex_literal", "float_literal":
+	case "int_literal", "hex_literal", "float_literal", "bin_literal":
 		return evaluateLiteralNode(node, numeric)
 	case "operator":
 		return evaluateBinaryOperatorNode(node, numeric)
@@ -31,6 +31,11 @@ func evaluateNode[T, E any](node *asts.ASTNode, numeric Numeric[T, E]) (T, error
 	default:
 		return zero, fmt.Errorf("unhandled node type %q", node.Type)
 	}
+}
+
+func isLiteralNode(node *asts.ASTNode) bool {
+	return node != nil && node.Token != nil &&
+		(node.Type == "int_literal" || node.Type == "hex_literal" || node.Type == "float_literal" || node.Type == "bin_literal")
 }
 
 func evaluateLiteralNode[T, E any](node *asts.ASTNode, numeric Numeric[T, E]) (T, error) {
@@ -67,7 +72,13 @@ func evaluateBinaryOperatorNode[T, E any](node *asts.ASTNode, numeric Numeric[T,
 	case "%":
 		return numeric.Mod(a, b)
 	case "**":
-		exp, err := numeric.ToExponent(b)
+		var exp E
+		var err error
+		if isLiteralNode(node.Children[1]) {
+			exp, err = numeric.ParseExponent(string(node.Children[1].Token.Lexeme))
+		} else {
+			exp, err = numeric.ToExponent(b)
+		}
 		if err != nil {
 			return zero, err
 		}

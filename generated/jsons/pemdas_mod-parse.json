@@ -1,0 +1,1898 @@
+{
+  "start_symbol": "Root",
+  "actions": {
+    "0": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "1": {
+      "EOF": {
+        "type": "reduce",
+        "target": 3
+      },
+      "minus": {
+        "type": "shift",
+        "target": 15
+      },
+      "plus": {
+        "type": "shift",
+        "target": 16
+      }
+    },
+    "2": {
+      "EOF": {
+        "type": "reduce",
+        "target": 13
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 13
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 13
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 13
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 13
+      },
+      "times": {
+        "type": "reduce",
+        "target": 13
+      }
+    },
+    "3": {
+      "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "divide": {
+        "type": "shift",
+        "target": 17
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 6
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 18
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 6
+      },
+      "times": {
+        "type": "shift",
+        "target": 19
+      }
+    },
+    "4": {
+      "EOF": {
+        "type": "reduce",
+        "target": 16
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 16
+      },
+      "exponentiation": {
+        "type": "shift",
+        "target": 20
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 16
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 16
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 16
+      },
+      "times": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "5": {
+      "EOF": {
+        "type": "reduce",
+        "target": 18
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 18
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 18
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 18
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 18
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 18
+      },
+      "times": {
+        "type": "reduce",
+        "target": 18
+      }
+    },
+    "6": {
+      "EOF": {
+        "type": "reduce",
+        "target": 2
+      }
+    },
+    "7": {
+      "EOF": {
+        "type": "accept"
+      }
+    },
+    "8": {
+      "EOF": {
+        "type": "reduce",
+        "target": 1
+      }
+    },
+    "9": {
+      "EOF": {
+        "type": "reduce",
+        "target": 10
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 10
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 10
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 10
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 10
+      },
+      "times": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "10": {
+      "EOF": {
+        "type": "reduce",
+        "target": 20
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 20
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 20
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 20
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 20
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 20
+      },
+      "times": {
+        "type": "reduce",
+        "target": 20
+      }
+    },
+    "11": {
+      "EOF": {
+        "type": "reduce",
+        "target": 19
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 19
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 19
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 19
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 19
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 19
+      },
+      "times": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "12": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "13": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "14": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      }
+    },
+    "15": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "16": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "17": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "18": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "19": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 13
+      },
+      "plus": {
+        "type": "shift",
+        "target": 14
+      }
+    },
+    "20": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      },
+      "minus": {
+        "type": "shift",
+        "target": 41
+      }
+    },
+    "21": {
+      "minus": {
+        "type": "shift",
+        "target": 42
+      },
+      "plus": {
+        "type": "shift",
+        "target": 43
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "22": {
+      "divide": {
+        "type": "reduce",
+        "target": 13
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 13
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 13
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 13
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 13
+      },
+      "times": {
+        "type": "reduce",
+        "target": 13
+      }
+    },
+    "23": {
+      "divide": {
+        "type": "shift",
+        "target": 44
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 6
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 45
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 6
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 6
+      },
+      "times": {
+        "type": "shift",
+        "target": 46
+      }
+    },
+    "24": {
+      "divide": {
+        "type": "reduce",
+        "target": 16
+      },
+      "exponentiation": {
+        "type": "shift",
+        "target": 47
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 16
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 16
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 16
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 16
+      },
+      "times": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "25": {
+      "divide": {
+        "type": "reduce",
+        "target": 18
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 18
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 18
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 18
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 18
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 18
+      },
+      "times": {
+        "type": "reduce",
+        "target": 18
+      }
+    },
+    "26": {
+      "rparen": {
+        "type": "shift",
+        "target": 48
+      }
+    },
+    "27": {
+      "divide": {
+        "type": "reduce",
+        "target": 10
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 10
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 10
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 10
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 10
+      },
+      "times": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "28": {
+      "divide": {
+        "type": "reduce",
+        "target": 20
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 20
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 20
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 20
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 20
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 20
+      },
+      "times": {
+        "type": "reduce",
+        "target": 20
+      }
+    },
+    "29": {
+      "divide": {
+        "type": "reduce",
+        "target": 19
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 19
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 19
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 19
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 19
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 19
+      },
+      "times": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "30": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "31": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "32": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      }
+    },
+    "33": {
+      "EOF": {
+        "type": "reduce",
+        "target": 12
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 12
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 12
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 12
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 12
+      },
+      "times": {
+        "type": "reduce",
+        "target": 12
+      }
+    },
+    "34": {
+      "EOF": {
+        "type": "reduce",
+        "target": 11
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 11
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 11
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 11
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 11
+      },
+      "times": {
+        "type": "reduce",
+        "target": 11
+      }
+    },
+    "35": {
+      "EOF": {
+        "type": "reduce",
+        "target": 5
+      },
+      "divide": {
+        "type": "shift",
+        "target": 17
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 5
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 18
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 5
+      },
+      "times": {
+        "type": "shift",
+        "target": 19
+      }
+    },
+    "36": {
+      "EOF": {
+        "type": "reduce",
+        "target": 4
+      },
+      "divide": {
+        "type": "shift",
+        "target": 17
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 4
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 18
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 4
+      },
+      "times": {
+        "type": "shift",
+        "target": 19
+      }
+    },
+    "37": {
+      "EOF": {
+        "type": "reduce",
+        "target": 8
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 8
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 8
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 8
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 8
+      },
+      "times": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "38": {
+      "EOF": {
+        "type": "reduce",
+        "target": 9
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 9
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 9
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 9
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 9
+      },
+      "times": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "39": {
+      "EOF": {
+        "type": "reduce",
+        "target": 7
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 7
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 7
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 7
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 7
+      },
+      "times": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "40": {
+      "EOF": {
+        "type": "reduce",
+        "target": 14
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 14
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 14
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 14
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 14
+      },
+      "times": {
+        "type": "reduce",
+        "target": 14
+      }
+    },
+    "41": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 10
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 11
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 12
+      }
+    },
+    "42": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "43": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "44": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "45": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "46": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 31
+      },
+      "plus": {
+        "type": "shift",
+        "target": 32
+      }
+    },
+    "47": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      },
+      "minus": {
+        "type": "shift",
+        "target": 59
+      }
+    },
+    "48": {
+      "EOF": {
+        "type": "reduce",
+        "target": 17
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 17
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 17
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 17
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 17
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 17
+      },
+      "times": {
+        "type": "reduce",
+        "target": 17
+      }
+    },
+    "49": {
+      "rparen": {
+        "type": "shift",
+        "target": 60
+      }
+    },
+    "50": {
+      "divide": {
+        "type": "reduce",
+        "target": 12
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 12
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 12
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 12
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 12
+      },
+      "times": {
+        "type": "reduce",
+        "target": 12
+      }
+    },
+    "51": {
+      "divide": {
+        "type": "reduce",
+        "target": 11
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 11
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 11
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 11
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 11
+      },
+      "times": {
+        "type": "reduce",
+        "target": 11
+      }
+    },
+    "52": {
+      "EOF": {
+        "type": "reduce",
+        "target": 15
+      },
+      "divide": {
+        "type": "reduce",
+        "target": 15
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 15
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 15
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 15
+      },
+      "times": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
+    "53": {
+      "divide": {
+        "type": "shift",
+        "target": 44
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 5
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 45
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 5
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 5
+      },
+      "times": {
+        "type": "shift",
+        "target": 46
+      }
+    },
+    "54": {
+      "divide": {
+        "type": "shift",
+        "target": 44
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 4
+      },
+      "modulo": {
+        "type": "shift",
+        "target": 45
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 4
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 4
+      },
+      "times": {
+        "type": "shift",
+        "target": 46
+      }
+    },
+    "55": {
+      "divide": {
+        "type": "reduce",
+        "target": 8
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 8
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 8
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 8
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 8
+      },
+      "times": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "56": {
+      "divide": {
+        "type": "reduce",
+        "target": 9
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 9
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 9
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 9
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 9
+      },
+      "times": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "57": {
+      "divide": {
+        "type": "reduce",
+        "target": 7
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 7
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 7
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 7
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 7
+      },
+      "times": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "58": {
+      "divide": {
+        "type": "reduce",
+        "target": 14
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 14
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 14
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 14
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 14
+      },
+      "times": {
+        "type": "reduce",
+        "target": 14
+      }
+    },
+    "59": {
+      "hex_literal": {
+        "type": "shift",
+        "target": 28
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 29
+      },
+      "lparen": {
+        "type": "shift",
+        "target": 30
+      }
+    },
+    "60": {
+      "divide": {
+        "type": "reduce",
+        "target": 17
+      },
+      "exponentiation": {
+        "type": "reduce",
+        "target": 17
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 17
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 17
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 17
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 17
+      },
+      "times": {
+        "type": "reduce",
+        "target": 17
+      }
+    },
+    "61": {
+      "divide": {
+        "type": "reduce",
+        "target": 15
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 15
+      },
+      "modulo": {
+        "type": "reduce",
+        "target": 15
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 15
+      },
+      "rparen": {
+        "type": "reduce",
+        "target": 15
+      },
+      "times": {
+        "type": "reduce",
+        "target": 15
+      }
+    }
+  },
+  "gotos": {
+    "0": {
+      "AddSubTerm": 1,
+      "ExponentiationTerm": 2,
+      "MulDivTerm": 3,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "PrecedenceChainStart": 6,
+      "Root": 7,
+      "Rvalue": 8,
+      "UnaryTerm": 9
+    },
+    "12": {
+      "AddSubTerm": 21,
+      "ExponentiationTerm": 22,
+      "MulDivTerm": 23,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "PrecedenceChainStart": 26,
+      "UnaryTerm": 27
+    },
+    "13": {
+      "ExponentiationTerm": 2,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "UnaryTerm": 33
+    },
+    "14": {
+      "ExponentiationTerm": 34,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5
+    },
+    "15": {
+      "ExponentiationTerm": 2,
+      "MulDivTerm": 35,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "UnaryTerm": 9
+    },
+    "16": {
+      "ExponentiationTerm": 2,
+      "MulDivTerm": 36,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "UnaryTerm": 9
+    },
+    "17": {
+      "ExponentiationTerm": 2,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "UnaryTerm": 37
+    },
+    "18": {
+      "ExponentiationTerm": 2,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "UnaryTerm": 38
+    },
+    "19": {
+      "ExponentiationTerm": 2,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5,
+      "UnaryTerm": 39
+    },
+    "20": {
+      "ExponentiationTerm": 40,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5
+    },
+    "30": {
+      "AddSubTerm": 21,
+      "ExponentiationTerm": 22,
+      "MulDivTerm": 23,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "PrecedenceChainStart": 49,
+      "UnaryTerm": 27
+    },
+    "31": {
+      "ExponentiationTerm": 22,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "UnaryTerm": 50
+    },
+    "32": {
+      "ExponentiationTerm": 51,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25
+    },
+    "41": {
+      "ExponentiationTerm": 52,
+      "ParenTerm": 4,
+      "PrecedenceChainEnd": 5
+    },
+    "42": {
+      "ExponentiationTerm": 22,
+      "MulDivTerm": 53,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "UnaryTerm": 27
+    },
+    "43": {
+      "ExponentiationTerm": 22,
+      "MulDivTerm": 54,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "UnaryTerm": 27
+    },
+    "44": {
+      "ExponentiationTerm": 22,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "UnaryTerm": 55
+    },
+    "45": {
+      "ExponentiationTerm": 22,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "UnaryTerm": 56
+    },
+    "46": {
+      "ExponentiationTerm": 22,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25,
+      "UnaryTerm": 57
+    },
+    "47": {
+      "ExponentiationTerm": 58,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25
+    },
+    "59": {
+      "ExponentiationTerm": 61,
+      "ParenTerm": 24,
+      "PrecedenceChainEnd": 25
+    }
+  },
+  "productions": [
+    {
+      "lhs": "__pgpg_start_1",
+      "rhs": [
+        {
+          "name": "Root",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Root",
+      "rhs": [
+        {
+          "name": "Rvalue",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Rvalue",
+      "rhs": [
+        {
+          "name": "PrecedenceChainStart",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "PrecedenceChainStart",
+      "rhs": [
+        {
+          "name": "AddSubTerm",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "AddSubTerm",
+      "rhs": [
+        {
+          "name": "AddSubTerm",
+          "terminal": false
+        },
+        {
+          "name": "plus",
+          "terminal": true
+        },
+        {
+          "name": "MulDivTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "AddSubTerm",
+      "rhs": [
+        {
+          "name": "AddSubTerm",
+          "terminal": false
+        },
+        {
+          "name": "minus",
+          "terminal": true
+        },
+        {
+          "name": "MulDivTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "AddSubTerm",
+      "rhs": [
+        {
+          "name": "MulDivTerm",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "MulDivTerm",
+      "rhs": [
+        {
+          "name": "MulDivTerm",
+          "terminal": false
+        },
+        {
+          "name": "times",
+          "terminal": true
+        },
+        {
+          "name": "UnaryTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "MulDivTerm",
+      "rhs": [
+        {
+          "name": "MulDivTerm",
+          "terminal": false
+        },
+        {
+          "name": "divide",
+          "terminal": true
+        },
+        {
+          "name": "UnaryTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "MulDivTerm",
+      "rhs": [
+        {
+          "name": "MulDivTerm",
+          "terminal": false
+        },
+        {
+          "name": "modulo",
+          "terminal": true
+        },
+        {
+          "name": "UnaryTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "MulDivTerm",
+      "rhs": [
+        {
+          "name": "UnaryTerm",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "UnaryTerm",
+      "rhs": [
+        {
+          "name": "plus",
+          "terminal": true
+        },
+        {
+          "name": "ExponentiationTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "type": "unary"
+      }
+    },
+    {
+      "lhs": "UnaryTerm",
+      "rhs": [
+        {
+          "name": "minus",
+          "terminal": true
+        },
+        {
+          "name": "UnaryTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [
+          1
+        ],
+        "type": "unary"
+      }
+    },
+    {
+      "lhs": "UnaryTerm",
+      "rhs": [
+        {
+          "name": "ExponentiationTerm",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "ExponentiationTerm",
+      "rhs": [
+        {
+          "name": "ParenTerm",
+          "terminal": false
+        },
+        {
+          "name": "exponentiation",
+          "terminal": true
+        },
+        {
+          "name": "ExponentiationTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          2
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "ExponentiationTerm",
+      "rhs": [
+        {
+          "name": "ParenTerm",
+          "terminal": false
+        },
+        {
+          "name": "exponentiation",
+          "terminal": true
+        },
+        {
+          "name": "minus",
+          "terminal": true
+        },
+        {
+          "name": "ExponentiationTerm",
+          "terminal": false
+        }
+      ],
+      "hint": {
+        "parent": 1,
+        "children": [
+          0,
+          3
+        ],
+        "type": "operator"
+      }
+    },
+    {
+      "lhs": "ExponentiationTerm",
+      "rhs": [
+        {
+          "name": "ParenTerm",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "ParenTerm",
+      "rhs": [
+        {
+          "name": "lparen",
+          "terminal": true
+        },
+        {
+          "name": "PrecedenceChainStart",
+          "terminal": false
+        },
+        {
+          "name": "rparen",
+          "terminal": true
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": null,
+        "pass-through": 1
+      }
+    },
+    {
+      "lhs": "ParenTerm",
+      "rhs": [
+        {
+          "name": "PrecedenceChainEnd",
+          "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "PrecedenceChainEnd",
+      "rhs": [
+        {
+          "name": "int_literal",
+          "terminal": true
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [],
+        "type": "int_literal"
+      }
+    },
+    {
+      "lhs": "PrecedenceChainEnd",
+      "rhs": [
+        {
+          "name": "hex_literal",
+          "terminal": true
+        }
+      ],
+      "hint": {
+        "parent": 0,
+        "children": [],
+        "type": "hex_literal"
+      }
+    }
+  ],
+  "hint_mode": "hints"
+}

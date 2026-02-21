@@ -13,6 +13,10 @@ func (FloatNumeric) FromString(s string) (float64, error) {
 	return strconv.ParseFloat(s, 64)
 }
 
+func (FloatNumeric) ParseExponent(s string) (float64, error) {
+	return strconv.ParseFloat(s, 64)
+}
+
 func (FloatNumeric) String(t float64) string {
 	return fmt.Sprintf("%g", t)
 }
