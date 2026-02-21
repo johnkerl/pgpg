@@ -173,4 +173,3 @@ func runParserOnce(input string, verbose bool, mode string, modN int) error {
 	}
 	return nil
 }
-

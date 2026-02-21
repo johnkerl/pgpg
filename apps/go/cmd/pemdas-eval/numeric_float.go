@@ -17,9 +17,9 @@ func (FloatNumeric) String(t float64) string {
 	return fmt.Sprintf("%g", t)
 }
 
-func (FloatNumeric) Add(a, b float64) float64       { return a + b }
-func (FloatNumeric) Subtract(a, b float64) float64  { return a - b }
-func (FloatNumeric) Multiply(a, b float64) float64  { return a * b }
+func (FloatNumeric) Add(a, b float64) float64      { return a + b }
+func (FloatNumeric) Subtract(a, b float64) float64 { return a - b }
+func (FloatNumeric) Multiply(a, b float64) float64 { return a * b }
 
 func (FloatNumeric) Divide(a, b float64) (float64, error) {
 	if b == 0 {

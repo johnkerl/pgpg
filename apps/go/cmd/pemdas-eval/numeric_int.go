@@ -17,7 +17,7 @@ func (IntNumeric) String(t int) string {
 	return strconv.Itoa(t)
 }
 
-func (IntNumeric) Add(a, b int) int   { return a + b }
+func (IntNumeric) Add(a, b int) int      { return a + b }
 func (IntNumeric) Subtract(a, b int) int { return a - b }
 func (IntNumeric) Multiply(a, b int) int { return a * b }
 
