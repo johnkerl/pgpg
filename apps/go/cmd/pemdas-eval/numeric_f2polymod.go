@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"goffl/pkg/f2poly"
-	"goffl/pkg/f2polymod"
+	"github.com/johnkerl/goffl/pkg/f2poly"
+	"github.com/johnkerl/goffl/pkg/f2polymod"
 )
 
 // F2PolyModNumeric implements Numeric[*f2polymod.F2PolyMod, int] for F2[x]/m(x).

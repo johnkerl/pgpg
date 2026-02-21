@@ -13,9 +13,9 @@ import (
 	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
 	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
 
-	"goffl/pkg/f2poly"
-	"goffl/pkg/f2polymod"
-	"goffl/pkg/intmod"
+	"github.com/johnkerl/goffl/pkg/f2poly"
+	"github.com/johnkerl/goffl/pkg/f2polymod"
+	"github.com/johnkerl/goffl/pkg/intmod"
 )
 
 func usage() {

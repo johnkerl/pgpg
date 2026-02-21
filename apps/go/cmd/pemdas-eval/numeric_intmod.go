@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"goffl/pkg/intarith"
-	"goffl/pkg/intmod"
+	"github.com/johnkerl/goffl/pkg/intarith"
+	"github.com/johnkerl/goffl/pkg/intmod"
 )
 
 // IntModNumeric implements Numeric[*intmod.IntMod, int] using goffl intmod.

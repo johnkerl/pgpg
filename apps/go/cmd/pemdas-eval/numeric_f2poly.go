@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"goffl/pkg/f2poly"
+	"github.com/johnkerl/goffl/pkg/f2poly"
 )
 
 // F2PolyNumeric implements Numeric[*f2poly.F2Poly, int] for polynomials over GF(2).

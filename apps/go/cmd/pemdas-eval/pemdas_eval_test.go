@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"testing"
 
-	"goffl/pkg/f2poly"
-	"goffl/pkg/f2polymod"
+	"github.com/johnkerl/goffl/pkg/f2poly"
+	"github.com/johnkerl/goffl/pkg/f2polymod"
 )
 
 // TestF2PolyModPow2Mod13 verifies that in F2[x]/(x^4+x+1), the powers of x (hex poly 2)
