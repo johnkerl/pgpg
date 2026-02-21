@@ -22,7 +22,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.19"
+          go-version: "1.25"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -40,9 +40,13 @@ jobs:
           pip install -r generated/py/requirements.txt
 
       - name: Build
+        env:
+          GOWORK: off
         run: make build
 
       - name: Test
+        env:
+          GOWORK: off
         run: make test
 
   format-advisory:
@@ -56,7 +60,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.19"
+          go-version: "1.25"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -68,6 +72,8 @@ jobs:
 
       - name: Check Go formatting
         id: go-fmt
+        env:
+          GOWORK: off
         run: |
           set +e
           OUT=$(gofmt -l manual/go generators/go generated/go apps/go 2>/dev/null | grep -v '^$')
