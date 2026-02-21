@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-// Numeric is the arithmetic backend interface. T is the value type, E is the
+// Numeric is the arithmetic numeric interface. T is the value type, E is the
 // exponent type for Exponentiate (e.g. int for modular, same as T for int/float).
 type Numeric[T, E any] interface {
 	FromString(s string) (T, error)
@@ -21,37 +21,37 @@ type Numeric[T, E any] interface {
 	Negate(v T) T
 }
 
-// IntBackend implements Numeric[int, int] for integer arithmetic.
-type IntBackend struct{}
+// IntNumeric implements Numeric[int, int] for integer arithmetic.
+type IntNumeric struct{}
 
-func (IntBackend) FromString(s string) (int, error) {
+func (IntNumeric) FromString(s string) (int, error) {
 	v, err := strconv.ParseInt(s, 0, 64)
 	return int(v), err
 }
 
-func (IntBackend) String(t int) string {
+func (IntNumeric) String(t int) string {
 	return strconv.Itoa(t)
 }
 
-func (IntBackend) Add(a, b int) int   { return a + b }
-func (IntBackend) Subtract(a, b int) int { return a - b }
-func (IntBackend) Multiply(a, b int) int { return a * b }
+func (IntNumeric) Add(a, b int) int   { return a + b }
+func (IntNumeric) Subtract(a, b int) int { return a - b }
+func (IntNumeric) Multiply(a, b int) int { return a * b }
 
-func (IntBackend) Divide(a, b int) (int, error) {
+func (IntNumeric) Divide(a, b int) (int, error) {
 	if b == 0 {
 		return 0, fmt.Errorf("division by zero")
 	}
 	return a / b, nil
 }
 
-func (IntBackend) Mod(a, b int) (int, error) {
+func (IntNumeric) Mod(a, b int) (int, error) {
 	if b == 0 {
 		return 0, fmt.Errorf("modulo by zero")
 	}
 	return a % b, nil
 }
 
-func (IntBackend) Exponentiate(base, exp int) (int, error) {
+func (IntNumeric) Exponentiate(base, exp int) (int, error) {
 	if exp < 0 {
 		return 0, fmt.Errorf("negative exponent for integer power")
 	}
@@ -62,44 +62,44 @@ func (IntBackend) Exponentiate(base, exp int) (int, error) {
 	return out, nil
 }
 
-func (IntBackend) ToExponent(v int) (int, error) { return v, nil }
-func (IntBackend) Negate(v int) int              { return -v }
+func (IntNumeric) ToExponent(v int) (int, error) { return v, nil }
+func (IntNumeric) Negate(v int) int              { return -v }
 
-// FloatBackend implements Numeric[float64, float64] for float arithmetic.
-type FloatBackend struct{}
+// FloatNumeric implements Numeric[float64, float64] for float arithmetic.
+type FloatNumeric struct{}
 
-func (FloatBackend) FromString(s string) (float64, error) {
+func (FloatNumeric) FromString(s string) (float64, error) {
 	return strconv.ParseFloat(s, 64)
 }
 
-func (FloatBackend) String(t float64) string {
+func (FloatNumeric) String(t float64) string {
 	return fmt.Sprintf("%g", t)
 }
 
-func (FloatBackend) Add(a, b float64) float64       { return a + b }
-func (FloatBackend) Subtract(a, b float64) float64  { return a - b }
-func (FloatBackend) Multiply(a, b float64) float64  { return a * b }
+func (FloatNumeric) Add(a, b float64) float64       { return a + b }
+func (FloatNumeric) Subtract(a, b float64) float64  { return a - b }
+func (FloatNumeric) Multiply(a, b float64) float64  { return a * b }
 
-func (FloatBackend) Divide(a, b float64) (float64, error) {
+func (FloatNumeric) Divide(a, b float64) (float64, error) {
 	if b == 0 {
 		return 0, fmt.Errorf("division by zero")
 	}
 	return a / b, nil
 }
 
-func (FloatBackend) Mod(a, b float64) (float64, error) {
+func (FloatNumeric) Mod(a, b float64) (float64, error) {
 	if b == 0 {
 		return 0, fmt.Errorf("modulo by zero")
 	}
 	return math.Mod(a, b), nil
 }
 
-func (FloatBackend) Exponentiate(base, exp float64) (float64, error) {
+func (FloatNumeric) Exponentiate(base, exp float64) (float64, error) {
 	return math.Pow(base, exp), nil
 }
 
-func (FloatBackend) ToExponent(v float64) (float64, error) { return v, nil }
-func (FloatBackend) Negate(v float64) float64              { return -v }
+func (FloatNumeric) ToExponent(v float64) (float64, error) { return v, nil }
+func (FloatNumeric) Negate(v float64) float64              { return -v }
 
 // ModInt is a value in Z/nZ (modular arithmetic). N is the modulus.
 type ModInt struct {
@@ -107,19 +107,19 @@ type ModInt struct {
 	N int
 }
 
-// ModBackend implements Numeric[ModInt, int]; exponent is always int.
-type ModBackend struct {
+// ModNumeric implements Numeric[ModInt, int]; exponent is always int.
+type ModNumeric struct {
 	N int
 }
 
-func NewModBackend(n int) (*ModBackend, error) {
+func NewModNumeric(n int) (*ModNumeric, error) {
 	if n <= 0 {
 		return nil, fmt.Errorf("modulus must be positive, got %d", n)
 	}
-	return &ModBackend{N: n}, nil
+	return &ModNumeric{N: n}, nil
 }
 
-func (b *ModBackend) FromString(s string) (ModInt, error) {
+func (b *ModNumeric) FromString(s string) (ModInt, error) {
 	v, err := strconv.ParseInt(s, 0, 64)
 	if err != nil {
 		return ModInt{}, err
@@ -127,7 +127,7 @@ func (b *ModBackend) FromString(s string) (ModInt, error) {
 	return b.normalize(int(v)), nil
 }
 
-func (b *ModBackend) normalize(v int) ModInt {
+func (b *ModNumeric) normalize(v int) ModInt {
 	r := v % b.N
 	if r < 0 {
 		r += b.N
@@ -135,23 +135,23 @@ func (b *ModBackend) normalize(v int) ModInt {
 	return ModInt{V: r, N: b.N}
 }
 
-func (b *ModBackend) String(t ModInt) string {
+func (b *ModNumeric) String(t ModInt) string {
 	return strconv.Itoa(t.V)
 }
 
-func (b *ModBackend) Add(a, bVal ModInt) ModInt {
+func (b *ModNumeric) Add(a, bVal ModInt) ModInt {
 	return b.normalize(a.V + bVal.V)
 }
 
-func (b *ModBackend) Subtract(a, bVal ModInt) ModInt {
+func (b *ModNumeric) Subtract(a, bVal ModInt) ModInt {
 	return b.normalize(a.V - bVal.V)
 }
 
-func (b *ModBackend) Multiply(a, bVal ModInt) ModInt {
+func (b *ModNumeric) Multiply(a, bVal ModInt) ModInt {
 	return b.normalize(a.V * bVal.V)
 }
 
-func (b *ModBackend) Divide(a, bVal ModInt) (ModInt, error) {
+func (b *ModNumeric) Divide(a, bVal ModInt) (ModInt, error) {
 	inv, err := modInverse(bVal.V, b.N)
 	if err != nil {
 		return ModInt{}, fmt.Errorf("no modular inverse for %d mod %d", bVal.V, b.N)
@@ -159,14 +159,14 @@ func (b *ModBackend) Divide(a, bVal ModInt) (ModInt, error) {
 	return b.normalize(a.V * inv), nil
 }
 
-func (b *ModBackend) Mod(a, bVal ModInt) (ModInt, error) {
+func (b *ModNumeric) Mod(a, bVal ModInt) (ModInt, error) {
 	if bVal.V == 0 {
 		return ModInt{}, fmt.Errorf("modulo by zero")
 	}
 	return b.normalize(a.V % bVal.V), nil
 }
 
-func (be *ModBackend) Exponentiate(base ModInt, exp int) (ModInt, error) {
+func (be *ModNumeric) Exponentiate(base ModInt, exp int) (ModInt, error) {
 	if exp < 0 {
 		inv, err := modInverse(base.V, be.N)
 		if err != nil {
@@ -190,11 +190,11 @@ func (be *ModBackend) Exponentiate(base ModInt, exp int) (ModInt, error) {
 	return ModInt{V: out, N: be.N}, nil
 }
 
-func (b *ModBackend) ToExponent(v ModInt) (int, error) {
+func (b *ModNumeric) ToExponent(v ModInt) (int, error) {
 	return v.V, nil
 }
 
-func (b *ModBackend) Negate(v ModInt) ModInt {
+func (b *ModNumeric) Negate(v ModInt) ModInt {
 	return b.normalize(-v.V)
 }
 

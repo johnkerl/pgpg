@@ -145,29 +145,29 @@ func runParserOnce(input string, verbose bool, mode string, modN int) error {
 	}
 	switch mode {
 	case "int":
-		var b IntBackend
+		var b IntNumeric
 		result, err := evaluateAST[int, int](ast, b, verbose)
 		if err != nil {
 			return err
 		}
 		fmt.Println(b.String(result))
 	case "float":
-		var b FloatBackend
+		var b FloatNumeric
 		result, err := evaluateAST[float64, float64](ast, b, verbose)
 		if err != nil {
 			return err
 		}
 		fmt.Println(b.String(result))
 	case "mod":
-		backend, err := NewModBackend(modN)
+		numeric, err := NewModNumeric(modN)
 		if err != nil {
 			return err
 		}
-		result, err := evaluateAST[ModInt, int](ast, backend, verbose)
+		result, err := evaluateAST[ModInt, int](ast, numeric, verbose)
 		if err != nil {
 			return err
 		}
-		fmt.Println(backend.String(result))
+		fmt.Println(numeric.String(result))
 	default:
 		return fmt.Errorf("unsupported mode %q", mode)
 	}
