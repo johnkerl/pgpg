@@ -30,6 +30,11 @@ func (b *IntModNumeric) FromString(s string) (*intmod.IntMod, error) {
 	return intmod.New(v, b.Modulus), nil
 }
 
+func (b *IntModNumeric) ParseExponent(s string) (int, error) {
+	v, err := strconv.ParseInt(s, 0, 64)
+	return int(v), err
+}
+
 func (b *IntModNumeric) String(t *intmod.IntMod) string {
 	return strconv.FormatInt(t.Residue, 10)
 }

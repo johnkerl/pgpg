@@ -33,6 +33,11 @@ func evaluateNode[T, E any](node *asts.ASTNode, numeric Numeric[T, E]) (T, error
 	}
 }
 
+func isLiteralNode(node *asts.ASTNode) bool {
+	return node != nil && node.Token != nil &&
+		(node.Type == "int_literal" || node.Type == "hex_literal" || node.Type == "float_literal" || node.Type == "bin_literal")
+}
+
 func evaluateLiteralNode[T, E any](node *asts.ASTNode, numeric Numeric[T, E]) (T, error) {
 	var zero T
 	if node.Token == nil {
@@ -67,7 +72,13 @@ func evaluateBinaryOperatorNode[T, E any](node *asts.ASTNode, numeric Numeric[T,
 	case "%":
 		return numeric.Mod(a, b)
 	case "**":
-		exp, err := numeric.ToExponent(b)
+		var exp E
+		var err error
+		if isLiteralNode(node.Children[1]) {
+			exp, err = numeric.ParseExponent(string(node.Children[1].Token.Lexeme))
+		} else {
+			exp, err = numeric.ToExponent(b)
+		}
 		if err != nil {
 			return zero, err
 		}

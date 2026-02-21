@@ -20,6 +20,21 @@ func (F2PolyNumeric) FromString(s string) (*f2poly.F2Poly, error) {
 	return f2poly.New(v), nil
 }
 
+// ParseExponent parses the exponent as decimal (e.g. 2**10 uses exponent 10, not 0x10).
+func (F2PolyNumeric) ParseExponent(s string) (int, error) {
+	v, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	if v < 0 {
+		return 0, fmt.Errorf("negative exponent disallowed for F2Poly")
+	}
+	if v > 0x7fffffff {
+		return 0, fmt.Errorf("exponent too large for F2Poly")
+	}
+	return int(v), nil
+}
+
 func (F2PolyNumeric) String(t *f2poly.F2Poly) string {
 	return t.String()
 }

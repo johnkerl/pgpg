@@ -13,6 +13,11 @@ func (IntNumeric) FromString(s string) (int, error) {
 	return int(v), err
 }
 
+func (IntNumeric) ParseExponent(s string) (int, error) {
+	v, err := strconv.ParseInt(s, 0, 64)
+	return int(v), err
+}
+
 func (IntNumeric) String(t int) string {
 	return strconv.Itoa(t)
 }

@@ -31,6 +31,11 @@ func (b *ModNumeric) FromString(s string) (ModInt, error) {
 	return b.normalize(int(v)), nil
 }
 
+func (b *ModNumeric) ParseExponent(s string) (int, error) {
+	v, err := strconv.ParseInt(s, 0, 64)
+	return int(v), err
+}
+
 func (b *ModNumeric) normalize(v int) ModInt {
 	r := v % b.N
 	if r < 0 {

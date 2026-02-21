@@ -31,6 +31,21 @@ func (b *F2PolyModNumeric) FromString(s string) (*f2polymod.F2PolyMod, error) {
 	return f2polymod.New(&f2poly.F2Poly{Bits: bits}, b.Modulus), nil
 }
 
+// ParseExponent parses the exponent as decimal (e.g. 2**10 uses exponent 10, not 0x10).
+func (b *F2PolyModNumeric) ParseExponent(s string) (int, error) {
+	v, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	if v < 0 {
+		return 0, fmt.Errorf("negative exponent disallowed")
+	}
+	if v > 0x7fffffff {
+		return 0, fmt.Errorf("exponent too large")
+	}
+	return int(v), nil
+}
+
 func (b *F2PolyModNumeric) String(t *f2polymod.F2PolyMod) string {
 	return t.Residue.String()
 }
