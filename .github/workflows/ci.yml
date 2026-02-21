@@ -106,9 +106,9 @@ jobs:
               issue_number: context.payload.pull_request.number,
               body,
             });
-          env:
-            GO_FMT_NEEDED: ${{ steps.go-fmt.outputs.needs_format }}
-            PY_FMT_NEEDED: ${{ steps.py-fmt.outputs.needs_format }}
+        env:
+          GO_FMT_NEEDED: ${{ steps.go-fmt.outputs.needs_format }}
+          PY_FMT_NEEDED: ${{ steps.py-fmt.outputs.needs_format }}
 
       - name: Emit warning for format (Actions summary)
         if: steps.go-fmt.outputs.needs_format == '1' || steps.py-fmt.outputs.needs_format == '1'
