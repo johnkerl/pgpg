@@ -58,7 +58,7 @@ func WithChildPrepended(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
 	return parent, nil
 }
 
-func WithTwoChildrenPreprended(parent *ASTNode, childA, childB *ASTNode) (*ASTNode, error) {
+func WithTwoChildrenPrepended(parent *ASTNode, childA, childB *ASTNode) (*ASTNode, error) {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{childA, childB}
 	} else {
