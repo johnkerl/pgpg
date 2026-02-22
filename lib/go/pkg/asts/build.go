@@ -82,11 +82,11 @@ func WithChildrenAdopted(parent *ASTNode, child *ASTNode) *ASTNode {
 	return parent
 }
 
-func (node *ASTNode) CheckArity(
+func (n *ASTNode) CheckArity(
 	arity int,
 ) error {
-	if len(node.Children) != arity {
-		return fmt.Errorf("expected AST node arity %d, got %d", arity, len(node.Children))
+	if len(n.Children) != arity {
+		return fmt.Errorf("expected AST node arity %d, got %d", arity, len(n.Children))
 	}
 	return nil
 }
