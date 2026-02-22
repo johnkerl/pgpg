@@ -9,11 +9,18 @@ import (
 
 	"github.com/johnkerl/pgpg/apps/go/manual/parsers"
 	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
 	libparsers "github.com/johnkerl/pgpg/lib/go/pkg/parsers"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
 )
+
+// generatedParser is the common interface for all generated parsers (AttachCLITrace + Parse(lexer, astMode)).
+type generatedParser interface {
+	AttachCLITrace(traceTokens, traceStates, traceStack bool)
+	Parse(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, error)
+}
 
 type parserInfoT struct {
 	run  func(string, traceOptions) (*asts.AST, error)
@@ -28,19 +35,41 @@ type traceOptions struct {
 }
 
 var parserMakerTable = map[string]parserInfoT{
-	"m:ame":          {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
-	"m:amne":         {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
-	"m:pemdas":       {run: runManualParser(parsers.NewPEMDASParser), help: "Arithmetic with parentheses and PEMDAS precedence."},
-	"m:vic":          {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
-	"m:vbc":          {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
-	"m:ebnf":         {run: runManualParser(libparsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
-	"g:pemdas-plain": {run: runGeneratedPEMDASPlainParser, help: "Generated arithmetic parser from apps/bnfs/pemdas-plain.bnf."},
-	"g:pemdas":       {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser with AST hints from apps/bnfs/pemdas.bnf."},
-	"g:stmts":        {run: runGeneratedStatementsParser, help: "Generated statements parser from apps/bnfs/statements.bnf."},
-	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from apps/bnfs/seng.bnf."},
-	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from apps/bnfs/lisp.bnf."},
-	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from apps/bnfs/json.bnf."},
-	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from apps/bnfs/json_plain.bnf."},
+	"m:ame":    {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
+	"m:amne":   {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
+	"m:pemdas": {run: runManualParser(parsers.NewPEMDASParser), help: "Arithmetic with parentheses and PEMDAS precedence."},
+	"m:vic":    {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
+	"m:vbc":    {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
+	"m:ebnf":   {run: runManualParser(libparsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
+
+	"g:pemdas-plain": {
+		run:  runGeneratedParser(generatedlexers.NewPEMDASPlainLexer, func() generatedParser { return generatedparsers.NewPEMDASPlainParser() }),
+		help: "Generated arithmetic parser from apps/bnfs/pemdas-plain.bnf.",
+	},
+	"g:pemdas": {
+		run:  runGeneratedParser(generatedlexers.NewPEMDASLexer, func() generatedParser { return generatedparsers.NewPEMDASParser() }),
+		help: "Generated arithmetic parser with AST hints from apps/bnfs/pemdas.bnf.",
+	},
+	"g:stmts": {
+		run:  runGeneratedParser(generatedlexers.NewStatementsLexer, func() generatedParser { return generatedparsers.NewStatementsParser() }),
+		help: "Generated statements parser from apps/bnfs/statements.bnf.",
+	},
+	"g:seng": {
+		run:  runGeneratedParser(generatedlexers.NewSENGLexer, func() generatedParser { return generatedparsers.NewSENGParser() }),
+		help: "Generated SENG parser from apps/bnfs/seng.bnf.",
+	},
+	"g:lisp": {
+		run:  runGeneratedParser(generatedlexers.NewLISPLexer, func() generatedParser { return generatedparsers.NewLISPParser() }),
+		help: "Generated LISP parser from apps/bnfs/lisp.bnf.",
+	},
+	"g:json": {
+		run:  runGeneratedParser(generatedlexers.NewJSONLexer, func() generatedParser { return generatedparsers.NewJSONParser() }),
+		help: "Generated JSON parser from apps/bnfs/json.bnf.",
+	},
+	"g:json-plain": {
+		run:  runGeneratedParser(generatedlexers.NewJSONPlainLexer, func() generatedParser { return generatedparsers.NewJSONPlainParser() }),
+		help: "Generated JSON parser from apps/bnfs/json_plain.bnf.",
+	},
 }
 
 func usage() {
@@ -142,53 +171,16 @@ func runManualParser(maker func() libparsers.AbstractParser) func(string, traceO
 	}
 }
 
-func runGeneratedPEMDASPlainParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewPEMDASPlainLexer(input)
-	parser := generatedparsers.NewPEMDASPlainParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
-}
-
-func runGeneratedPEMDASParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewPEMDASLexer(input)
-	parser := generatedparsers.NewPEMDASParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
-}
-
-func runGeneratedStatementsParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewStatementsLexer(input)
-	parser := generatedparsers.NewStatementsParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
-}
-
-func runGeneratedSENGParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewSENGLexer(input)
-	parser := generatedparsers.NewSENGParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
-}
-
-func runGeneratedLISPParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewLISPLexer(input)
-	parser := generatedparsers.NewLISPParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
-}
-
-func runGeneratedJSONParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewJSONLexer(input)
-	parser := generatedparsers.NewJSONParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
-}
-
-func runGeneratedJSONPlainParser(input string, opts traceOptions) (*asts.AST, error) {
-	lexer := generatedlexers.NewJSONPlainLexer(input)
-	parser := generatedparsers.NewJSONPlainParser()
-	parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
-	return parser.Parse(lexer, opts.astMode)
+func runGeneratedParser(
+	newLexer func(string) liblexers.AbstractLexer,
+	newParser func() generatedParser,
+) func(string, traceOptions) (*asts.AST, error) {
+	return func(input string, opts traceOptions) (*asts.AST, error) {
+		lexer := newLexer(input)
+		parser := newParser()
+		parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
+		return parser.Parse(lexer, opts.astMode)
+	}
 }
 
 func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input string, opts traceOptions) error {
