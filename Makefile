@@ -9,9 +9,9 @@ test:
 	make -C generators/go test
 	make -C apps/go       test
 	make -C generators/py test
-	make -C apps/generated/py test
+	make -C apps/py/generated test
 	make -C generators/js test
-	make -C apps/generated/js test
+	make -C apps/js/generated test
 	make -C apps/py       test
 
 fmt:
@@ -20,7 +20,7 @@ fmt:
 	make -C apps/generated fmt
 	make -C apps/go       fmt
 	make -C generators/py fmt
-	make -C apps/generated/py fmt
+	make -C apps/py/generated fmt
 	make -C apps/py       fmt
 
 clean:
@@ -29,9 +29,9 @@ clean:
 	make -C apps/generated clean
 	make -C apps/go       clean
 	make -C generators/py clean
-	make -C apps/generated/py clean
+	make -C apps/py/generated clean
 	make -C generators/js clean
-	make -C apps/generated/js clean
+	make -C apps/js/generated clean
 	make -C apps/py       clean
 
 .PHONY: build test fmt clean

@@ -1,6 +1,6 @@
 # PGPG Python apps
 
-Python CLI tools that use the generated Python lexers and parsers (from `apps/generated/py`). Run from repo root or with `PYTHONPATH` including `generators/py` and `apps/generated/py`.
+Python CLI tools that use the generated Python lexers and parsers (from `apps/py/generated`). Run from repo root or with `PYTHONPATH` including `generators/py` and `apps/py/generated`.
 
 ## trylex
 
@@ -41,10 +41,10 @@ Option `-v`: print AST before evaluation.
 
 ## Dependencies
 
-Generated lexers/parsers must exist in `apps/generated/py`. From repo root:
+Generated lexers/parsers must exist in `apps/py/generated`. From repo root:
 
 ```bash
-make -C apps/generated/py all   # json + pemdas
+make -C apps/py/generated all   # json + pemdas
 ```
 
-Scripts add `generators/py` and `apps/generated/py` to `sys.path` automatically when run from the repo.
+Scripts add `generators/py` and `apps/py/generated` to `sys.path` automatically when run from the repo.

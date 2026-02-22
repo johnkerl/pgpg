@@ -11,7 +11,7 @@ import (
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
 	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
+	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
 )
 
 type lexerMaker func(string) lexers.AbstractLexer
