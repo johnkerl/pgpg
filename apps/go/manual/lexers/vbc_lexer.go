@@ -82,13 +82,11 @@ func (lexer *VBCLexer) Scan() (token *tokens.Token) {
 			return tokens.NewToken(runes, VBCLexerTypeNot, &startLocation)
 		}
 		return tokens.NewToken(runes, VBCLexerTypeIdentifier, &startLocation)
-
-	} else {
-		return tokens.NewErrorToken(
-			fmt.Sprintf("VBC lexer: unrecognized token %q (%U)", r, r),
-			lexer.tokenLocation,
-		)
 	}
+	return tokens.NewErrorToken(
+		fmt.Sprintf("VBC lexer: unrecognized token %q (%U)", r, r),
+		lexer.tokenLocation,
+	)
 }
 
 func (lexer *VBCLexer) ignoreNextRuneIf(predicate RunePredicateFunc) bool {

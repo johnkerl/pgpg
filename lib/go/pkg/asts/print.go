@@ -122,15 +122,15 @@ func (node *ASTNode) PrintParexOneLine() {
 func (node *ASTNode) printParexOneLineAux() {
 	if node.IsLeaf() {
 		fmt.Print(node.Text())
-	} else {
-		fmt.Print("(")
-		fmt.Print(node.Text())
-		for _, child := range node.Children {
-			fmt.Print(" ")
-			child.printParexOneLineAux()
-		}
-		fmt.Print(")")
+		return
 	}
+	fmt.Print("(")
+	fmt.Print(node.Text())
+	for _, child := range node.Children {
+		fmt.Print(" ")
+		child.printParexOneLineAux()
+	}
+	fmt.Print(")")
 }
 
 // IsLeaf determines if an AST node is a leaf node.

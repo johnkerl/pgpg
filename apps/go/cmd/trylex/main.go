@@ -88,21 +88,21 @@ func main() {
 				os.Exit(1)
 			}
 		}
-	} else {
-		if len(args) == 0 {
-			content, err := io.ReadAll(os.Stdin)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-			if err := runLexerOnce(lexerMaker, string(content)); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-		} else if err := runLexerOnFiles(lexerMaker, args); err != nil {
+		return
+	}
+	if len(args) == 0 {
+		content, err := io.ReadAll(os.Stdin)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		if err := runLexerOnce(lexerMaker, string(content)); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	} else if err := runLexerOnFiles(lexerMaker, args); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 

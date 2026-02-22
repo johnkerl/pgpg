@@ -49,37 +49,37 @@ func NewASTNodeTerminal(tok *tokens.Token, nodeType NodeType) *ASTNode {
 	}
 }
 
-func WithChildPrepended(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
+func WithChildPrepended(parent *ASTNode, child *ASTNode) *ASTNode {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{child}
 	} else {
 		parent.Children = append([]*ASTNode{child}, parent.Children...)
 	}
-	return parent, nil
+	return parent
 }
 
-func WithTwoChildrenPrepended(parent *ASTNode, childA, childB *ASTNode) (*ASTNode, error) {
+func WithTwoChildrenPrepended(parent *ASTNode, childA, childB *ASTNode) *ASTNode {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{childA, childB}
 	} else {
 		parent.Children = append([]*ASTNode{childA, childB}, parent.Children...)
 	}
-	return parent, nil
+	return parent
 }
 
-func WithChildAppended(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
+func WithChildAppended(parent *ASTNode, child *ASTNode) *ASTNode {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{child}
 	} else {
 		parent.Children = append(parent.Children, child)
 	}
-	return parent, nil
+	return parent
 }
 
-func WithChildrenAdopted(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
+func WithChildrenAdopted(parent *ASTNode, child *ASTNode) *ASTNode {
 	parent.Children = child.Children
 	child.Children = nil
-	return parent, nil
+	return parent
 }
 
 func (node *ASTNode) CheckArity(
@@ -87,7 +87,6 @@ func (node *ASTNode) CheckArity(
 ) error {
 	if len(node.Children) != arity {
 		return fmt.Errorf("expected AST node arity %d, got %d", arity, len(node.Children))
-	} else {
-		return nil
 	}
+	return nil
 }

@@ -96,13 +96,11 @@ func (lexer *PEMDASLexer) Scan() (token *tokens.Token) {
 			}
 		}
 		return tokens.NewToken(runes, PEMDASLexerTypeNumber, &startLocation)
-
-	} else {
-		return tokens.NewErrorToken(
-			fmt.Sprintf("PEMDAS lexer: unrecognized token %q (%U)", r, r),
-			lexer.tokenLocation,
-		)
 	}
+	return tokens.NewErrorToken(
+		fmt.Sprintf("PEMDAS lexer: unrecognized token %q (%U)", r, r),
+		lexer.tokenLocation,
+	)
 }
 
 func (lexer *PEMDASLexer) ignoreNextRuneIf(predicate RunePredicateFunc) bool {

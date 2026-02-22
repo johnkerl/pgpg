@@ -152,10 +152,8 @@ func (parser *EBNFParser) parseSequence() (*asts.ASTNode, error) {
 		return nil, errors.New("syntax error: expected term")
 	}
 
-	var seqNode *asts.ASTNode
-	if len(terms) == 1 {
-		seqNode = terms[0]
-	} else {
+	seqNode := terms[0]
+	if len(terms) != 1 {
 		seqNode = asts.NewASTNode(nil, EBNFParserNodeTypeSequence, terms)
 	}
 

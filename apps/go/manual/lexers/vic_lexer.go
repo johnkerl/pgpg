@@ -117,13 +117,11 @@ func (lexer *VICLexer) Scan() (token *tokens.Token) {
 			}
 		}
 		return tokens.NewToken(runes, VICLexerTypeNumber, &startLocation)
-
-	} else {
-		return tokens.NewErrorToken(
-			fmt.Sprintf("VIC lexer: unrecognized token %q (%U)", r, r),
-			lexer.tokenLocation,
-		)
 	}
+	return tokens.NewErrorToken(
+		fmt.Sprintf("VIC lexer: unrecognized token %q (%U)", r, r),
+		lexer.tokenLocation,
+	)
 }
 
 func isVICIdentifierStart(r rune) bool {
