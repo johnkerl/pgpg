@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
-	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
+	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
+	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
 	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
 )
 

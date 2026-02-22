@@ -70,10 +70,12 @@ cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 The repo is a Go monorepo with four separate Go modules connected via `replace` directives:
 
 ```
-lib/           → Core libraries for generators (tokens, asts, EBNF lexer/parser, util). No external deps except testify.
-generators/go/ → Code generation tools. Depends on lib.
-apps/generated/ → Output of generators/go (pre-generated lexers/parsers from BNF grammars). Depends on lib.
-apps/go/       → CLI tools (trylex, tryparse, tryast). Depends on lib + generated. Sample hand-written lexers/parsers live in apps/go/manual/.
+lib/               → Core libraries for generators (tokens, asts, EBNF lexer/parser, util). No external deps except testify.
+generators/go/     → Code generation tools. Depends on lib.
+apps/generated/    → Makefile that drives codegen; output goes to apps/go/generated, apps/jsons, apps/py/generated, apps/js/generated.
+apps/go/generated/ → Go module with generated lexers/parsers (from BNF). Depends on lib.
+apps/go/           → CLI tools (trylex, tryparse, tryast). Depends on lib + generated. Sample hand-written lexers/parsers live in apps/go/manual/.
+apps/jsons/        → JSON tables (lex/parse) produced by lexgen-tables/parsegen-tables.
 ```
 
 ### Generator Pipeline
@@ -99,8 +101,8 @@ The JSON intermediate format is intentionally language-independent to allow futu
 - **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
 - **`generators/go/pkg/run/`** — File I/O wrappers for one-call-per-step: `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode`
 - **`apps/bnfs/`** — Grammar files to have lexers/parsers generated from
-- **`apps/generated/go/pkg/lexers/`** — Auto-generated lexers from `apps/bnfs/`
-- **`apps/generated/go/pkg/parsers/`** — Auto-generated parsers from `apps/bnfs/`
+- **`apps/go/generated/pkg/lexers/`** — Auto-generated lexers from `apps/bnfs/`
+- **`apps/go/generated/pkg/parsers/`** — Auto-generated parsers from `apps/bnfs/`
 - **`apps/go/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
 
 ### BNF Grammars

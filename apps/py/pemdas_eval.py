@@ -11,10 +11,10 @@ import argparse
 import sys
 from pathlib import Path
 
-# Add repo root so we can add generators/py and apps/generated/py to path
+# Add repo root so we can add generators/py and apps/py/generated to path
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(_REPO_ROOT / "generators" / "py"))
-sys.path.insert(0, str(_REPO_ROOT / "apps" / "generated" / "py"))
+sys.path.insert(0, str(_REPO_ROOT / "apps" / "py" / "generated"))
 
 
 def main() -> int:

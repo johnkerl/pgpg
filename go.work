@@ -2,10 +2,10 @@ go 1.25
 
 use (
 	./apps/go
-	./apps/generated
+	./apps/go/generated
 	./generators/go
 	./lib
 )
 
 replace github.com/johnkerl/pgpg/lib v0.0.0 => ./lib
-replace github.com/johnkerl/pgpg/generated v0.0.0 => ./apps/generated
+replace github.com/johnkerl/pgpg/generated v0.0.0 => ./apps/go/generated

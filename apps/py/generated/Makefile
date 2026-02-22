@@ -1,10 +1,10 @@
 # Generated Python lexers and parsers from JSON tables (produced by Go lexgen-tables / parsegen-tables).
-# Run from repo root: make -C apps/generated/py [target]
-# Or from here: make JSON_PATH=../jsons ...
+# Run from repo root: make -C apps/py/generated [target]
+# Or from here: make JSON_PATH=../../jsons ...
 # Codegen and runtime live in ../../../generators/py.
 
 GEN_PY ?= ../../../generators/py
-JSON_PATH ?= ../jsons
+JSON_PATH ?= ../../jsons
 
 # Generate JSON parser + lexer
 json: json-lexer json-parser
@@ -31,7 +31,7 @@ pemdas-parser:
 		-o parsers/pemdas_parser.py -c PEMDASParser \
 		$(JSON_PATH)/pemdas-parse.json
 
-# Regenerate all parsers/lexers that have JSON in generated/jsons
+# Regenerate all parsers/lexers that have JSON in apps/jsons
 all: json pemdas
 	@echo "Add more grammar targets as needed (e.g. lisp)."
 

@@ -12,8 +12,8 @@ import (
 	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
 	libparsers "github.com/johnkerl/pgpg/lib/go/pkg/parsers"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
-	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
+	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
+	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
 )
 
 // generatedParser is the common interface for all generated parsers (AttachCLITrace + Parse(lexer, astMode)).

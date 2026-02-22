@@ -2,7 +2,7 @@
 
 Python 3.10+.
 
-This directory holds **generated** lexers and parsers only. Codegen scripts, runtime (Token, AST, AbstractLexer), and tests live in **../../generators/py**.
+This directory holds **generated** lexers and parsers only. Codegen scripts, runtime (Token, AST, AbstractLexer), and tests live in **../../../generators/py**.
 
 ## Layout
 
@@ -25,10 +25,10 @@ Use the **same** JSON tables produced by the Go tools (`parsegen-tables`, `lexge
 From the **repository root**:
 
 ```bash
-make -C apps/generated/py json
+make -C apps/py/generated json
 ```
 
-Or from **apps/generated/py/** (output goes into this directory):
+Or from **apps/py/generated/** (output goes into this directory):
 
 ```bash
 make json
@@ -39,20 +39,20 @@ To run codegen by hand (from repo root):
 ```bash
 # Parser (default class prefix is pgpg_)
 PYTHONPATH=generators/py python3 generators/py/codegen/parsegen_code.py \
-  -o apps/generated/py/parsers/json_parser.py -c JSONParser \
-  apps/generated/jsons/json-parse.json
+  -o apps/py/generated/parsers/json_parser.py -c JSONParser \
+  apps/jsons/json-parse.json
 
 # Lexer
 PYTHONPATH=generators/py python3 generators/py/codegen/lexgen_code.py \
-  -o apps/generated/py/lexers/json_lexer.py -c JSONLexer \
-  apps/generated/jsons/json-lex.json
+  -o apps/py/generated/lexers/json_lexer.py -c JSONLexer \
+  apps/jsons/json-lex.json
 ```
 
 - **--prefix** (default: `pgpg_`) is prepended to the class name. Use `--prefix ""` for no prefix.
 
 ## Running generated parsers
 
-Set `PYTHONPATH` so that **generators/py** (runtime) and **apps/generated/py** (lexers, parsers) are on the path, e.g. from repo root: `PYTHONPATH=generators/py:apps/generated/py`.
+Set `PYTHONPATH` so that **generators/py** (runtime) and **apps/py/generated** (lexers, parsers) are on the path, e.g. from repo root: `PYTHONPATH=generators/py:apps/py/generated`.
 
 ```python
 from lexers.json_lexer import pgpg_JSONLexer
@@ -76,7 +76,7 @@ ast = parser.parse(lex, "")
 
 ## Tests
 
-Tests live in **generators/py**. From **apps/generated/py/**:
+Tests live in **generators/py**. From **apps/py/generated/**:
 
 ```bash
 make test
