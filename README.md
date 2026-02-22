@@ -40,7 +40,7 @@ As of February 2026 I'm picking this back up again, making significant use of Cu
 ## Build commands
 
 ```bash
-# Build everything (manual, generator, generated, apps/go) and run tests
+# Build everything (manual, generator, apps/generated, apps/go) and run tests
 make
 make -C manual test
 make -C generators/go test
@@ -50,13 +50,13 @@ make -C manual          # Build manual module (core libraries)
 make -C manual test     # Run manual tests
 make -C generators/go     # Build generator executables
 make -C generators/go test  # Run generator tests
-make -C generated       # Generate lexers and parsers from BNF source
+make -C apps/generated  # Generate lexers and parsers from BNF source
 make -C apps/go         # Build CLI runner tools
 
 # Format code
 make -C manual fmt
 make -C generators/go fmt
-make -C generated fmt
+make -C apps/generated fmt
 make -C apps/go fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)

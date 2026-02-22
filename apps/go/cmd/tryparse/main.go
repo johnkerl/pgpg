@@ -7,8 +7,9 @@ import (
 	"os"
 	"sort"
 
-	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
-	"github.com/johnkerl/pgpg/manual/go/pkg/parsers"
+	"github.com/johnkerl/pgpg/apps/go/manual/parsers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	libparsers "github.com/johnkerl/pgpg/lib/go/pkg/parsers"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/go/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/go/pkg/parsers"
@@ -32,14 +33,14 @@ var parserMakerTable = map[string]parserInfoT{
 	"m:pemdas":       {run: runManualParser(parsers.NewPEMDASParser), help: "Arithmetic with parentheses and PEMDAS precedence."},
 	"m:vic":          {run: runManualParser(parsers.NewVICParser), help: "Arithmetic with identifiers, assignments, and PEMDAS precedence."},
 	"m:vbc":          {run: runManualParser(parsers.NewVBCParser), help: "Boolean expressions with identifiers and AND/OR/NOT."},
-	"m:ebnf":         {run: runManualParser(parsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
-	"g:pemdas-plain": {run: runGeneratedPEMDASPlainParser, help: "Generated arithmetic parser from bnfs/pemdas-plain.bnf."},
-	"g:pemdas":       {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser with AST hints from bnfs/pemdas.bnf."},
-	"g:stmts":        {run: runGeneratedStatementsParser, help: "Generated statements parser from generated/bnffs/statements.bnf."},
-	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from generated/bnffs/seng.bnf."},
-	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from bnfs/lisp.bnf."},
-	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from bnfs/json.bnf."},
-	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from bnfs/json_plain.bnf."},
+	"m:ebnf":         {run: runManualParser(libparsers.NewEBNFParser), help: "EBNF grammar with identifiers, literals, and operators."},
+	"g:pemdas-plain": {run: runGeneratedPEMDASPlainParser, help: "Generated arithmetic parser from apps/bnfs/pemdas-plain.bnf."},
+	"g:pemdas":       {run: runGeneratedPEMDASParser, help: "Generated arithmetic parser with AST hints from apps/bnfs/pemdas.bnf."},
+	"g:stmts":        {run: runGeneratedStatementsParser, help: "Generated statements parser from apps/bnfs/statements.bnf."},
+	"g:seng":         {run: runGeneratedSENGParser, help: "Generated SENG parser from apps/bnfs/seng.bnf."},
+	"g:lisp":         {run: runGeneratedLISPParser, help: "Generated LISP parser from apps/bnfs/lisp.bnf."},
+	"g:json":         {run: runGeneratedJSONParser, help: "Generated JSON parser from apps/bnfs/json.bnf."},
+	"g:json-plain":   {run: runGeneratedJSONPlainParser, help: "Generated JSON parser from apps/bnfs/json_plain.bnf."},
 }
 
 func usage() {
@@ -134,7 +135,7 @@ func main() {
 	}
 }
 
-func runManualParser(maker func() parsers.AbstractParser) func(string, traceOptions) (*asts.AST, error) {
+func runManualParser(maker func() libparsers.AbstractParser) func(string, traceOptions) (*asts.AST, error) {
 	return func(input string, _ traceOptions) (*asts.AST, error) {
 		parser := maker()
 		return parser.Parse(input)
