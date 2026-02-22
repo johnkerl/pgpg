@@ -49,58 +49,44 @@ func NewASTNodeTerminal(tok *tokens.Token, nodeType NodeType) *ASTNode {
 	}
 }
 
-func WithChildPrepended(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
+func WithChildPrepended(parent *ASTNode, child *ASTNode) *ASTNode {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{child}
 	} else {
 		parent.Children = append([]*ASTNode{child}, parent.Children...)
 	}
-	return parent, nil
+	return parent
 }
 
-func WithTwoChildrenPreprended(parent *ASTNode, childA, childB *ASTNode) (*ASTNode, error) {
+func WithTwoChildrenPrepended(parent *ASTNode, childA, childB *ASTNode) *ASTNode {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{childA, childB}
 	} else {
 		parent.Children = append([]*ASTNode{childA, childB}, parent.Children...)
 	}
-	return parent, nil
+	return parent
 }
 
-func WithChildAppended(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
+func WithChildAppended(parent *ASTNode, child *ASTNode) *ASTNode {
 	if parent.Children == nil {
 		parent.Children = []*ASTNode{child}
 	} else {
 		parent.Children = append(parent.Children, child)
 	}
-	return parent, nil
+	return parent
 }
 
-func WithChildrenAdopted(parent *ASTNode, child *ASTNode) (*ASTNode, error) {
+func WithChildrenAdopted(parent *ASTNode, child *ASTNode) *ASTNode {
 	parent.Children = child.Children
 	child.Children = nil
-	return parent, nil
+	return parent
 }
 
-func (node *ASTNode) CheckArity(
+func (n *ASTNode) CheckArity(
 	arity int,
 ) error {
-	if len(node.Children) != arity {
-		return fmt.Errorf("expected AST node arity %d, got %d", arity, len(node.Children))
-	} else {
-		return nil
+	if len(n.Children) != arity {
+		return fmt.Errorf("expected AST node arity %d, got %d", arity, len(n.Children))
 	}
-}
-
-// Tokens are produced by GOCC. However there is an exception: for the ternary
-// operator I want the AST to have a "?:" token, which GOCC doesn't produce
-// since nothing is actually spelled like that in the DSL.
-func NewASTToken(iliteral interface{}, iclonee interface{}) *tokens.Token {
-	literal := iliteral.(string)
-	// clonee := iclonee.(*tokens.Token)
-	return &tokens.Token{
-		// Type: clonee.Type,
-		Lexeme: []rune(literal),
-		// Position: clonee.Position,
-	}
+	return nil
 }

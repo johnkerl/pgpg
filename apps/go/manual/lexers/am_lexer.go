@@ -71,12 +71,11 @@ func (lexer *AMLexer) Scan() (token *tokens.Token) {
 		}
 		return tokens.NewToken(runes, AMLexerTypeNumber, &startLocation)
 
-	} else {
-		return tokens.NewErrorToken(
-			fmt.Sprintf("AM lexer: unrecognized token %q (%U)", r, r),
-			lexer.tokenLocation,
-		)
 	}
+	return tokens.NewErrorToken(
+		fmt.Sprintf("AM lexer: unrecognized token %q (%U)", r, r),
+		lexer.tokenLocation,
+	)
 }
 
 func (lexer *AMLexer) ignoreNextRuneIf(predicate RunePredicateFunc) bool {
@@ -91,9 +90,8 @@ func (lexer *AMLexer) ignoreNextRuneIf(predicate RunePredicateFunc) bool {
 	if predicate(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func (lexer *AMLexer) ignoreNextRunesIf(predicate RunePredicateFunc) {

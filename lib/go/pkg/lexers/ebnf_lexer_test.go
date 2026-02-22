@@ -3,8 +3,152 @@ package lexers
 import (
 	"testing"
 
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 	"github.com/stretchr/testify/assert"
 )
+
+// ebnfExpectedToken represents one expected token for table-driven EBNF lexer tests.
+// Use lexeme "" and type tokens.TokenTypeEOF for the final EOF token.
+type ebnfExpectedToken struct {
+	lexeme string
+	typ    tokens.TokenType
+}
+
+func TestEBNFLexerTableDriven(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  []ebnfExpectedToken
+	}{
+		{
+			name:  "empty",
+			input: "",
+			want:  []ebnfExpectedToken{{"", tokens.TokenTypeEOF}},
+		},
+		{
+			name:  "rule with alternation",
+			input: "rule ::= \"a\" | 'b' ;",
+			want: []ebnfExpectedToken{
+				{"rule", EBNFLexerTypeIdentifier},
+				{"::=", EBNFLexerTypeAssign},
+				{"\"a\"", EBNFLexerTypeString},
+				{"|", EBNFLexerTypeOr},
+				{"'b'", EBNFLexerTypeString},
+				{";", EBNFLexerTypeSemicolon},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "brackets and equals",
+			input: "[ { ( ) } ] =",
+			want: []ebnfExpectedToken{
+				{"[", EBNFLexerTypeLBracket},
+				{"{", EBNFLexerTypeLBrace},
+				{"(", EBNFLexerTypeLParen},
+				{")", EBNFLexerTypeRParen},
+				{"}", EBNFLexerTypeRBrace},
+				{"]", EBNFLexerTypeRBracket},
+				{"=", EBNFLexerTypeAssign},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "standalone colon",
+			input: "x :=",
+			want: []ebnfExpectedToken{
+				{"x", EBNFLexerTypeIdentifier},
+				{":", EBNFLexerTypeColon},
+				{"=", EBNFLexerTypeAssign},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "arrow and hint block",
+			input: `A ::= B -> { "parent" : 0 }`,
+			want: []ebnfExpectedToken{
+				{"A", EBNFLexerTypeIdentifier},
+				{"::=", EBNFLexerTypeAssign},
+				{"B", EBNFLexerTypeIdentifier},
+				{"->", EBNFLexerTypeArrow},
+				{"{", EBNFLexerTypeLBrace},
+				{`"parent"`, EBNFLexerTypeString},
+				{":", EBNFLexerTypeColon},
+				{"0", EBNFLexerTypeInteger},
+				{"}", EBNFLexerTypeRBrace},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "dash in range",
+			input: `"a"-"z"`,
+			want: []ebnfExpectedToken{
+				{`"a"`, EBNFLexerTypeString},
+				{"-", EBNFLexerTypeDash},
+				{`"z"`, EBNFLexerTypeString},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "comma and integers",
+			input: "0, 12, 345",
+			want: []ebnfExpectedToken{
+				{"0", EBNFLexerTypeInteger},
+				{",", EBNFLexerTypeComma},
+				{"12", EBNFLexerTypeInteger},
+				{",", EBNFLexerTypeComma},
+				{"345", EBNFLexerTypeInteger},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "dot wildcard",
+			input: "x . y",
+			want: []ebnfExpectedToken{
+				{"x", EBNFLexerTypeIdentifier},
+				{".", EBNFLexerTypeDot},
+				{"y", EBNFLexerTypeIdentifier},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "comment ignored",
+			input: "# comment\nrule ::= x",
+			want: []ebnfExpectedToken{
+				{"rule", EBNFLexerTypeIdentifier},
+				{"::=", EBNFLexerTypeAssign},
+				{"x", EBNFLexerTypeIdentifier},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+		{
+			name:  "identifier with leading underscore",
+			input: "_foo ::= bar",
+			want: []ebnfExpectedToken{
+				{"_foo", EBNFLexerTypeIdentifier},
+				{"::=", EBNFLexerTypeAssign},
+				{"bar", EBNFLexerTypeIdentifier},
+				{"", tokens.TokenTypeEOF},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			lexer := NewEBNFLexer(tt.input)
+			for i, want := range tt.want {
+				tok := lexer.Scan()
+				if tok == nil {
+					t.Fatalf("token %d: Scan() returned nil", i)
+				}
+				if want.typ == tokens.TokenTypeEOF {
+					assert.True(t, tok.IsEOF(), "token %d: expected EOF", i)
+					continue
+				}
+				assert.Equal(t, want.lexeme, tok.LexemeText(), "token %d lexeme", i)
+				assert.Equal(t, want.typ, tok.Type, "token %d type", i)
+			}
+		})
+	}
+}
 
 func TestEBNFLexer1(t *testing.T) {
 	lexer := NewEBNFLexer("")

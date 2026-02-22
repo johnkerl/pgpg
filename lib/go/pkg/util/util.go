@@ -9,8 +9,7 @@ import (
 // but "" splits to [""] when I wish it were []. This function does the latter.
 func SplitString(input string, separator string) []string {
 	if input == "" {
-		return make([]string, 0)
-	} else {
-		return strings.Split(input, separator)
+		return nil
 	}
+	return strings.Split(input, separator)
 }

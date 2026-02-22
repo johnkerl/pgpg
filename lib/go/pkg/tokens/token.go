@@ -25,7 +25,7 @@ func NewEOFToken(location *TokenLocation) *Token {
 	}
 }
 
-// NewErrorToken is a keystroke-saver for constructing a token of type EOF.
+// NewErrorToken is a keystroke-saver for constructing a token of type Error.
 func NewErrorToken(errorText string, location *TokenLocation) *Token {
 	return &Token{
 		Lexeme:   []rune(errorText),
@@ -35,29 +35,29 @@ func NewErrorToken(errorText string, location *TokenLocation) *Token {
 }
 
 // IsEOF is a keystroke-saver for determining if a token's type is EOF.
-func (token *Token) IsEOF() bool {
-	return token.Type == TokenTypeEOF
+func (t *Token) IsEOF() bool {
+	return t.Type == TokenTypeEOF
 }
 
-// IsEOF is a keystroke-saver for determining if a token's type is Error.
-func (token *Token) IsError() bool {
-	return token.Type == TokenTypeError
+// IsError is a keystroke-saver for determining if a token's type is Error.
+func (t *Token) IsError() bool {
+	return t.Type == TokenTypeError
 }
 
-func (token Token) String() string {
+func (t Token) String() string {
 	return fmt.Sprintf(
 		"token=<<%s>> type=%s line=%d column=%d",
-		string(token.Lexeme),
-		token.Type,
-		token.Location.LineNumber,
-		token.Location.ColumnNumber,
+		string(t.Lexeme),
+		t.Type,
+		t.Location.LineNumber,
+		t.Location.ColumnNumber,
 	)
 }
 
-func (token Token) LexemeText() string {
-	return string(token.Lexeme)
+func (t Token) LexemeText() string {
+	return string(t.Lexeme)
 }
 
-func (token Token) TokenTypeText() string {
-	return string(token.Type)
+func (t Token) TokenTypeText() string {
+	return string(t.Type)
 }

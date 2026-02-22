@@ -152,10 +152,8 @@ func (parser *EBNFParser) parseSequence() (*asts.ASTNode, error) {
 		return nil, errors.New("syntax error: expected term")
 	}
 
-	var seqNode *asts.ASTNode
-	if len(terms) == 1 {
-		seqNode = terms[0]
-	} else {
+	seqNode := terms[0]
+	if len(terms) != 1 {
 		seqNode = asts.NewASTNode(nil, EBNFParserNodeTypeSequence, terms)
 	}
 
@@ -410,7 +408,9 @@ func (parser *EBNFParser) getAndValidateLookaheadToken() error {
 	parser.lexer.Advance()
 	lookaheadToken := parser.lexer.LookAhead()
 	if lookaheadToken.IsError() {
-		return errors.New(string(lookaheadToken.Lexeme))
+		return fmt.Errorf("lexer at %s: %s",
+			parser.formatTokenLocation(lookaheadToken),
+			string(lookaheadToken.Lexeme))
 	}
 
 	return nil
@@ -422,7 +422,7 @@ func (parser *EBNFParser) formatTokenLocation(token *tokens.Token) string {
 	}
 	if parser.sourceName != "" {
 		return fmt.Sprintf(
-			"%s, line %d, position %d",
+			"%s, line %d, column %d",
 			parser.sourceName,
 			token.Location.LineNumber,
 			token.Location.ColumnNumber,

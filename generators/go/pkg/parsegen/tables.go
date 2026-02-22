@@ -1058,7 +1058,7 @@ func conflictError(state int, terminal string, existing Action, next Action, ite
 		b.WriteString("\n  Hint:\n")
 		b.WriteString(hint)
 	}
-	return fmt.Errorf(b.String())
+	return fmt.Errorf("%s", b.String())
 }
 
 func formatAction(label string, action Action, grammar *grammar, stateLabels map[int]string) string {

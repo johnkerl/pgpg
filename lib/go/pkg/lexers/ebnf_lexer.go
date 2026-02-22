@@ -258,9 +258,8 @@ func (lexer *EBNFLexer) ignoreNextRuneIf(predicate RunePredicateFunc) bool {
 	if predicate(r) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func (lexer *EBNFLexer) ignoreNextRunesIf(predicate RunePredicateFunc) {

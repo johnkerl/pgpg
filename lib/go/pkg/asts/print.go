@@ -15,77 +15,77 @@ import (
 //     "a"
 //     "b"
 
-func (ast *AST) Print() {
-	ast.RootNode.Print()
+func (a *AST) Print() {
+	a.RootNode.Print()
 }
 
 // PrintParex is parenthesized-expression print.
 //
 // Example, given parse of 'a + b':
 // (+ a b)
-func (ast *AST) PrintParex() {
-	ast.RootNode.PrintParex()
+func (a *AST) PrintParex() {
+	a.RootNode.PrintParex()
 }
 
 // PrintParexOneLine is parenthesized-expression print, all on one line.
 //
 // Example, given parse of 'a + b':
 // (+ a b)
-func (ast *AST) PrintParexOneLine() {
-	ast.RootNode.PrintParexOneLine()
+func (a *AST) PrintParexOneLine() {
+	a.RootNode.PrintParexOneLine()
 }
 
 // Print is indent-style multiline print.
-func (node *ASTNode) Print() {
-	node.printAux(0)
+func (n *ASTNode) Print() {
+	n.printAux(0)
 }
 
 // printAux is a recursion-helper for Print.
-func (node *ASTNode) printAux(depth int) {
+func (n *ASTNode) printAux(depth int) {
 	// Indent
 	for i := 0; i < depth; i++ {
 		fmt.Print("    ")
 	}
 
 	// Token text (if non-nil) and token type
-	tok := node.Token
+	tok := n.Token
 	if tok != nil {
-		fmt.Printf("\"%s\" [tt:%s] [nt:%s]", tok.LexemeText(), tok.TokenTypeText(), node.Type)
+		fmt.Printf("\"%s\" [tt:%s] [nt:%s]", tok.LexemeText(), tok.TokenTypeText(), n.Type)
 	} else {
-		fmt.Printf("[nt:%s]", node.Type)
+		fmt.Printf("[nt:%s]", n.Type)
 	}
 	fmt.Println()
 
 	// Children, indented one level further
-	if node.Children != nil {
-		for _, child := range node.Children {
+	if n.Children != nil {
+		for _, child := range n.Children {
 			child.printAux(depth + 1)
 		}
 	}
 }
 
 // PrintParex is parenthesized-expression print.
-func (node *ASTNode) PrintParex() {
-	node.printParexAux(0)
+func (n *ASTNode) PrintParex() {
+	n.printParexAux(0)
 }
 
 // printParexAux is a recursion-helper for PrintParex.
-func (node *ASTNode) printParexAux(depth int) {
-	if node.IsLeaf() {
+func (n *ASTNode) printParexAux(depth int) {
+	if n.IsLeaf() {
 		for i := 0; i < depth; i++ {
 			fmt.Print("    ")
 		}
-		fmt.Println(node.Text())
+		fmt.Println(n.Text())
 
-	} else if node.ChildrenAreAllLeaves() {
+	} else if n.ChildrenAreAllLeaves() {
 		// E.g. (= sum 0) or (+ 1 2)
 		for i := 0; i < depth; i++ {
 			fmt.Print("    ")
 		}
 		fmt.Print("(")
-		fmt.Print(node.Text())
+		fmt.Print(n.Text())
 
-		for _, child := range node.Children {
+		for _, child := range n.Children {
 			fmt.Print(" ")
 			fmt.Print(child.Text())
 		}
@@ -97,10 +97,10 @@ func (node *ASTNode) printParexAux(depth int) {
 			fmt.Print("    ")
 		}
 		fmt.Print("(")
-		fmt.Println(node.Text())
+		fmt.Println(n.Text())
 
 		// Children on their own lines
-		for _, child := range node.Children {
+		for _, child := range n.Children {
 			child.printParexAux(depth + 1)
 		}
 
@@ -113,34 +113,34 @@ func (node *ASTNode) printParexAux(depth int) {
 }
 
 // PrintParexOneLine is parenthesized-expression print, all on one line.
-func (node *ASTNode) PrintParexOneLine() {
-	node.printParexOneLineAux()
+func (n *ASTNode) PrintParexOneLine() {
+	n.printParexOneLineAux()
 	fmt.Println()
 }
 
 // printParexOneLineAux is a recursion-helper for PrintParexOneLine.
-func (node *ASTNode) printParexOneLineAux() {
-	if node.IsLeaf() {
-		fmt.Print(node.Text())
-	} else {
-		fmt.Print("(")
-		fmt.Print(node.Text())
-		for _, child := range node.Children {
-			fmt.Print(" ")
-			child.printParexOneLineAux()
-		}
-		fmt.Print(")")
+func (n *ASTNode) printParexOneLineAux() {
+	if n.IsLeaf() {
+		fmt.Print(n.Text())
+		return
 	}
+	fmt.Print("(")
+	fmt.Print(n.Text())
+	for _, child := range n.Children {
+		fmt.Print(" ")
+		child.printParexOneLineAux()
+	}
+	fmt.Print(")")
 }
 
 // IsLeaf determines if an AST node is a leaf node.
-func (node *ASTNode) IsLeaf() bool {
-	return len(node.Children) == 0
+func (n *ASTNode) IsLeaf() bool {
+	return len(n.Children) == 0
 }
 
 // ChildrenAreAllLeaves determines if an AST node's children are all leaf nodes.
-func (node *ASTNode) ChildrenAreAllLeaves() bool {
-	for _, child := range node.Children {
+func (n *ASTNode) ChildrenAreAllLeaves() bool {
+	for _, child := range n.Children {
 		if !child.IsLeaf() {
 			return false
 		}
@@ -152,10 +152,10 @@ func (node *ASTNode) ChildrenAreAllLeaves() bool {
 // nodes have non-nil tokens; other, nil. And token-types can have spaces in
 // them. In this method we use custom mappings to always get a whitespace-free
 // representation of the content of a single AST node.
-func (node *ASTNode) Text() string {
+func (n *ASTNode) Text() string {
 	tokenText := ""
-	if node.Token != nil {
-		tokenText = node.Token.LexemeText()
+	if n.Token != nil {
+		tokenText = n.Token.LexemeText()
 	}
 
 	return tokenText

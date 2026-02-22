@@ -117,21 +117,21 @@ func main() {
 				os.Exit(1)
 			}
 		}
-	} else {
-		if len(args) == 0 {
-			content, err := io.ReadAll(os.Stdin)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-			if err := runParserOnce(run, string(content), opts); err != nil {
-				fmt.Fprintln(os.Stderr, err)
-				os.Exit(1)
-			}
-		} else if err := runParserOnFiles(run, args, opts); err != nil {
+		return
+	}
+	if len(args) == 0 {
+		content, err := io.ReadAll(os.Stdin)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
+		if err := runParserOnce(run, string(content), opts); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	} else if err := runParserOnFiles(run, args, opts); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 

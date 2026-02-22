@@ -39,9 +39,8 @@ func (lexer *LineLexer) Scan() (token *tokens.Token) {
 		lexer.tokenLocation.LocateRune(r, runeWidth)
 		if r == '\n' {
 			break
-		} else {
-			runes = append(runes, r)
 		}
+		runes = append(runes, r)
 	}
 
 	retval := tokens.NewToken(
