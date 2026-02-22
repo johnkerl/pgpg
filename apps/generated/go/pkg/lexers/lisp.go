@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type LISPLexer struct {
@@ -15,9 +15,9 @@ type LISPLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*LISPLexer)(nil)
+var _ liblexers.AbstractLexer = (*LISPLexer)(nil)
 
-func NewLISPLexer(inputText string) manuallexers.AbstractLexer {
+func NewLISPLexer(inputText string) liblexers.AbstractLexer {
 	return &LISPLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),

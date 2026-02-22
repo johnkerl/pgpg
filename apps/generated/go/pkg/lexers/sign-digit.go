@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type SignDigitLexer struct {
@@ -14,9 +14,9 @@ type SignDigitLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*SignDigitLexer)(nil)
+var _ liblexers.AbstractLexer = (*SignDigitLexer)(nil)
 
-func NewSignDigitLexer(inputText string) manuallexers.AbstractLexer {
+func NewSignDigitLexer(inputText string) liblexers.AbstractLexer {
 	return &SignDigitLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),

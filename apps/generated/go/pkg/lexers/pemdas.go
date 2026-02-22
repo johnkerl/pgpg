@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type PEMDASLexer struct {
@@ -15,9 +15,9 @@ type PEMDASLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*PEMDASLexer)(nil)
+var _ liblexers.AbstractLexer = (*PEMDASLexer)(nil)
 
-func NewPEMDASLexer(inputText string) manuallexers.AbstractLexer {
+func NewPEMDASLexer(inputText string) liblexers.AbstractLexer {
 	return &PEMDASLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),

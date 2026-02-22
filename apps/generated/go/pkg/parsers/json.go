@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type JSONParser struct {
@@ -25,7 +25,7 @@ func NewJSONParser() *JSONParser { return &JSONParser{} }
 // noASTSentinel is used as a placeholder on the node stack when astMode == "noast".
 var JSONParserNoASTSentinel = &asts.ASTNode{}
 
-func (parser *JSONParser) Parse(lexer manuallexers.AbstractLexer, astMode string) (*asts.AST, error) {
+func (parser *JSONParser) Parse(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, error) {
 	if lexer == nil {
 		return nil, fmt.Errorf("parser: nil lexer")
 	}

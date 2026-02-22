@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/asts"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type {{.TypeName}} struct {
@@ -25,7 +25,7 @@ func New{{.TypeName}}() *{{.TypeName}} { return &{{.TypeName}}{} }
 // noASTSentinel is used as a placeholder on the node stack when astMode == "noast".
 var {{.TypeName}}NoASTSentinel = &asts.ASTNode{}
 
-func (parser *{{.TypeName}}) Parse(lexer manuallexers.AbstractLexer, astMode string) (*asts.AST, error) {
+func (parser *{{.TypeName}}) Parse(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, error) {
 	if lexer == nil {
 		return nil, fmt.Errorf("parser: nil lexer")
 	}

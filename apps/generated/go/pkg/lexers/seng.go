@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type SENGLexer struct {
@@ -15,9 +15,9 @@ type SENGLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*SENGLexer)(nil)
+var _ liblexers.AbstractLexer = (*SENGLexer)(nil)
 
-func NewSENGLexer(inputText string) manuallexers.AbstractLexer {
+func NewSENGLexer(inputText string) liblexers.AbstractLexer {
 	return &SENGLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),

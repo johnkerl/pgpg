@@ -8,13 +8,13 @@ Add the generators module to your `go.mod`:
 
 ```go
 require github.com/johnkerl/pgpg/generators/go v0.0.0
-require github.com/johnkerl/pgpg/manual v0.0.0  // indirect, pulled in by generators
+require github.com/johnkerl/pgpg/lib v0.0.0  // indirect, pulled in by generators
 
-replace github.com/johnkerl/pgpg/manual => /path/to/pgpg/manual
+replace github.com/johnkerl/pgpg/lib => /path/to/pgpg/lib
 replace github.com/johnkerl/pgpg/generators/go => /path/to/pgpg/generators/go
 ```
 
-For local development inside the same repo, use relative `replace` directives so both modules point at your working copy. Once the module is published (e.g. to a module proxy), you can depend on a version and drop the `replace` for the generators; you may still need a `replace` for `manual` if it is not published separately.
+For local development inside the same repo, use relative `replace` directives so both modules point at your working copy. Once the module is published (e.g. to a module proxy), you can depend on a version and drop the `replace` for the generators; you may still need a `replace` for `lib` if it is not published separately.
 
 ## Library surface
 

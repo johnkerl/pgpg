@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type JSONPlainLexer struct {
@@ -15,9 +15,9 @@ type JSONPlainLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*JSONPlainLexer)(nil)
+var _ liblexers.AbstractLexer = (*JSONPlainLexer)(nil)
 
-func NewJSONPlainLexer(inputText string) manuallexers.AbstractLexer {
+func NewJSONPlainLexer(inputText string) liblexers.AbstractLexer {
 	return &JSONPlainLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),

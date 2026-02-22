@@ -7,8 +7,8 @@ import (
 {{- end }}
 	"unicode/utf8"
 
-	manuallexers "github.com/johnkerl/pgpg/manual/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/manual/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 type {{.TypeName}} struct {
@@ -17,9 +17,9 @@ type {{.TypeName}} struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-var _ manuallexers.AbstractLexer = (*{{.TypeName}})(nil)
+var _ liblexers.AbstractLexer = (*{{.TypeName}})(nil)
 
-func New{{.TypeName}}(inputText string) manuallexers.AbstractLexer {
+func New{{.TypeName}}(inputText string) liblexers.AbstractLexer {
 	return &{{.TypeName}}{
 		inputText:     inputText,
 		inputLength:   len(inputText),

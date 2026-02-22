@@ -1,11 +1,11 @@
 build:
-	make -C manual
+	make -C lib
 	make -C generators/go
 	make -C apps/generated
 	make -C apps/go
 
 test:
-	make -C manual        test
+	make -C lib           test
 	make -C generators/go test
 	make -C apps/go       test
 	make -C generators/py test
@@ -15,7 +15,7 @@ test:
 	make -C apps/py       test
 
 fmt:
-	make -C manual        fmt
+	make -C lib           fmt
 	make -C generators/go fmt
 	make -C apps/generated fmt
 	make -C apps/go       fmt
@@ -24,7 +24,7 @@ fmt:
 	make -C apps/py       fmt
 
 clean:
-	make -C manual        clean
+	make -C lib           clean
 	make -C generators/go clean
 	make -C apps/generated clean
 	make -C apps/go       clean

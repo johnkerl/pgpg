@@ -4,9 +4,9 @@ go 1.25
 
 require (
 	github.com/johnkerl/pgpg/generated v0.0.0
-	github.com/johnkerl/pgpg/manual v0.0.0
+	github.com/johnkerl/pgpg/lib v0.0.0
 )
 
-replace github.com/johnkerl/pgpg/manual => ../../manual
+replace github.com/johnkerl/pgpg/lib => ../../lib
 
 replace github.com/johnkerl/pgpg/generated => ../generated
