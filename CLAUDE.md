@@ -11,7 +11,7 @@ hand-written recursive-descent parsers and a full generator pipeline.
 ## Build Commands
 
 ```bash
-# Build everything (lib, generator, apps/generated, apps/go) and run tests
+# Build everything (lib, generator, apps/go/generated, apps/go) and run tests
 make
 make -C lib test
 make -C generators/go test
@@ -21,13 +21,13 @@ make -C lib             # Build lib (core libraries for generators)
 make -C lib test        # Run lib tests
 make -C generators/go   # Build generator executables
 make -C generators/go test  # Run generator tests
-make -C apps/generated  # Generate lexers and parsers from BNF source
+make -C apps/go/generated  # Generate lexers and parsers from BNF source
 make -C apps/go        # Build CLI runner tools
 
 # Format code
 make -C lib fmt
 make -C generators/go fmt
-make -C apps/generated fmt
+make -C apps/go/generated fmt
 make -C apps/go fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
@@ -72,7 +72,7 @@ The repo is a Go monorepo with four separate Go modules connected via `replace` 
 ```
 lib/               → Core libraries for generators (tokens, asts, EBNF lexer/parser, util). No external deps except testify.
 generators/go/     → Code generation tools. Depends on lib.
-apps/generated/    → Makefile that drives codegen; output goes to apps/go/generated, apps/jsons, apps/py/generated, apps/js/generated.
+apps/go/generated/ → Makefile that drives Go codegen; output goes to apps/go/generated/pkg/lexers|parsers, apps/jsons. (Py/JS have their own apps/py/generated, apps/js/generated.)
 apps/go/generated/ → Go module with generated lexers/parsers (from BNF). Depends on lib.
 apps/go/           → CLI tools (trylex, tryparse, tryast). Depends on lib + generated. Sample hand-written lexers/parsers live in apps/go/manual/.
 apps/jsons/        → JSON tables (lex/parse) produced by lexgen-tables/parsegen-tables.

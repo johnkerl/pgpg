@@ -26,8 +26,8 @@ PARSE_SPECS=\
   json|JSON \
   json_plain|JSONPlain
 
-GO_GEN := ../go/generated
-JSONS := ../jsons
+GO_GEN := .
+JSONS := ../../jsons
 
 LEXGENS=$(foreach spec,$(LEX_SPECS),$(GO_GEN)/pkg/lexers/$(firstword $(subst |, ,$(spec))).go)
 PARSEGENS=$(foreach spec,$(PARSE_SPECS),$(GO_GEN)/pkg/parsers/$(firstword $(subst |, ,$(spec))).go)
@@ -42,22 +42,22 @@ dirs:
 # ----------------------------------------------------------------
 define LEX_GO_RULE
 $(GO_GEN)/pkg/lexers/$(1).go: $(JSONS)/$(1)-lex.json
-	../../generators/go/lexgen-code -o $$@ -type $(2)Lexer $$<
+	../../../generators/go/lexgen-code -o $$@ -type $(2)Lexer $$<
 endef
 
 define LEX_JSON_RULE
-$(JSONS)/$(1)-lex.json: ../bnfs/$(1).bnf
-	../../generators/go/lexgen-tables -o $$@ $$<
+$(JSONS)/$(1)-lex.json: ../../bnfs/$(1).bnf
+	../../../generators/go/lexgen-tables -o $$@ $$<
 endef
 
 define PARSE_GO_RULE
 $(GO_GEN)/pkg/parsers/$(1).go: $(JSONS)/$(1)-parse.json
-	../../generators/go/parsegen-code -o $$@ -package parsers -type $(2)Parser $$<
+	../../../generators/go/parsegen-code -o $$@ -package parsers -type $(2)Parser $$<
 endef
 
 define PARSE_JSON_RULE
-$(JSONS)/$(1)-parse.json: ../bnfs/$(1).bnf
-	../../generators/go/parsegen-tables -o $$@ $$<
+$(JSONS)/$(1)-parse.json: ../../bnfs/$(1).bnf
+	../../../generators/go/parsegen-tables -o $$@ $$<
 endef
 
 $(foreach spec,$(LEX_SPECS),$(eval $(call LEX_GO_RULE,$(firstword $(subst |, ,$(spec))),$(word 2,$(subst |, ,$(spec))))))

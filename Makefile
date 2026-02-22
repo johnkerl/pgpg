@@ -1,7 +1,7 @@
 build:
 	make -C lib
 	make -C generators/go
-	make -C apps/generated
+	make -C apps/go/generated
 	make -C apps/go
 
 test:
@@ -17,7 +17,7 @@ test:
 fmt:
 	make -C lib           fmt
 	make -C generators/go fmt
-	make -C apps/generated fmt
+	make -C apps/go/generated fmt
 	make -C apps/go       fmt
 	make -C generators/py fmt
 	make -C apps/py/generated fmt
@@ -26,7 +26,7 @@ fmt:
 clean:
 	make -C lib           clean
 	make -C generators/go clean
-	make -C apps/generated clean
+	make -C apps/go/generated clean
 	make -C apps/go       clean
 	make -C generators/py clean
 	make -C apps/py/generated clean
