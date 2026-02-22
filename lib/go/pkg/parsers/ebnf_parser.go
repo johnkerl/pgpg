@@ -408,7 +408,9 @@ func (parser *EBNFParser) getAndValidateLookaheadToken() error {
 	parser.lexer.Advance()
 	lookaheadToken := parser.lexer.LookAhead()
 	if lookaheadToken.IsError() {
-		return errors.New(string(lookaheadToken.Lexeme))
+		return fmt.Errorf("lexer at %s: %s",
+			parser.formatTokenLocation(lookaheadToken),
+			string(lookaheadToken.Lexeme))
 	}
 
 	return nil
