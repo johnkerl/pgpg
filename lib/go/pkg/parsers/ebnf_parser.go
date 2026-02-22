@@ -422,7 +422,7 @@ func (parser *EBNFParser) formatTokenLocation(token *tokens.Token) string {
 	}
 	if parser.sourceName != "" {
 		return fmt.Sprintf(
-			"%s, line %d, position %d",
+			"%s, line %d, column %d",
 			parser.sourceName,
 			token.Location.LineNumber,
 			token.Location.ColumnNumber,

@@ -25,7 +25,7 @@ func NewEOFToken(location *TokenLocation) *Token {
 	}
 }
 
-// NewErrorToken is a keystroke-saver for constructing a token of type EOF.
+// NewErrorToken is a keystroke-saver for constructing a token of type Error.
 func NewErrorToken(errorText string, location *TokenLocation) *Token {
 	return &Token{
 		Lexeme:   []rune(errorText),
@@ -39,7 +39,7 @@ func (token *Token) IsEOF() bool {
 	return token.Type == TokenTypeEOF
 }
 
-// IsEOF is a keystroke-saver for determining if a token's type is Error.
+// IsError is a keystroke-saver for determining if a token's type is Error.
 func (token *Token) IsError() bool {
 	return token.Type == TokenTypeError
 }

@@ -3,12 +3,9 @@
 * `pemdas-eval` with `-v`
 * Prohibit any parent/child indices the same
 * Port manuals to JavaScript
-* Hex literals into some grammars ...
-* Simple calculator:
-  * Prompt string or no
-  * Handle stdin
-  * Types: int, float; other things in GOFFL
 * Make sure we can handle sequences (e.g. lines but not necessarily); record-streams; CLI mode
+* D on ^D at CLI
+* Separate `.bnf` pieces for lex and parse: in case of all parser bits identical (e.g. PEMDAS*).
 
 # Top of list
 
