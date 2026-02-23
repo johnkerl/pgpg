@@ -2,9 +2,7 @@
 
 PGPG is the Pretty Good Parser Generator.
 
-As of Feburary 2023 it is very much a sketch and a work in progress.
-
-As of February 2026 I'm picking this back up again, making significant use of Cursor.
+It's very much a work in progress!
 
 ## Sample apps
 

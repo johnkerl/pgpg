@@ -7,6 +7,8 @@
 * D on ^D at CLI
 * Separate `.bnf` pieces for lex and parse: in case of all parser bits identical (e.g. `PEMDAS*`).
 * `go.work` narrative ..
+* `taginfo.sh` ... make this crisper ...
+* ??  `GOPROXY=direct go mod tidy`
 
 # Top of list
 
