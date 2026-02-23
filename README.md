@@ -43,21 +43,21 @@ an evolving template for ways to use PGPG.
 ## Build commands
 
 ```bash
-# Build everything (manual, generator, apps/go/generated output & apps/jsons, apps/go) and run tests
+# Build everything (lib, generator, apps/go/generated, apps/go) and run tests
 make
-make -C manual test
+make -C lib/go test
 make -C generators/go test
 
 # Build and test individual modules
-make -C manual          # Build manual module (core libraries)
-make -C manual test     # Run manual tests
-make -C generators/go     # Build generator executables
-make -C generators/go test  # Run generator tests
+make -C lib/go             # Build lib (core libraries for generators)
+make -C lib/go test        # Run lib tests
+make -C generators/go      # Build generator executables
+make -C generators/go test # Run generator tests
 make -C apps/go/generated  # Generate lexers/parsers (output: apps/go/generated, apps/jsons)
-make -C apps/go         # Build CLI runner tools
+make -C apps/go            # Build CLI runner tools
 
 # Format code
-make -C manual fmt
+make -C lib/go fmt
 make -C generators/go fmt
 make -C apps/go/generated fmt
 make -C apps/go fmt
@@ -66,14 +66,14 @@ make -C apps/go fmt
 make -C generators/go staticcheck
 
 # Pre-push check (fmt + build + test)
-make -C manual dev
+make -C lib/go dev
 make -C generators/go dev
 ```
 
 ## Running a single test
 
 ```bash
-cd manual    && go test ./go/pkg/lexers/ -run TestPEMDASLexer
+cd lib/go    && go test ./pkg/lexers/ -run TestEBNFLexer
 cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 ```
 
@@ -81,18 +81,18 @@ cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 
 ```bash
 # Manual (hand-written) parsers: prefix "m:"
-./apps/go/tryparse m:pemdas expr '1*2+3'
-./apps/go/tryparse m:vic expr 'x = x + 1'
+./apps/go/tryparse -e m:pemdas '1*2+3'
+./apps/go/tryparse -e m:vic 'x = x + 1'
 
 # Generated parsers: prefix "g:"
-./apps/go/tryparse g:pemdas expr '1+2*3'
-./apps/go/tryparse g:json expr '{"a": [1, 2, 3]}'
-./apps/go/tryparse g:lisp expr '(+ 1 (* 2 3))'
+./apps/go/tryparse -e g:pemdas '1+2*3'
+./apps/go/tryparse -e g:json '{"a": [1, 2, 3]}'
+./apps/go/tryparse -e g:lisp '(+ 1 (* 2 3))'
 
-# Debug flags
-./apps/go/tryparse -tokens -states -stack g:pemdas expr '1+2'
+# Debug flags (flags before parser name)
+./apps/go/tryparse -tokens -states -stack -e g:pemdas '1+2'
 
 # Test lexers
-./apps/go/trylex m:pemdas expr '1+2*3'
-./apps/go/trylex g:pemdas expr '1+2*3'
+./apps/go/trylex -e m:pemdas '1+2*3'
+./apps/go/trylex -e g:pemdas '1+2*3'
 ```
