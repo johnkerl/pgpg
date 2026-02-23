@@ -6,6 +6,11 @@ As of Feburary 2023 it is very much a sketch and a work in progress.
 
 As of February 2026 I'm picking this back up again, making significant use of Cursor.
 
+## Sample apps
+
+You might take a look at [pgpg-experiments](https://github.com/johnkerl/pgpg-experiments) which is intended as
+an evolving template for ways to use PGPG.
+
 ## Goals
 
 * Implement a few basic algorithms.
