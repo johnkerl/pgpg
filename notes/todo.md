@@ -1,8 +1,8 @@
 # Top
 
-* JSON multi-object
+* Multi-object:
   * Move to io.Reader (w/ string-handling option of course)
-  * Then implement  streaming proposal
+  * Then implement streaming proposal
 
 * PASCAL-S
   * have more parsing-debug tools available in sample apps!
@@ -20,6 +20,10 @@
 ```
 $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 ```
+
+* Perf-analyze the JSON lexer
+
+* PGPG: `lib` -> `lib/go`
 
 # Language ideas
 
@@ -42,18 +46,18 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 
 ## Utility languages
 
-* Config-file language -- ?
+* Config-file language for Miller -- ? Presumably there are standard config-file packages already out there.
 * Something shell-like -- ?
-* PYFFL: port eval DSL/CLI from GOFFL
-* PYFFL: cmds from RUFFL
 
 # Tools to-do
 
+* Dependabot
+* Copilot reviews
 * Prohibit any parent/child indices the same
 * Port manuals to JavaScript
 * Re-organize and grok the lexer/parser tables etc.
 * D on ^D at CLI
-* Separate `.bnf` files for lex and parse? In case of all parser bits identical (e.g. `PEMDAS*`).
+* Allow separate `.bnf` files for lex and parse? In case of all parser bits identical (e.g. `PEMDAS*`).
 * `go.work` narrative ..
 * `taginfo.sh` ... make this crisper ...
 * ??  `GOPROXY=direct go mod tidy`
@@ -81,6 +85,11 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 * Cursor
 
 # FF arithmetic REPL etc.
+
+To port:
+
+* PYFFL: port eval DSL/CLI from GOFFL
+* PYFFL: port cmds from RUFFL
 
 What to implement in a BNF/DSL vs. using Python for scripting:
 

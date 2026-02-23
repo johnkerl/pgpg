@@ -3,7 +3,7 @@ package parsers
 import (
 	"testing"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	"github.com/johnkerl/pgpg/lib/pkg/asts"
 	"github.com/stretchr/testify/assert"
 )
 

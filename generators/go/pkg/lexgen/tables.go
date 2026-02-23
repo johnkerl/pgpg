@@ -11,8 +11,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
-	"github.com/johnkerl/pgpg/lib/go/pkg/parsers"
+	"github.com/johnkerl/pgpg/lib/pkg/asts"
+	"github.com/johnkerl/pgpg/lib/pkg/parsers"
 )
 
 // LexTableOptions configures lexer table generation from a grammar.

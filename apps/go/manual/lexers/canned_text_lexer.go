@@ -1,8 +1,8 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
-	"github.com/johnkerl/pgpg/lib/go/pkg/util"
+	"github.com/johnkerl/pgpg/lib/pkg/tokens"
+	"github.com/johnkerl/pgpg/lib/pkg/util"
 )
 
 const (

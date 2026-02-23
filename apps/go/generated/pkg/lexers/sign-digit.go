@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"unicode/utf8"
 
-	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/lib/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/pkg/tokens"
 )
 
 type SignDigitLexer struct {

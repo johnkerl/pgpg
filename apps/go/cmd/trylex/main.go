@@ -9,7 +9,7 @@ import (
 	"sort"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
-	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	liblexers "github.com/johnkerl/pgpg/lib/pkg/lexers"
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
 )

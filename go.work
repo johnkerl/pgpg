@@ -4,8 +4,7 @@ use (
 	./apps/go
 	./apps/go/generated
 	./generators/go
-	./lib
+	./lib/go
 )
 
-replace github.com/johnkerl/pgpg/lib v0.0.0 => ./lib
 replace github.com/johnkerl/pgpg/generated v0.0.0 => ./apps/go/generated

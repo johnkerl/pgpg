@@ -13,19 +13,19 @@ hand-written recursive-descent parsers and a full generator pipeline.
 ```bash
 # Build everything (lib, generator, apps/go/generated, apps/go) and run tests
 make
-make -C lib test
+make -C lib/go test
 make -C generators/go test
 
 # Build and test individual modules
-make -C lib             # Build lib (core libraries for generators)
-make -C lib test        # Run lib tests
+make -C lib/go          # Build lib (core libraries for generators)
+make -C lib/go test     # Run lib tests
 make -C generators/go   # Build generator executables
 make -C generators/go test  # Run generator tests
 make -C apps/go/generated  # Generate lexers and parsers from BNF source
 make -C apps/go        # Build CLI runner tools
 
 # Format code
-make -C lib fmt
+make -C lib/go fmt
 make -C generators/go fmt
 make -C apps/go/generated fmt
 make -C apps/go fmt
@@ -34,14 +34,14 @@ make -C apps/go fmt
 make -C generators/go staticcheck
 
 # Pre-push check (fmt + build + test)
-make -C lib dev
+make -C lib/go dev
 make -C generators/go dev
 ```
 
 ## Running a Single Test
 
 ```bash
-cd lib       && go test ./go/pkg/lexers/ -run TestEBNFLexer
+cd lib/go    && go test ./pkg/lexers/ -run TestEBNFLexer
 cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 ```
 
