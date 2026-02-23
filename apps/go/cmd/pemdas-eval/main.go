@@ -10,7 +10,7 @@ import (
 
 	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
 	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
-	"github.com/johnkerl/pgpg/lib/pkg/asts"
+	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
 )
 
 func usage() {

@@ -4,10 +4,10 @@ import (
 	"errors"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
-	"github.com/johnkerl/pgpg/lib/pkg/asts"
-	liblexers "github.com/johnkerl/pgpg/lib/pkg/lexers"
-	"github.com/johnkerl/pgpg/lib/pkg/parsers"
-	"github.com/johnkerl/pgpg/lib/pkg/tokens"
+	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/parsers"
+	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
 )
 
 // Root : Sum ; Sum : Product RestOfSum ; RestOfSum : plus Product RestOfSum | empty ;
