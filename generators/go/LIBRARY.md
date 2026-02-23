@@ -10,7 +10,7 @@ Add the generators module to your `go.mod`:
 require github.com/johnkerl/pgpg/generators/go v0.0.0
 require github.com/johnkerl/pgpg/lib v0.0.0  // indirect, pulled in by generators
 
-replace github.com/johnkerl/pgpg/lib => /path/to/pgpg/lib
+replace github.com/johnkerl/pgpg/lib => /path/to/pgpg/lib/go
 replace github.com/johnkerl/pgpg/generators/go => /path/to/pgpg/generators/go
 ```
 

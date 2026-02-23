@@ -7,5 +7,4 @@ use (
 	./lib/go
 )
 
-replace github.com/johnkerl/pgpg/lib/go v0.0.0 => ./lib
 replace github.com/johnkerl/pgpg/generated v0.0.0 => ./apps/go/generated

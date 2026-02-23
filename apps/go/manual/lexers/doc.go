@@ -3,7 +3,7 @@
 package lexers
 
 import (
-	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
+	liblexers "github.com/johnkerl/pgpg/lib/pkg/lexers"
 )
 
 // AbstractLexer is the interface that all lexers in this package implement.

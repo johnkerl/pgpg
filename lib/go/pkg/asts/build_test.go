@@ -3,7 +3,7 @@ package asts
 import (
 	"testing"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/lib/pkg/tokens"
 )
 
 func TestNewAST(t *testing.T) {

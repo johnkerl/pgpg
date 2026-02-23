@@ -1,7 +1,7 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/lib/pkg/tokens"
 )
 
 type AbstractLexer interface {

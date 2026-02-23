@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
-	"github.com/johnkerl/pgpg/lib/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/lib/pkg/asts"
+	"github.com/johnkerl/pgpg/lib/pkg/lexers"
+	"github.com/johnkerl/pgpg/lib/pkg/tokens"
 )
 
 type EBNFParser struct {
