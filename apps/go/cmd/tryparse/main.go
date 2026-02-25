@@ -8,12 +8,12 @@ import (
 	"sort"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/parsers"
-	"github.com/johnkerl/pgpg/lib/pkg/asts"
-	liblexers "github.com/johnkerl/pgpg/lib/pkg/lexers"
-	libparsers "github.com/johnkerl/pgpg/lib/pkg/parsers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
+	liblexers "github.com/johnkerl/pgpg/go/lib/pkg/lexers"
+	libparsers "github.com/johnkerl/pgpg/go/lib/pkg/parsers"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
-	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
+	generatedlexers "github.com/johnkerl/pgpg/apps/go/generated/pkg/lexers"
+	generatedparsers "github.com/johnkerl/pgpg/apps/go/generated/pkg/parsers"
 )
 
 // generatedParser is the common interface for all generated parsers (AttachCLITrace + Parse(lexer, astMode)).

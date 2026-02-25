@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	liblexers "github.com/johnkerl/pgpg/lib/pkg/lexers"
-	"github.com/johnkerl/pgpg/lib/pkg/tokens"
+	liblexers "github.com/johnkerl/pgpg/go/lib/pkg/lexers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 type JSONLexer struct {

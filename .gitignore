@@ -4,7 +4,10 @@
 tags
 *~
 
+.cursor
+
 # Executables
+/go/bin/
 /generators/go/lexgen-code
 /generators/go/lexgen-tables
 /generators/go/parsegen-code

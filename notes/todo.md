@@ -14,6 +14,10 @@
     * `go get github.com/johnkerl/pgpg/lib@v0.2.0`
     * `go get github.com/johnkerl/pgpg/generators/go@v0.2.0`
 
+* Packaging!
+  * `export GOWORK=off`
+  * Etc.
+
 * Clean targets for pgpge
 
 * Error out on this:
