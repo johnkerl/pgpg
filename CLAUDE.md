@@ -11,38 +11,34 @@ hand-written recursive-descent parsers and a full generator pipeline.
 ## Build Commands
 
 ```bash
-# Build everything (lib, generator, apps/go/generated, apps/go) and run tests
+# Build everything (go lib+generators+bin, apps/go/generated, apps/go) and run tests
 make
-make -C lib/go test
-make -C generators/go test
+make -C go test
+make -C apps/go test
 
-# Build and test individual modules
-make -C lib/go          # Build lib (core libraries for generators)
-make -C lib/go test     # Run lib tests
-make -C generators/go   # Build generator executables
-make -C generators/go test  # Run generator tests
-make -C apps/go/generated  # Generate lexers and parsers from BNF source
-make -C apps/go        # Build CLI runner tools
+# Build and test individual parts
+make -C go              # Build lib, generators, and install binaries to go/bin/
+make -C go test         # Run go (lib + generators) tests
+make -C apps/go/generated  # Generate lexers and parsers from BNF (uses go/bin/*)
+make -C apps/go         # Build CLI runner tools (uses go.work → local go/)
 
 # Format code
-make -C lib/go fmt
-make -C generators/go fmt
+make -C go fmt
 make -C apps/go/generated fmt
 make -C apps/go fmt
 
 # Static analysis (requires: go install honnef.co/go/tools/cmd/staticcheck@latest)
-make -C generators/go staticcheck
+make -C go staticcheck  # if added to go/Makefile
 
 # Pre-push check (fmt + build + test)
-make -C lib/go dev
-make -C generators/go dev
+make -C go dev          # if added to go/Makefile
 ```
 
 ## Running a Single Test
 
 ```bash
-cd lib/go    && go test ./pkg/lexers/ -run TestEBNFLexer
-cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
+cd go && go test ./lib/pkg/lexers/ -run TestEBNFLexer
+cd go && go test ./generators/pkg/lexgen/ -run TestCodegen
 ```
 
 ## Testing Parsers Interactively
@@ -67,43 +63,42 @@ cd generators/go && go test ./pkg/lexgen/ -run TestCodegen
 
 ## Architecture
 
-The repo is a Go monorepo with four separate Go modules connected via `replace` directives:
+The repo uses two Go modules; no `replace` directives. External repos (e.g. pgpg-experiments) depend on `github.com/johnkerl/pgpg/go`.
 
-```
-lib/               → Core libraries for generators (tokens, asts, EBNF lexer/parser, util). No external deps except testify.
-generators/go/     → Code generation tools. Depends on lib.
-apps/go/generated/ → Makefile that drives Go codegen; output goes to apps/go/generated/pkg/lexers|parsers, apps/jsons. (Py/JS have their own apps/py/generated, apps/js/generated.)
-apps/go/generated/ → Go module with generated lexers/parsers (from BNF). Depends on lib.
-apps/go/           → CLI tools (trylex, tryparse, tryast). Depends on lib + generated. Sample hand-written lexers/parsers live in apps/go/manual/.
-apps/jsons/        → JSON tables (lex/parse) produced by lexgen-tables/parsegen-tables.
-```
+- **`go/`** — One module: `module github.com/johnkerl/pgpg/go`. Contains:
+  - **`go/lib/`** — Core libraries (tokens, asts, lexers, parsers, util). Used by generators and by apps. Import: `github.com/johnkerl/pgpg/go/lib/pkg/...`
+  - **`go/generators/`** — Code generation tools (lexgen, parsegen). Depends on go/lib.
+  - **`go/bin/`** — Generator binaries (lexgen-tables, lexgen-code, parsegen-tables, parsegen-code), built by `make -C go`. Used by `apps/go/generated` Makefile.
+- **`apps/go/`** — One module: `module github.com/johnkerl/pgpg/apps/go`. Depends on `github.com/johnkerl/pgpg/go`. Contains:
+  - **`apps/go/generated/`** — Generated lexers/parsers (from BNF); part of this module (no separate go.mod). Makefile invokes `go/bin/*`.
+  - **`apps/go/manual/`** — Hand-written sample lexers/parsers.
+  - **`apps/go/cmd/`** — CLIs (trylex, tryparse, tryast).
+- **`apps/go/go.work`** — Optional: `use .` and `use ../../go` so that builds in apps/go use the local `go/` module (CI and local dev).
+- **`apps/jsons/`** — JSON tables produced by lexgen-tables/parsegen-tables.
 
 ### Generator Pipeline
 
 ```
 BNF grammar file (.bnf)
-    → lexgen-tables / parsegen-tables → JSON tables (intermediate, language-independent)
-    → lexgen-code / parsegen-code     → Generated Go source files
+    → go/bin/lexgen-tables, go/bin/parsegen-tables → JSON tables (intermediate)
+    → go/bin/lexgen-code, go/bin/parsegen-code     → Generated Go source in apps/go/generated/
 ```
 
-The JSON intermediate format is intentionally language-independent to allow future code generation targets beyond Go. The same pipeline can be driven in process: see **Using the generators as a library** below.
+The JSON intermediate format is language-independent. The same pipeline can be driven in process: see **Using the generators as a library** below.
 
 ### Key Packages
 
-- **`lib/go/pkg/tokens/`** — Token type, location tracking
-- **`lib/go/pkg/lexers/`** — `AbstractLexer` interface, EBNF lexer, LookaheadLexer (used by generators)
-- **`lib/go/pkg/parsers/`** — `AbstractParser` interface, EBNF parser (used by generators)
-- **`lib/go/pkg/asts/`** — AST node structure (Type, Token, Children), constructors, pretty-printing
-- **`lib/go/pkg/util/`** — SplitString and other helpers
-- **`apps/go/manual/lexers/`** — Sample hand-written lexers (pemdas, vic, vbc, seng, etc.)
-- **`apps/go/manual/parsers/`** — Sample hand-written parsers (pemdas, vic, vbc, ame, amne)
-- **`generators/go/pkg/lexgen/`** — NFA→DFA lexer table generation + Go code generation (uses `templates/lexer.go.tmpl`)
-- **`generators/go/pkg/parsegen/`** — LR(1) parser table generation + Go code generation (uses `templates/parser.go.tmpl`)
-- **`generators/go/pkg/run/`** — File I/O wrappers for one-call-per-step: `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode`
-- **`apps/bnfs/`** — Grammar files to have lexers/parsers generated from
-- **`apps/go/generated/pkg/lexers/`** — Auto-generated lexers from `apps/bnfs/`
-- **`apps/go/generated/pkg/parsers/`** — Auto-generated parsers from `apps/bnfs/`
-- **`apps/go/cmd/`** — CLIs to interactively test-drive the manual and generated lexers and parsers.
+- **`go/lib/pkg/tokens/`** — Token type, location tracking
+- **`go/lib/pkg/lexers/`** — `AbstractLexer` interface, EBNF lexer, LookaheadLexer
+- **`go/lib/pkg/parsers/`** — `AbstractParser` interface, EBNF parser
+- **`go/lib/pkg/asts/`** — AST node structure, constructors, pretty-printing
+- **`go/lib/pkg/util/`** — SplitString and other helpers
+- **`go/generators/pkg/lexgen/`** — NFA→DFA lexer table + Go codegen (templates/lexer.go.tmpl)
+- **`go/generators/pkg/parsegen/`** — LR(1) parser table + Go codegen (templates/parser.go.tmpl)
+- **`go/generators/pkg/run/`** — `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode`
+- **`apps/bnfs/`** — Grammar files
+- **`apps/go/generated/pkg/lexers/`**, **`apps/go/generated/pkg/parsers/`** — Auto-generated from apps/bnfs
+- **`apps/go/cmd/`** — trylex, tryparse, tryast
 
 ### BNF Grammars
 
@@ -111,17 +106,17 @@ Grammar files live in `apps/bnfs/` (pemdas, lisp, json, seng, statements, pascal
 
 ### Using the generators as a library
 
-Other packages can use the generators in process (e.g. from `go generate`) instead of calling the CLI binaries. Add `github.com/johnkerl/pgpg/generators/go` to your module’s dependencies (and `replace` for local dev). The library surface is:
+Other modules (e.g. pgpg-experiments) use the generators in process via `go get github.com/johnkerl/pgpg/go`. Import `github.com/johnkerl/pgpg/go/generators/pkg/lexgen`, `.../parsegen`, `.../run`. No `replace` needed. Library surface is:
 
 - **`pkg/lexgen`** and **`pkg/parsegen`**: `GenerateTables(grammar, opts)`, `EncodeTables(tables, opts)`, `DecodeTables(data)`, `GenerateCode(tables, opts)`. All behavior is controlled by options structs; no globals.
 - **`pkg/run`**: `LexgenTables`, `LexgenCode`, `ParsegenTables`, `ParsegenCode` — each does read → generate → write for one pipeline step; pass `""` or `"-"` as output path to write to stdout.
 
-See **`generators/go/LIBRARY.md`** for dependency setup, option types, and examples.
+See **`go/generators/LIBRARY.md`** (if present) for option types and examples.
 
 ## Profiling
 
 ```bash
-./generators/go/parsegen-tables \
+./go/bin/parsegen-tables \
   -cpuprofile cpu.pprof -memprofile mem.pprof -trace trace.out \
   -o output.json grammar.bnf
 go tool pprof -http=:8082 cpu.pprof

@@ -3,7 +3,7 @@ package lexers
 import (
 	"testing"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 	"github.com/stretchr/testify/assert"
 )
 

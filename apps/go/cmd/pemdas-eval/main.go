@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	generatedlexers "github.com/johnkerl/pgpg/generated/pkg/lexers"
-	generatedparsers "github.com/johnkerl/pgpg/generated/pkg/parsers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	generatedlexers "github.com/johnkerl/pgpg/apps/go/generated/pkg/lexers"
+	generatedparsers "github.com/johnkerl/pgpg/apps/go/generated/pkg/parsers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
 )
 
 func usage() {

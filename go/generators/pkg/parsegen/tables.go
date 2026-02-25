@@ -10,8 +10,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
-	"github.com/johnkerl/pgpg/lib/go/pkg/parsers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
+	"github.com/johnkerl/pgpg/go/lib/pkg/parsers"
 )
 
 const eofSymbol = "EOF"

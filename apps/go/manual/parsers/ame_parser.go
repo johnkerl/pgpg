@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
-	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/parsers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
+	liblexers "github.com/johnkerl/pgpg/go/lib/pkg/lexers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/parsers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 // Grammar:

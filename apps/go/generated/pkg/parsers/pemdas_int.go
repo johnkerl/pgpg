@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
-	liblexers "github.com/johnkerl/pgpg/lib/go/pkg/lexers"
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
+	liblexers "github.com/johnkerl/pgpg/go/lib/pkg/lexers"
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 type PEMDASIntParser struct {

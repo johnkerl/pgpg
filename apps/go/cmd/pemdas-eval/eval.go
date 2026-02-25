@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/johnkerl/pgpg/lib/go/pkg/asts"
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
 )
 
 // evaluateAST walks the AST using the given Numeric numeric and returns the result.

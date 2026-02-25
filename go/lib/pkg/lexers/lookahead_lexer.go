@@ -1,7 +1,7 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/lib/go/pkg/tokens"
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 // LookaheadLexer wraps an AbstractLexer so that there is a LookAhead() token (one lookahead level) and
