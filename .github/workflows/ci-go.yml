@@ -1,0 +1,96 @@
+# CI: Go build and test. Format check is advisory only (does not fail the workflow).
+name: CI (Go)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Build
+        env:
+          GOWORK: off
+        run: make build
+
+      - name: Test
+        env:
+          GOWORK: off
+        run: make test
+
+  format-advisory:
+    name: Format check (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+
+      - name: Check Go formatting
+        id: go-fmt
+        env:
+          GOWORK: off
+        run: |
+          set +e
+          OUT=$(gofmt -l go apps/go/generated apps/go 2>/dev/null | grep -v '^$')
+          if [ -n "$OUT" ]; then
+            echo "needs_format=1" >> "$GITHUB_OUTPUT"
+            echo "go_files<<EOF" >> "$GITHUB_OUTPUT"
+            echo "$OUT" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_format=0" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment on PR (format advisory)
+        if: steps.go-fmt.outputs.needs_format == '1'
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        with:
+          script: |
+            if (!context.payload.pull_request) return;
+            const body = `## Code formatting (advisory)
+
+            **Go**: some files are not \`gofmt\`-ed. This does not fail CI.
+
+            **To fix from the repo root:**
+            \`\`\`bash
+            make fmt
+            \`\`\`
+            Then commit the changes.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
+
+      - name: Emit warning for format (Actions summary)
+        if: steps.go-fmt.outputs.needs_format == '1'
+        run: |
+          echo "::warning::Go: run 'make fmt' (uses gofmt). This is advisory only and does not fail the workflow."
