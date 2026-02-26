@@ -6,8 +6,6 @@ if [ $# -ne 1 ]; then
 fi
 version="$1"
 git tag $version
-git tag lib/go/$version
-git tag generators/go/$version
+git tag go/$version
 git push origin $version
-git push origin lib/go/$version
-git push origin generators/go/$version
+git push origin go/$version

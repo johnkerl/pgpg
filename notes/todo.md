@@ -14,20 +14,12 @@
     * `go get github.com/johnkerl/pgpg/lib@v0.2.0`
     * `go get github.com/johnkerl/pgpg/generators/go@v0.2.0`
 
-* Packaging!
-  * `export GOWORK=off`
-  * Etc.
-
-* Clean targets for pgpge
-
 * Error out on this:
 ```
 $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 ```
 
 * Perf-analyze the JSON lexer
-
-* PGPG: `lib` -> `lib/go`
 
 # Language ideas
 
