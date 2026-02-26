@@ -4,6 +4,12 @@ PGPG is the Pretty Good Parser Generator.
 
 It's very much a work in progress!
 
+## CI status
+
+[![Go build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-go.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-go.yml)
+[![Python build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-python.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-python.yml)
+[![JS build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-js.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-js.yml)
+
 ## Sample apps
 
 You might take a look at [pgpg-experiments](https://github.com/johnkerl/pgpg-experiments) which is intended as
