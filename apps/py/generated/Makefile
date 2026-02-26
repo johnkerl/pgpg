@@ -1,9 +1,9 @@
 # Generated Python lexers and parsers from JSON tables (produced by Go lexgen-tables / parsegen-tables).
 # Run from repo root: make -C apps/py/generated [target]
 # Or from here: make JSON_PATH=../../jsons ...
-# Codegen and runtime live in ../../../generators/py.
+# Codegen and runtime live in ../../../py/generators.
 
-GEN_PY ?= ../../../generators/py
+GEN_PY ?= ../../../py/generators
 JSON_PATH ?= ../../jsons
 
 # Generate JSON parser + lexer

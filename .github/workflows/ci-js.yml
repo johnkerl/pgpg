@@ -1,0 +1,30 @@
+# CI: JavaScript/Node build and test.
+name: CI (JS)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate (JS lexers/parsers)
+        run: make -C apps/js/generated GEN_JS=../../../js/generators all
+
+      - name: Test
+        run: make -C apps/js/generated GEN_JS=../../../js/generators test

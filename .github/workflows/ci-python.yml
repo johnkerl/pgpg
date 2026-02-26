@@ -1,0 +1,93 @@
+# CI: Python build and test. Format check is advisory only (does not fail the workflow).
+name: CI (Python)
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Python dependencies
+        run: |
+          pip install -r py/generators/requirements.txt
+          pip install -r apps/py/generated/requirements.txt
+
+      - name: Generate (Python lexers/parsers)
+        run: make -C apps/py/generated all
+
+      - name: Test
+        run: make -C apps/py test
+
+  format-advisory:
+    name: Format check (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Black
+        run: pip install black
+
+      - name: Check Python formatting
+        id: py-fmt
+        run: |
+          if black --check py/generators apps/py/generated apps/py 2>/dev/null; then
+            echo "needs_format=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_format=1" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment on PR (format advisory)
+        if: steps.py-fmt.outputs.needs_format == '1'
+        uses: actions/github-script@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        with:
+          script: |
+            if (!context.payload.pull_request) return;
+            const body = `## Code formatting (advisory)
+
+            **Python**: some files are not formatted with Black. This does not fail CI.
+
+            **To fix from the repo root:**
+            \`\`\`bash
+            make fmt
+            \`\`\`
+            Then commit the changes.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
+
+      - name: Emit warning for format (Actions summary)
+        if: steps.py-fmt.outputs.needs_format == '1'
+        run: |
+          echo "::warning::Python: run 'make fmt' (uses black). This is advisory only and does not fail the workflow."
