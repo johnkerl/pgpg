@@ -12,9 +12,9 @@ import sys
 from pathlib import Path
 from typing import Callable, Optional
 
-# Add repo root so we can add generators/py and apps/py/generated to path
+# Add repo root so we can add py/generators and apps/py/generated to path
 _REPO_ROOT = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(_REPO_ROOT / "generators" / "py"))
+sys.path.insert(0, str(_REPO_ROOT / "py" / "generators"))
 sys.path.insert(0, str(_REPO_ROOT / "apps" / "py" / "generated"))
 
 from lexers import json_lexer

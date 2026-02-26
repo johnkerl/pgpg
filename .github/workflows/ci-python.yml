@@ -26,7 +26,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r generators/py/requirements.txt
+          pip install -r py/generators/requirements.txt
           pip install -r apps/py/generated/requirements.txt
 
       - name: Generate (Python lexers/parsers)
@@ -57,7 +57,7 @@ jobs:
       - name: Check Python formatting
         id: py-fmt
         run: |
-          if black --check generators/py apps/py/generated apps/py 2>/dev/null; then
+          if black --check py/generators apps/py/generated apps/py 2>/dev/null; then
             echo "needs_format=0" >> "$GITHUB_OUTPUT"
           else
             echo "needs_format=1" >> "$GITHUB_OUTPUT"
