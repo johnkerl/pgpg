@@ -1,0 +1,36 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for Go (lib and generators)
+  - package-ecosystem: "gomod"
+    directory: "/go"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for Go (apps)
+  - package-ecosystem: "gomod"
+    directory: "/apps/go"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for Python (generators)
+  - package-ecosystem: "pip"
+    directory: "/py/generators"
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for Python (generated apps)
+  - package-ecosystem: "pip"
+    directory: "/apps/py/generated"
+    schedule:
+      interval: "daily"
