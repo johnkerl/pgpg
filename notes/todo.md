@@ -3,6 +3,8 @@
 * Multi-object:
   * Move to `io.Reader` (w/ string-handling option of course)
   * Then implement streaming proposal
+  * Make sure truly streaming
+  * Fix mixed-mode cases
 
 * PASCAL-S
 
