@@ -15,8 +15,8 @@ const ebnfLexerInitialCapacity = 1024
 const (
 	EBNFLexerTypeIdentifier tokens.TokenType = "identifier"
 	EBNFLexerTypeString     tokens.TokenType = "string"
-	EBNFLexerTypeAssign      tokens.TokenType = "::="
-	EBNFLexerTypeOr          tokens.TokenType = "|"
+	EBNFLexerTypeAssign     tokens.TokenType = "::="
+	EBNFLexerTypeOr         tokens.TokenType = "|"
 	EBNFLexerTypeLParen     tokens.TokenType = "("
 	EBNFLexerTypeRParen     tokens.TokenType = ")"
 	EBNFLexerTypeLBracket   tokens.TokenType = "["
