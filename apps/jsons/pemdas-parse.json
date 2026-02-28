@@ -32,6 +32,22 @@
         "type": "reduce",
         "target": 3
       },
+      "float_literal": {
+        "type": "reduce",
+        "target": 3
+      },
+      "hex_literal": {
+        "type": "reduce",
+        "target": 3
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 3
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 3
+      },
       "minus": {
         "type": "shift",
         "target": 16
@@ -157,17 +173,107 @@
       "EOF": {
         "type": "reduce",
         "target": 2
+      },
+      "float_literal": {
+        "type": "reduce",
+        "target": 2
+      },
+      "hex_literal": {
+        "type": "reduce",
+        "target": 2
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 2
+      },
+      "minus": {
+        "type": "reduce",
+        "target": 2
+      },
+      "plus": {
+        "type": "reduce",
+        "target": 2
       }
     },
     "7": {
       "EOF": {
         "type": "accept"
+      },
+      "divide": {
+        "type": "accept_and_yield"
+      },
+      "exponentiation": {
+        "type": "accept_and_yield"
+      },
+      "float_literal": {
+        "type": "accept_and_yield"
+      },
+      "hex_literal": {
+        "type": "accept_and_yield"
+      },
+      "int_literal": {
+        "type": "accept_and_yield"
+      },
+      "lparen": {
+        "type": "accept_and_yield"
+      },
+      "minus": {
+        "type": "accept_and_yield"
+      },
+      "modulo": {
+        "type": "accept_and_yield"
+      },
+      "plus": {
+        "type": "accept_and_yield"
+      },
+      "rparen": {
+        "type": "accept_and_yield"
+      },
+      "times": {
+        "type": "accept_and_yield"
       }
     },
     "8": {
       "EOF": {
         "type": "reduce",
         "target": 1
+      },
+      "divide": {
+        "type": "accept_and_yield"
+      },
+      "exponentiation": {
+        "type": "accept_and_yield"
+      },
+      "float_literal": {
+        "type": "accept_and_yield"
+      },
+      "hex_literal": {
+        "type": "accept_and_yield"
+      },
+      "int_literal": {
+        "type": "accept_and_yield"
+      },
+      "lparen": {
+        "type": "accept_and_yield"
+      },
+      "minus": {
+        "type": "accept_and_yield"
+      },
+      "modulo": {
+        "type": "accept_and_yield"
+      },
+      "plus": {
+        "type": "accept_and_yield"
+      },
+      "rparen": {
+        "type": "accept_and_yield"
+      },
+      "times": {
+        "type": "accept_and_yield"
       }
     },
     "9": {
@@ -509,6 +615,22 @@
       }
     },
     "22": {
+      "float_literal": {
+        "type": "reduce",
+        "target": 3
+      },
+      "hex_literal": {
+        "type": "reduce",
+        "target": 3
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 3
+      },
+      "lparen": {
+        "type": "reduce",
+        "target": 3
+      },
       "minus": {
         "type": "shift",
         "target": 44

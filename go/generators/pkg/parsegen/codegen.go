@@ -253,6 +253,8 @@ func actionKindLiteral(kind string, typeName string) string {
 		return typeName + "ActionReduce"
 	case "accept":
 		return typeName + "ActionAccept"
+	case "accept_and_yield":
+		return typeName + "ActionAcceptAndYield"
 	default:
 		return typeName + "ActionAccept"
 	}

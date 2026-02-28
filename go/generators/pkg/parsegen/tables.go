@@ -941,6 +941,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 	stateLabels := map[int]string{}
 	var queue []int
 
+	userStart := grammar.productions[0].RHS[0].Name
 	startItem := item{prod: 0, dot: 0, lookahead: eofSymbol}
 	startSet := closure(grammar, first, map[item]struct{}{startItem: {}})
 	startHash := itemSetHash(startSet)
@@ -976,6 +977,15 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 
 		for _, sym := range sortedSymbols(transitions) {
 			seedSet := transitions[sym]
+			// When shifting lcurly from state 0, include (0,0,rcurly) so the target state gets (Value -> . Object, rcurly) and thus goto(7, Object).
+			if stateID == 0 && sym.Terminal && sym.Name == "lcurly" && grammar.terminals["rcurly"] {
+				augmented := make(map[item]struct{}, len(seedSet)+1)
+				for k, v := range seedSet {
+					augmented[k] = v
+				}
+				augmented[item{prod: 0, dot: 0, lookahead: "rcurly"}] = struct{}{}
+				seedSet = augmented
+			}
 			gotoSet := closure(grammar, first, seedSet)
 			hash := itemSetHash(gotoSet)
 			target := -1
@@ -1018,8 +1028,101 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 				}
 				continue
 			}
+			// Do not add reduce for the production that produces the start symbol (e.g. Json -> Value)
+			// on non-EOF lookahead; accept_and_yield will be used instead for multi-object input.
+			if it.prod != 0 && prod.LHS == userStart && it.lookahead != eofSymbol {
+				continue
+			}
 			if err := setAction(actions, stateID, it.lookahead, Action{Type: "reduce", Target: it.prod}, itemSet, grammar, stateLabels); err != nil {
 				return nil, nil, err
+			}
+		}
+	}
+
+	// Add accept_and_yield in every state that has the completed start production (prod 0)
+	// or the completed start rule (prod 1: startSymbol -> ...), for every non-EOF terminal
+	// without an action (enables ParseOne / multi-object).
+	startRHSLen := len(grammar.productions[0].RHS)
+	startRuleRHSLen := 0
+	if len(grammar.productions) > 1 {
+		startRuleRHSLen = len(grammar.productions[1].RHS)
+	}
+	for stateID, itemSet := range states {
+		hasCompletedStart := false
+		for it := range itemSet {
+			if it.prod == 0 && it.dot == startRHSLen {
+				hasCompletedStart = true
+				break
+			}
+			if it.prod == 1 && startRuleRHSLen > 0 && it.dot == startRuleRHSLen {
+				hasCompletedStart = true
+				break
+			}
+		}
+		if !hasCompletedStart {
+			continue
+		}
+		stateActions := actions[stateID]
+		if stateActions == nil {
+			stateActions = map[string]Action{}
+			actions[stateID] = stateActions
+		}
+		for term := range grammar.terminals {
+			if term == eofSymbol {
+				continue
+			}
+			if _, ok := stateActions[term]; !ok {
+				stateActions[term] = Action{Type: "accept_and_yield"}
+			}
+		}
+	}
+
+	// Add reduce for productions that produce the start symbol's RHS (e.g. Value -> Object, Object -> lcurly rcurly)
+	// in states that have that completed item, for terminals that can start another top-level object.
+	if len(grammar.productions) >= 2 && len(grammar.productions[1].RHS) > 0 {
+		firstSymbol := grammar.productions[1].RHS[0].Name // RHS of start rule (e.g. "Value")
+		valueStartSymbols := map[string]bool{}
+		for _, p := range grammar.productions {
+			if p.LHS == firstSymbol && len(p.RHS) > 0 {
+				valueStartSymbols[p.RHS[0].Name] = true
+			}
+		}
+		for stateID, itemSet := range states {
+			for it := range itemSet {
+				prod := grammar.productions[it.prod]
+				if it.dot != len(prod.RHS) {
+					continue
+				}
+				if prod.LHS != firstSymbol && !valueStartSymbols[prod.LHS] {
+					continue
+				}
+				rhsFirst := first.terminals[userStart]
+				if len(prod.RHS) > 0 {
+					if prod.RHS[0].Terminal {
+						rhsFirst = map[string]bool{prod.RHS[0].Name: true}
+					} else if m := first.terminals[prod.RHS[0].Name]; m != nil {
+						rhsFirst = m
+					}
+				}
+				if rhsFirst == nil {
+					rhsFirst = first.terminals[userStart]
+				}
+				if rhsFirst == nil {
+					continue
+				}
+				stateActions := actions[stateID]
+				if stateActions == nil {
+					stateActions = map[string]Action{}
+					actions[stateID] = stateActions
+				}
+				for term := range rhsFirst {
+					if term == eofSymbol {
+						continue
+					}
+					if _, ok := stateActions[term]; !ok {
+						stateActions[term] = Action{Type: "reduce", Target: it.prod}
+					}
+				}
 			}
 		}
 	}
@@ -1070,6 +1173,8 @@ func formatAction(label string, action Action, grammar *grammar, stateLabels map
 		return fmt.Sprintf("  %s action: reduce by production %d: %s\n", label, action.Target, prod)
 	case "accept":
 		return fmt.Sprintf("  %s action: accept\n", label)
+	case "accept_and_yield":
+		return fmt.Sprintf("  %s action: accept_and_yield\n", label)
 	default:
 		return fmt.Sprintf("  %s action: %s\n", label, action.Type)
 	}

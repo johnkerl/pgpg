@@ -35,15 +35,56 @@
       "EOF": {
         "type": "reduce",
         "target": 3
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 3
       }
     },
     "2": {
       "EOF": {
         "type": "accept"
+      },
+      "colon": {
+        "type": "accept_and_yield"
+      },
+      "comma": {
+        "type": "accept_and_yield"
+      },
+      "false": {
+        "type": "accept_and_yield"
+      },
+      "lbracket": {
+        "type": "accept_and_yield"
+      },
+      "lcurly": {
+        "type": "accept_and_yield"
+      },
+      "null": {
+        "type": "accept_and_yield"
+      },
+      "number": {
+        "type": "accept_and_yield"
+      },
+      "rbracket": {
+        "type": "accept_and_yield"
+      },
+      "rcurly": {
+        "type": "accept_and_yield"
+      },
+      "string": {
+        "type": "accept_and_yield"
+      },
+      "true": {
+        "type": "accept_and_yield"
       }
     },
     "3": {
       "EOF": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lcurly": {
         "type": "reduce",
         "target": 2
       }
@@ -52,10 +93,47 @@
       "EOF": {
         "type": "reduce",
         "target": 1
+      },
+      "colon": {
+        "type": "accept_and_yield"
+      },
+      "comma": {
+        "type": "accept_and_yield"
+      },
+      "false": {
+        "type": "accept_and_yield"
+      },
+      "lbracket": {
+        "type": "accept_and_yield"
+      },
+      "lcurly": {
+        "type": "accept_and_yield"
+      },
+      "null": {
+        "type": "accept_and_yield"
+      },
+      "number": {
+        "type": "accept_and_yield"
+      },
+      "rbracket": {
+        "type": "accept_and_yield"
+      },
+      "rcurly": {
+        "type": "accept_and_yield"
+      },
+      "string": {
+        "type": "accept_and_yield"
+      },
+      "true": {
+        "type": "accept_and_yield"
       }
     },
     "5": {
       "EOF": {
+        "type": "reduce",
+        "target": 7
+      },
+      "false": {
         "type": "reduce",
         "target": 7
       }
@@ -95,17 +173,45 @@
       }
     },
     "7": {
+      "false": {
+        "type": "shift",
+        "target": 30
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 31
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 32
+      },
+      "null": {
+        "type": "shift",
+        "target": 33
+      },
+      "number": {
+        "type": "shift",
+        "target": 34
+      },
       "rcurly": {
         "type": "shift",
-        "target": 26
+        "target": 35
       },
       "string": {
         "type": "shift",
-        "target": 27
+        "target": 36
+      },
+      "true": {
+        "type": "shift",
+        "target": 37
       }
     },
     "8": {
       "EOF": {
+        "type": "reduce",
+        "target": 8
+      },
+      "null": {
         "type": "reduce",
         "target": 8
       }
@@ -114,10 +220,18 @@
       "EOF": {
         "type": "reduce",
         "target": 5
+      },
+      "number": {
+        "type": "reduce",
+        "target": 5
       }
     },
     "10": {
       "EOF": {
+        "type": "reduce",
+        "target": 4
+      },
+      "string": {
         "type": "reduce",
         "target": 4
       }
@@ -126,10 +240,18 @@
       "EOF": {
         "type": "reduce",
         "target": 6
+      },
+      "true": {
+        "type": "reduce",
+        "target": 6
       }
     },
     "12": {
       "comma": {
+        "type": "reduce",
+        "target": 3
+      },
+      "lbracket": {
         "type": "reduce",
         "target": 3
       },
@@ -141,11 +263,15 @@
     "13": {
       "rbracket": {
         "type": "shift",
-        "target": 28
+        "target": 38
       }
     },
     "14": {
       "comma": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lcurly": {
         "type": "reduce",
         "target": 2
       },
@@ -157,7 +283,7 @@
     "15": {
       "comma": {
         "type": "shift",
-        "target": 30
+        "target": 40
       },
       "rbracket": {
         "type": "reduce",
@@ -166,6 +292,10 @@
     },
     "16": {
       "comma": {
+        "type": "reduce",
+        "target": 7
+      },
+      "false": {
         "type": "reduce",
         "target": 7
       },
@@ -197,7 +327,7 @@
       },
       "rbracket": {
         "type": "shift",
-        "target": 32
+        "target": 42
       },
       "string": {
         "type": "shift",
@@ -211,15 +341,19 @@
     "18": {
       "rcurly": {
         "type": "shift",
-        "target": 34
+        "target": 44
       },
       "string": {
         "type": "shift",
-        "target": 27
+        "target": 45
       }
     },
     "19": {
       "comma": {
+        "type": "reduce",
+        "target": 8
+      },
+      "null": {
         "type": "reduce",
         "target": 8
       },
@@ -233,6 +367,10 @@
         "type": "reduce",
         "target": 5
       },
+      "number": {
+        "type": "reduce",
+        "target": 5
+      },
       "rbracket": {
         "type": "reduce",
         "target": 5
@@ -240,6 +378,10 @@
     },
     "21": {
       "EOF": {
+        "type": "reduce",
+        "target": 16
+      },
+      "lbracket": {
         "type": "reduce",
         "target": 16
       }
@@ -252,6 +394,10 @@
       "rbracket": {
         "type": "reduce",
         "target": 4
+      },
+      "string": {
+        "type": "reduce",
+        "target": 4
       }
     },
     "23": {
@@ -262,49 +408,129 @@
       "rbracket": {
         "type": "reduce",
         "target": 6
+      },
+      "true": {
+        "type": "reduce",
+        "target": 6
       }
     },
     "24": {
+      "lbracket": {
+        "type": "reduce",
+        "target": 3
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 3
+      }
+    },
+    "25": {
+      "colon": {
+        "type": "accept_and_yield"
+      },
+      "comma": {
+        "type": "accept_and_yield"
+      },
+      "false": {
+        "type": "accept_and_yield"
+      },
+      "lbracket": {
+        "type": "accept_and_yield"
+      },
+      "lcurly": {
+        "type": "accept_and_yield"
+      },
+      "null": {
+        "type": "accept_and_yield"
+      },
+      "number": {
+        "type": "accept_and_yield"
+      },
+      "rbracket": {
+        "type": "accept_and_yield"
+      },
+      "rcurly": {
+        "type": "reduce"
+      },
+      "string": {
+        "type": "accept_and_yield"
+      },
+      "true": {
+        "type": "accept_and_yield"
+      }
+    },
+    "26": {
       "comma": {
         "type": "shift",
-        "target": 36
+        "target": 47
       },
       "rcurly": {
         "type": "reduce",
         "target": 11
       }
     },
-    "25": {
+    "27": {
       "rcurly": {
         "type": "shift",
-        "target": 37
-      }
-    },
-    "26": {
-      "EOF": {
-        "type": "reduce",
-        "target": 10
-      }
-    },
-    "27": {
-      "colon": {
-        "type": "shift",
-        "target": 38
+        "target": 48
       }
     },
     "28": {
-      "EOF": {
+      "lcurly": {
         "type": "reduce",
-        "target": 15
+        "target": 2
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 2
       }
     },
     "29": {
+      "colon": {
+        "type": "accept_and_yield"
+      },
+      "comma": {
+        "type": "accept_and_yield"
+      },
+      "false": {
+        "type": "accept_and_yield"
+      },
+      "lbracket": {
+        "type": "accept_and_yield"
+      },
+      "lcurly": {
+        "type": "accept_and_yield"
+      },
+      "null": {
+        "type": "accept_and_yield"
+      },
+      "number": {
+        "type": "accept_and_yield"
+      },
       "rbracket": {
-        "type": "reduce",
-        "target": 19
+        "type": "accept_and_yield"
+      },
+      "rcurly": {
+        "type": "accept_and_yield"
+      },
+      "string": {
+        "type": "accept_and_yield"
+      },
+      "true": {
+        "type": "accept_and_yield"
       }
     },
     "30": {
+      "false": {
+        "type": "reduce",
+        "target": 7
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 7
+      }
+    },
+    "31": {
       "false": {
         "type": "shift",
         "target": 16
@@ -325,107 +551,275 @@
         "type": "shift",
         "target": 20
       },
-      "string": {
-        "type": "shift",
-        "target": 22
-      },
-      "true": {
-        "type": "shift",
-        "target": 23
-      }
-    },
-    "31": {
       "rbracket": {
-        "type": "shift",
-        "target": 40
-      }
-    },
-    "32": {
-      "comma": {
-        "type": "reduce",
-        "target": 16
-      },
-      "rbracket": {
-        "type": "reduce",
-        "target": 16
-      }
-    },
-    "33": {
-      "rcurly": {
-        "type": "shift",
-        "target": 41
-      }
-    },
-    "34": {
-      "comma": {
-        "type": "reduce",
-        "target": 10
-      },
-      "rbracket": {
-        "type": "reduce",
-        "target": 10
-      }
-    },
-    "35": {
-      "rcurly": {
-        "type": "reduce",
-        "target": 13
-      }
-    },
-    "36": {
-      "string": {
-        "type": "shift",
-        "target": 27
-      }
-    },
-    "37": {
-      "EOF": {
-        "type": "reduce",
-        "target": 9
-      }
-    },
-    "38": {
-      "false": {
-        "type": "shift",
-        "target": 46
-      },
-      "lbracket": {
-        "type": "shift",
-        "target": 47
-      },
-      "lcurly": {
-        "type": "shift",
-        "target": 48
-      },
-      "null": {
-        "type": "shift",
-        "target": 49
-      },
-      "number": {
         "type": "shift",
         "target": 50
       },
       "string": {
         "type": "shift",
-        "target": 51
+        "target": 22
       },
       "true": {
         "type": "shift",
+        "target": 23
+      }
+    },
+    "32": {
+      "rcurly": {
+        "type": "shift",
         "target": 52
+      },
+      "string": {
+        "type": "shift",
+        "target": 45
+      }
+    },
+    "33": {
+      "null": {
+        "type": "reduce",
+        "target": 8
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "34": {
+      "number": {
+        "type": "reduce",
+        "target": 5
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 5
+      }
+    },
+    "35": {
+      "EOF": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "36": {
+      "colon": {
+        "type": "shift",
+        "target": 53
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 4
+      },
+      "string": {
+        "type": "reduce",
+        "target": 4
+      }
+    },
+    "37": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "true": {
+        "type": "reduce",
+        "target": 6
+      }
+    },
+    "38": {
+      "EOF": {
+        "type": "reduce",
+        "target": 15
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 15
       }
     },
     "39": {
+      "rbracket": {
+        "type": "reduce",
+        "target": 19
+      }
+    },
+    "40": {
+      "false": {
+        "type": "shift",
+        "target": 16
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 17
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 18
+      },
+      "null": {
+        "type": "shift",
+        "target": 19
+      },
+      "number": {
+        "type": "shift",
+        "target": 20
+      },
+      "string": {
+        "type": "shift",
+        "target": 22
+      },
+      "true": {
+        "type": "shift",
+        "target": 23
+      }
+    },
+    "41": {
+      "rbracket": {
+        "type": "shift",
+        "target": 55
+      }
+    },
+    "42": {
+      "comma": {
+        "type": "reduce",
+        "target": 16
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 16
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "43": {
+      "rcurly": {
+        "type": "shift",
+        "target": 56
+      }
+    },
+    "44": {
+      "comma": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "rbracket": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "45": {
+      "colon": {
+        "type": "shift",
+        "target": 53
+      }
+    },
+    "46": {
+      "rcurly": {
+        "type": "reduce",
+        "target": 13
+      }
+    },
+    "47": {
+      "string": {
+        "type": "shift",
+        "target": 45
+      }
+    },
+    "48": {
+      "EOF": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "49": {
+      "rbracket": {
+        "type": "shift",
+        "target": 58
+      }
+    },
+    "50": {
+      "lbracket": {
+        "type": "reduce",
+        "target": 16
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 16
+      }
+    },
+    "51": {
+      "rcurly": {
+        "type": "shift",
+        "target": 59
+      }
+    },
+    "52": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "53": {
+      "false": {
+        "type": "shift",
+        "target": 63
+      },
+      "lbracket": {
+        "type": "shift",
+        "target": 64
+      },
+      "lcurly": {
+        "type": "shift",
+        "target": 65
+      },
+      "null": {
+        "type": "shift",
+        "target": 66
+      },
+      "number": {
+        "type": "shift",
+        "target": 67
+      },
+      "string": {
+        "type": "shift",
+        "target": 68
+      },
+      "true": {
+        "type": "shift",
+        "target": 69
+      }
+    },
+    "54": {
       "comma": {
         "type": "shift",
-        "target": 30
+        "target": 40
       },
       "rbracket": {
         "type": "reduce",
         "target": 17
       }
     },
-    "40": {
+    "55": {
       "comma": {
+        "type": "reduce",
+        "target": 15
+      },
+      "lbracket": {
         "type": "reduce",
         "target": 15
       },
@@ -434,8 +828,12 @@
         "target": 15
       }
     },
-    "41": {
+    "56": {
       "comma": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lcurly": {
         "type": "reduce",
         "target": 9
       },
@@ -444,18 +842,42 @@
         "target": 9
       }
     },
-    "42": {
+    "57": {
       "comma": {
         "type": "shift",
-        "target": 36
+        "target": 47
       },
       "rcurly": {
         "type": "reduce",
         "target": 11
       }
     },
-    "43": {
+    "58": {
+      "lbracket": {
+        "type": "reduce",
+        "target": 15
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 15
+      }
+    },
+    "59": {
+      "lcurly": {
+        "type": "reduce",
+        "target": 9
+      },
+      "rcurly": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
+    "60": {
       "comma": {
+        "type": "reduce",
+        "target": 3
+      },
+      "lbracket": {
         "type": "reduce",
         "target": 3
       },
@@ -464,8 +886,12 @@
         "target": 3
       }
     },
-    "44": {
+    "61": {
       "comma": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lcurly": {
         "type": "reduce",
         "target": 2
       },
@@ -474,7 +900,7 @@
         "target": 2
       }
     },
-    "45": {
+    "62": {
       "comma": {
         "type": "reduce",
         "target": 14
@@ -484,8 +910,12 @@
         "target": 14
       }
     },
-    "46": {
+    "63": {
       "comma": {
+        "type": "reduce",
+        "target": 7
+      },
+      "false": {
         "type": "reduce",
         "target": 7
       },
@@ -494,7 +924,7 @@
         "target": 7
       }
     },
-    "47": {
+    "64": {
       "false": {
         "type": "shift",
         "target": 16
@@ -517,7 +947,7 @@
       },
       "rbracket": {
         "type": "shift",
-        "target": 56
+        "target": 73
       },
       "string": {
         "type": "shift",
@@ -528,18 +958,22 @@
         "target": 23
       }
     },
-    "48": {
+    "65": {
       "rcurly": {
         "type": "shift",
-        "target": 58
+        "target": 75
       },
       "string": {
         "type": "shift",
-        "target": 27
+        "target": 45
       }
     },
-    "49": {
+    "66": {
       "comma": {
+        "type": "reduce",
+        "target": 8
+      },
+      "null": {
         "type": "reduce",
         "target": 8
       },
@@ -548,8 +982,12 @@
         "target": 8
       }
     },
-    "50": {
+    "67": {
       "comma": {
+        "type": "reduce",
+        "target": 5
+      },
+      "number": {
         "type": "reduce",
         "target": 5
       },
@@ -558,7 +996,7 @@
         "target": 5
       }
     },
-    "51": {
+    "68": {
       "comma": {
         "type": "reduce",
         "target": 4
@@ -566,9 +1004,13 @@
       "rcurly": {
         "type": "reduce",
         "target": 4
+      },
+      "string": {
+        "type": "reduce",
+        "target": 4
       }
     },
-    "52": {
+    "69": {
       "comma": {
         "type": "reduce",
         "target": 6
@@ -576,28 +1018,36 @@
       "rcurly": {
         "type": "reduce",
         "target": 6
+      },
+      "true": {
+        "type": "reduce",
+        "target": 6
       }
     },
-    "53": {
+    "70": {
       "rbracket": {
         "type": "reduce",
         "target": 18
       }
     },
-    "54": {
+    "71": {
       "rcurly": {
         "type": "reduce",
         "target": 12
       }
     },
-    "55": {
+    "72": {
       "rbracket": {
         "type": "shift",
-        "target": 59
+        "target": 76
       }
     },
-    "56": {
+    "73": {
       "comma": {
+        "type": "reduce",
+        "target": 16
+      },
+      "lbracket": {
         "type": "reduce",
         "target": 16
       },
@@ -606,14 +1056,18 @@
         "target": 16
       }
     },
-    "57": {
+    "74": {
       "rcurly": {
         "type": "shift",
-        "target": 60
+        "target": 77
       }
     },
-    "58": {
+    "75": {
       "comma": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lcurly": {
         "type": "reduce",
         "target": 10
       },
@@ -622,8 +1076,12 @@
         "target": 10
       }
     },
-    "59": {
+    "76": {
       "comma": {
+        "type": "reduce",
+        "target": 15
+      },
+      "lbracket": {
         "type": "reduce",
         "target": 15
       },
@@ -632,8 +1090,12 @@
         "target": 15
       }
     },
-    "60": {
+    "77": {
       "comma": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lcurly": {
         "type": "reduce",
         "target": 9
       },
@@ -657,53 +1119,67 @@
       "Value": 15
     },
     "7": {
-      "Member": 24,
-      "Members": 25
+      "Array": 24,
+      "Json": 25,
+      "Member": 26,
+      "Members": 27,
+      "Object": 28,
+      "Value": 29
     },
     "15": {
-      "__pgpg_repeat_2": 29
+      "__pgpg_repeat_2": 39
     },
     "17": {
       "Array": 12,
-      "Elements": 31,
+      "Elements": 41,
       "Object": 14,
       "Value": 15
     },
     "18": {
-      "Member": 24,
-      "Members": 33
+      "Member": 26,
+      "Members": 43
     },
-    "24": {
-      "__pgpg_repeat_1": 35
+    "26": {
+      "__pgpg_repeat_1": 46
     },
-    "30": {
+    "31": {
       "Array": 12,
-      "Object": 14,
-      "Value": 39
-    },
-    "36": {
-      "Member": 42
-    },
-    "38": {
-      "Array": 43,
-      "Object": 44,
-      "Value": 45
-    },
-    "39": {
-      "__pgpg_repeat_2": 53
-    },
-    "42": {
-      "__pgpg_repeat_1": 54
-    },
-    "47": {
-      "Array": 12,
-      "Elements": 55,
+      "Elements": 49,
       "Object": 14,
       "Value": 15
     },
-    "48": {
-      "Member": 24,
-      "Members": 57
+    "32": {
+      "Member": 26,
+      "Members": 51
+    },
+    "40": {
+      "Array": 12,
+      "Object": 14,
+      "Value": 54
+    },
+    "47": {
+      "Member": 57
+    },
+    "53": {
+      "Array": 60,
+      "Object": 61,
+      "Value": 62
+    },
+    "54": {
+      "__pgpg_repeat_2": 70
+    },
+    "57": {
+      "__pgpg_repeat_1": 71
+    },
+    "64": {
+      "Array": 12,
+      "Elements": 72,
+      "Object": 14,
+      "Value": 15
+    },
+    "65": {
+      "Member": 26,
+      "Members": 74
     }
   },
   "productions": [

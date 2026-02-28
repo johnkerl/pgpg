@@ -76,6 +76,30 @@
     "4": {
       "EOF": {
         "type": "accept"
+      },
+      "equals": {
+        "type": "accept_and_yield"
+      },
+      "id": {
+        "type": "accept_and_yield"
+      },
+      "if": {
+        "type": "accept_and_yield"
+      },
+      "int_literal": {
+        "type": "accept_and_yield"
+      },
+      "lparen": {
+        "type": "accept_and_yield"
+      },
+      "print": {
+        "type": "accept_and_yield"
+      },
+      "rparen": {
+        "type": "accept_and_yield"
+      },
+      "semicolon": {
+        "type": "accept_and_yield"
       }
     },
     "5": {

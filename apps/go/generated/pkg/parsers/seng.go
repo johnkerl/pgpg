@@ -11,7 +11,8 @@ import (
 )
 
 type SENGParser struct {
-	Trace *SENGParserTraceHooks
+	Trace            *SENGParserTraceHooks
+	stashedLookahead *tokens.Token
 }
 
 type SENGParserTraceHooks struct {
@@ -102,8 +103,113 @@ func (parser *SENGParser) Parse(lexer liblexers.AbstractLexer, astMode string) (
 				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
+		case SENGParserActionAcceptAndYield:
+			return nil, fmt.Errorf("parse error: multiple objects; use ParseOne for multi-object input")
 		default:
 			return nil, fmt.Errorf("parse error: no action")
+		}
+	}
+}
+
+// ParseOne parses one record from the lexer. It is for multi-object input: call in a loop until done.
+// Returns (ast, true, nil) on EOF after a record, (ast, false, nil) when more input follows, or (nil, false, err) on error.
+func (parser *SENGParser) ParseOne(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, bool, error) {
+	if lexer == nil {
+		return nil, false, fmt.Errorf("parser: nil lexer")
+	}
+	stateStack := []int{0}
+	nodeStack := []*asts.ASTNode{}
+	var lookahead *tokens.Token
+	if parser.stashedLookahead != nil {
+		lookahead = parser.stashedLookahead
+		parser.stashedLookahead = nil
+	} else {
+		lookahead = lexer.Scan()
+	}
+	if parser.Trace != nil && parser.Trace.OnToken != nil {
+		parser.Trace.OnToken(lookahead)
+	}
+	for {
+		if lookahead == nil {
+			return nil, false, fmt.Errorf("parser: lexer returned nil token")
+		}
+		if lookahead.Type == tokens.TokenTypeError {
+			return nil, false, fmt.Errorf("lexer error: %s", string(lookahead.Lexeme))
+		}
+		state := stateStack[len(stateStack)-1]
+		action, ok := SENGParserActions[state][lookahead.Type]
+		if !ok {
+			return nil, false, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
+		}
+		if parser.Trace != nil && parser.Trace.OnAction != nil {
+			parser.Trace.OnAction(state, action, lookahead)
+		}
+		switch action.Kind {
+		case SENGParserActionShift:
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, SENGParserNoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
+			stateStack = append(stateStack, action.Target)
+			lookahead = lexer.Scan()
+			if parser.Trace != nil && parser.Trace.OnToken != nil {
+				parser.Trace.OnToken(lookahead)
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case SENGParserActionReduce:
+			prod := SENGParserProductions[action.Target]
+			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
+			for i := prod.rhsCount - 1; i >= 0; i-- {
+				stateStack = stateStack[:len(stateStack)-1]
+				rhsNodes[i] = nodeStack[len(nodeStack)-1]
+				nodeStack = nodeStack[:len(nodeStack)-1]
+			}
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, SENGParserNoASTSentinel)
+			} else {
+				if prod.rhsCount == 0 {
+					rhsNodes = []*asts.ASTNode{}
+				}
+				node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				nodeStack = append(nodeStack, node)
+			}
+			state = stateStack[len(stateStack)-1]
+			nextState, ok := SENGParserGotos[state][prod.lhs]
+			if !ok {
+				return nil, false, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
+			}
+			stateStack = append(stateStack, nextState)
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case SENGParserActionAccept:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, true, nil
+			}
+			return asts.NewAST(nodeStack[0]), true, nil
+		case SENGParserActionAcceptAndYield:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			parser.stashedLookahead = lookahead
+			if astMode == "noast" {
+				return nil, false, nil
+			}
+			return asts.NewAST(nodeStack[0]), false, nil
+		default:
+			return nil, false, fmt.Errorf("parse error: no action")
 		}
 	}
 }
@@ -143,6 +249,7 @@ const (
 	SENGParserActionShift SENGParserActionKind = iota
 	SENGParserActionReduce
 	SENGParserActionAccept
+	SENGParserActionAcceptAndYield
 )
 
 type SENGParserAction struct {
@@ -200,6 +307,8 @@ func formatSENGParserAction(action SENGParserAction) string {
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case SENGParserActionAccept:
 		return "accept"
+	case SENGParserActionAcceptAndYield:
+		return "accept_and_yield"
 	default:
 		return "unknown"
 	}
@@ -228,12 +337,23 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionShift, Target: 16},
 	},
 	3: {
+		tokens.TokenType("adjective"):        {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 5},
+		tokens.TokenType("noun"):             {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 5},
 	},
 	4: {
-		tokens.TokenTypeEOF: {Kind: SENGParserActionAccept},
+		tokens.TokenTypeEOF:                            {Kind: SENGParserActionAccept},
+		tokens.TokenType("adjective"):                  {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("adverb"):                     {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("article"):                    {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("intransitiveImperativeVerb"): {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("intransitiveVerb"):           {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("noun"):                       {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("preposition"):                {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("transitiveImperativeVerb"):   {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("transitiveVerb"):             {Kind: SENGParserActionAcceptAndYield},
 	},
 	5: {
 		tokens.TokenType("adjective"): {Kind: SENGParserActionShift, Target: 19},
@@ -260,6 +380,7 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 	10: {
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 7},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenType("noun"):             {Kind: SENGParserActionReduce, Target: 7},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 7},
 	},
 	11: {
@@ -293,7 +414,9 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 3},
 	},
 	18: {
-		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 5},
+		tokens.TokenTypeEOF:           {Kind: SENGParserActionReduce, Target: 5},
+		tokens.TokenType("adjective"): {Kind: SENGParserActionReduce, Target: 5},
+		tokens.TokenType("noun"):      {Kind: SENGParserActionReduce, Target: 5},
 	},
 	19: {
 		tokens.TokenType("adjective"): {Kind: SENGParserActionShift, Target: 19},
@@ -304,9 +427,11 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("noun"):      {Kind: SENGParserActionShift, Target: 21},
 	},
 	21: {
-		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenTypeEOF:      {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenType("noun"): {Kind: SENGParserActionReduce, Target: 7},
 	},
 	22: {
+		tokens.TokenType("adjective"):        {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 8},
@@ -321,6 +446,7 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 	},
 	25: {
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenType("article"):          {Kind: SENGParserActionReduce, Target: 6},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 6},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 6},
 	},
@@ -330,7 +456,16 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("noun"):      {Kind: SENGParserActionShift, Target: 21},
 	},
 	27: {
-		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 1},
+		tokens.TokenTypeEOF:                            {Kind: SENGParserActionReduce, Target: 1},
+		tokens.TokenType("adjective"):                  {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("adverb"):                     {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("article"):                    {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("intransitiveImperativeVerb"): {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("intransitiveVerb"):           {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("noun"):                       {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("preposition"):                {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("transitiveImperativeVerb"):   {Kind: SENGParserActionAcceptAndYield},
+		tokens.TokenType("transitiveVerb"):             {Kind: SENGParserActionAcceptAndYield},
 	},
 	28: {
 		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 12},
@@ -346,10 +481,12 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("noun"):      {Kind: SENGParserActionShift, Target: 21},
 	},
 	31: {
-		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 8},
+		tokens.TokenTypeEOF:           {Kind: SENGParserActionReduce, Target: 8},
+		tokens.TokenType("adjective"): {Kind: SENGParserActionReduce, Target: 8},
 	},
 	32: {
-		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenTypeEOF:         {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenType("article"): {Kind: SENGParserActionReduce, Target: 6},
 	},
 	33: {
 		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 18},
