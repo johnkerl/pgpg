@@ -1,18 +1,17 @@
 # Top
 
 * Multi-object:
-  * Move to io.Reader (w/ string-handling option of course)
+  * Move to `io.Reader` (w/ string-handling option of course)
   * Then implement streaming proposal
 
 * PASCAL-S
-  * have more parsing-debug tools available in sample apps!
-  * wup: sharp edge if this isn't first b/c first-found & it matches identifier
-  * wup: ./generate.sh  && go build && ./astprint -e 'program foo'
-  * wup: better with missing semicolons
-  * wup: Root must come first
-  * top-level and next-level makefiles for pgpge: build fmt clean [test]
-    * `go get github.com/johnkerl/pgpg/lib@v0.2.0`
-    * `go get github.com/johnkerl/pgpg/generators/go@v0.2.0`
+
+* UX findings from PASCAL-S:
+  * Have more parsing-debug tools available in sample apps
+  * Write up: Sharp edge if this isn't first b/c first-found & it matches identifier
+  * Write up: `./generate.sh  && go build && ./astprint -e 'program foo'`
+  * Write up: Better error messages with missing semicolons
+  * Write up: Root must come first
 
 * Error out on this:
 ```
