@@ -1096,18 +1096,13 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 				if prod.LHS != firstSymbol && !valueStartSymbols[prod.LHS] {
 					continue
 				}
-				rhsFirst := first.terminals[userStart]
-				if len(prod.RHS) > 0 {
-					if prod.RHS[0].Terminal {
-						rhsFirst = map[string]bool{prod.RHS[0].Name: true}
-					} else if m := first.terminals[prod.RHS[0].Name]; m != nil {
-						rhsFirst = m
-					}
+				// Use First(start RHS), e.g. First(Value), so every such state gets reduce for all
+				// value-starting terminals (enables mixed-type multi-object e.g. [] {} and {} []).
+				valueFirst := first.terminals[firstSymbol]
+				if valueFirst == nil {
+					valueFirst = first.terminals[userStart]
 				}
-				if rhsFirst == nil {
-					rhsFirst = first.terminals[userStart]
-				}
-				if rhsFirst == nil {
+				if valueFirst == nil {
 					continue
 				}
 				stateActions := actions[stateID]
@@ -1115,7 +1110,7 @@ func buildLR1Tables(grammar *grammar) (map[int]map[string]Action, map[int]map[st
 					stateActions = map[string]Action{}
 					actions[stateID] = stateActions
 				}
-				for term := range rhsFirst {
+				for term := range valueFirst {
 					if term == eofSymbol {
 						continue
 					}
