@@ -1,74 +1,140 @@
 package lexers
 
 import (
+	"bufio"
 	"fmt"
+	"io"
+	"strings"
 	"unicode/utf8"
 
 	liblexers "github.com/johnkerl/pgpg/go/lib/pkg/lexers"
 	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
+const SignDigitLexerBufSize = 4096
+
 type SignDigitLexer struct {
-	inputText     string
-	inputLength   int
+	reader        *bufio.Reader
+	buf           []byte
+	tokenStart    int
 	tokenLocation *tokens.TokenLocation
+	atEOF         bool
 }
 
 var _ liblexers.AbstractLexer = (*SignDigitLexer)(nil)
 
-func NewSignDigitLexer(inputText string) liblexers.AbstractLexer {
+func NewSignDigitLexer(r io.Reader) liblexers.AbstractLexer {
+	reader, ok := r.(*bufio.Reader)
+	if !ok {
+		reader = bufio.NewReader(r)
+	}
 	return &SignDigitLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		reader:        reader,
+		buf:           make([]byte, 0, SignDigitLexerBufSize),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
-func (lexer *SignDigitLexer) Scan() *tokens.Token {
-	for {
-		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-			return tokens.NewEOFToken(lexer.tokenLocation)
+// NewSignDigitLexerFromString returns a lexer over s (convenience for tests and -e mode).
+func NewSignDigitLexerFromString(s string) liblexers.AbstractLexer {
+	return NewSignDigitLexer(strings.NewReader(s))
+}
+
+func (lexer *SignDigitLexer) ensureFill(needBytes int) {
+	for needBytes > len(lexer.buf) && !lexer.atEOF {
+		chunk := make([]byte, SignDigitLexerBufSize)
+		n, err := lexer.reader.Read(chunk)
+		if n > 0 {
+			lexer.buf = append(lexer.buf, chunk[:n]...)
 		}
-
-		startLocation := *lexer.tokenLocation
-		scanLocation := *lexer.tokenLocation
-		state := SignDigitLexerStartState
-		lastAcceptState := -1
-		lastAcceptLocation := scanLocation
-
-		for {
-			if scanLocation.ByteOffset >= lexer.inputLength {
-				break
-			}
-			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
-			nextState, ok := SignDigitLexerLookupTransition(state, r)
-			if !ok {
-				break
-			}
-			scanLocation.LocateRune(r, width)
-			state = nextState
-			if _, ok := SignDigitLexerActions[state]; ok {
-				lastAcceptState = state
-				lastAcceptLocation = scanLocation
-			}
+		if err == io.EOF {
+			lexer.atEOF = true
+			return
 		}
-
-		if lastAcceptState < 0 {
-			r, _ := lexer.peekRuneAt(lexer.tokenLocation.ByteOffset)
-			return tokens.NewErrorToken(fmt.Sprintf("lexer: unrecognized input %q", r), lexer.tokenLocation)
+		if err != nil {
+			lexer.atEOF = true
+			return
 		}
-
-		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
-		lexeme := []rune(lexemeText)
-		*lexer.tokenLocation = lastAcceptLocation
-		tokenType := SignDigitLexerActions[lastAcceptState]
-		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
 }
 
 func (lexer *SignDigitLexer) peekRuneAt(byteOffset int) (rune, int) {
-	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
+	lexer.ensureFill(byteOffset + utf8.UTFMax)
+	if byteOffset >= len(lexer.buf) {
+		return 0, 0
+	}
+	r, width := utf8.DecodeRune(lexer.buf[byteOffset:])
+	if width == 0 {
+		return 0, 0
+	}
 	return r, width
+}
+
+func (lexer *SignDigitLexer) Scan() *tokens.Token {
+	lexer.ensureFill(lexer.tokenStart + 1)
+	if lexer.tokenStart >= len(lexer.buf) && lexer.atEOF {
+		return tokens.NewEOFToken(lexer.tokenLocation)
+	}
+
+	for {
+		if lexer.tokenStart >= len(lexer.buf) {
+			if lexer.atEOF {
+				return tokens.NewEOFToken(lexer.tokenLocation)
+			}
+			lexer.ensureFill(lexer.tokenStart + 1)
+			if lexer.tokenStart >= len(lexer.buf) {
+				return tokens.NewEOFToken(lexer.tokenLocation)
+			}
+		}
+
+		startLocation := *lexer.tokenLocation
+		scanOffset := lexer.tokenStart
+		state := SignDigitLexerStartState
+		lastAcceptState := -1
+		lastAcceptOffset := scanOffset
+
+		for {
+			if scanOffset >= len(lexer.buf) {
+				if !lexer.atEOF {
+					lexer.ensureFill(scanOffset + utf8.UTFMax)
+				}
+				if scanOffset >= len(lexer.buf) {
+					break
+				}
+			}
+			r, width := lexer.peekRuneAt(scanOffset)
+			if width == 0 {
+				break
+			}
+			nextState, ok := SignDigitLexerLookupTransition(state, r)
+			if !ok {
+				break
+			}
+			scanOffset += width
+			state = nextState
+			if _, ok := SignDigitLexerActions[state]; ok {
+				lastAcceptState = state
+				lastAcceptOffset = scanOffset
+			}
+		}
+
+		if lastAcceptState < 0 {
+			r, _ := lexer.peekRuneAt(lexer.tokenStart)
+			return tokens.NewErrorToken(fmt.Sprintf("lexer: unrecognized input %q", r), lexer.tokenLocation)
+		}
+
+		lexemeText := string(lexer.buf[lexer.tokenStart:lastAcceptOffset])
+		lexeme := []rune(lexemeText)
+		for len(lexemeText) > 0 {
+			r, w := utf8.DecodeRuneInString(lexemeText)
+			lexer.tokenLocation.LocateRune(r, w)
+			lexemeText = lexemeText[w:]
+		}
+		lexer.buf = lexer.buf[lastAcceptOffset:]
+		lexer.tokenStart = 0
+		tokenType := SignDigitLexerActions[lastAcceptState]
+		return tokens.NewToken(lexeme, tokenType, &startLocation)
+	}
 }
 
 func SignDigitLexerLookupTransition(state int, r rune) (int, bool) {

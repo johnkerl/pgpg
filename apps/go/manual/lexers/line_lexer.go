@@ -1,8 +1,10 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
+	"io"
 	"unicode/utf8"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 const lineLexerInitialCapacity = 1024
@@ -18,10 +20,15 @@ type LineLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewLineLexer(inputText string) AbstractLexer {
+func NewLineLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return NewLineLexerFromString(string(b))
+}
+
+func NewLineLexerFromString(s string) AbstractLexer {
 	return &LineLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		inputText:     s,
+		inputLength:   len(s),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }

@@ -3,6 +3,7 @@ package parsers
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
@@ -32,8 +33,8 @@ func NewAMEParser() parsers.AbstractParser {
 	return &AMEParser{}
 }
 
-func (parser *AMEParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewAMLexer(inputText))
+func (parser *AMEParser) Parse(r io.Reader) (*asts.AST, error) {
+	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewAMLexer(r))
 	rootNode, err := parser.parseSumOrProduct()
 	if err != nil {
 		return nil, err

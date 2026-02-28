@@ -133,7 +133,7 @@ func TestEBNFLexerTableDriven(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			lexer := NewEBNFLexer(tt.input)
+			lexer := NewEBNFLexerFromString(tt.input)
 			for i, want := range tt.want {
 				tok := lexer.Scan()
 				if tok == nil {
@@ -151,14 +151,14 @@ func TestEBNFLexerTableDriven(t *testing.T) {
 }
 
 func TestEBNFLexer1(t *testing.T) {
-	lexer := NewEBNFLexer("")
+	lexer := NewEBNFLexerFromString("")
 
 	token := lexer.Scan()
 	assert.True(t, token.IsEOF())
 }
 
 func TestEBNFLexer2(t *testing.T) {
-	lexer := NewEBNFLexer("rule ::= \"a\" | 'b' ;")
+	lexer := NewEBNFLexerFromString("rule ::= \"a\" | 'b' ;")
 
 	token := lexer.Scan()
 	assert.Equal(t, "rule", token.LexemeText())
@@ -189,7 +189,7 @@ func TestEBNFLexer2(t *testing.T) {
 }
 
 func TestEBNFLexer3(t *testing.T) {
-	lexer := NewEBNFLexer("[ { ( ) } ] =")
+	lexer := NewEBNFLexerFromString("[ { ( ) } ] =")
 
 	token := lexer.Scan()
 	assert.Equal(t, "[", token.LexemeText())
@@ -222,7 +222,7 @@ func TestEBNFLexer3(t *testing.T) {
 
 func TestEBNFLexer4(t *testing.T) {
 	// Standalone colon is now valid (used in AST hint blocks)
-	lexer := NewEBNFLexer("x :=")
+	lexer := NewEBNFLexerFromString("x :=")
 
 	token := lexer.Scan()
 	assert.Equal(t, "x", token.LexemeText())
@@ -241,7 +241,7 @@ func TestEBNFLexer4(t *testing.T) {
 }
 
 func TestEBNFLexerArrow(t *testing.T) {
-	lexer := NewEBNFLexer(`A ::= B -> { "parent" : 0 }`)
+	lexer := NewEBNFLexerFromString(`A ::= B -> { "parent" : 0 }`)
 
 	token := lexer.Scan()
 	assert.Equal(t, "A", token.LexemeText())
@@ -285,7 +285,7 @@ func TestEBNFLexerArrow(t *testing.T) {
 
 func TestEBNFLexerDashStillWorks(t *testing.T) {
 	// Dash without > should still produce dash token (used in ranges)
-	lexer := NewEBNFLexer(`"a"-"z"`)
+	lexer := NewEBNFLexerFromString(`"a"-"z"`)
 
 	token := lexer.Scan()
 	assert.Equal(t, `"a"`, token.LexemeText())
@@ -301,7 +301,7 @@ func TestEBNFLexerDashStillWorks(t *testing.T) {
 }
 
 func TestEBNFLexerCommaAndIntegers(t *testing.T) {
-	lexer := NewEBNFLexer("0, 12, 345")
+	lexer := NewEBNFLexerFromString("0, 12, 345")
 
 	token := lexer.Scan()
 	assert.Equal(t, "0", token.LexemeText())

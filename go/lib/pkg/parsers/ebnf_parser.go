@@ -3,6 +3,7 @@ package parsers
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
 	"github.com/johnkerl/pgpg/go/lib/pkg/lexers"
@@ -41,8 +42,8 @@ func NewEBNFParserWithSourceName(sourceName string) AbstractParser {
 	return &EBNFParser{sourceName: sourceName}
 }
 
-func (parser *EBNFParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = lexers.NewLookaheadLexer(lexers.NewEBNFLexerWithSourceName(inputText, parser.sourceName))
+func (parser *EBNFParser) Parse(r io.Reader) (*asts.AST, error) {
+	parser.lexer = lexers.NewLookaheadLexer(lexers.NewEBNFLexerWithSourceName(r, parser.sourceName))
 
 	rootNode, err := parser.parseGrammar()
 	if err != nil {

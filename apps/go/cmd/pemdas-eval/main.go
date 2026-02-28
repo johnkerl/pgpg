@@ -68,7 +68,7 @@ func main() {
 			os.Exit(1)
 		}
 		for _, arg := range args {
-			if err := runParserOnce(arg, verbose, mode, modN); err != nil {
+			if err := runParserOnce(strings.NewReader(arg), verbose, mode, modN); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
@@ -76,12 +76,7 @@ func main() {
 		return
 	}
 	if len(args) == 0 {
-		content, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		if err := runParserOnce(string(content), verbose, mode, modN); err != nil {
+		if err := runParserOnce(os.Stdin, verbose, mode, modN); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -114,7 +109,7 @@ func runREPL(verbose bool, prompt string, mode string, modN int) {
 		if line == "" {
 			continue
 		}
-		if err := runParserOnce(line, verbose, mode, modN); err != nil {
+		if err := runParserOnce(strings.NewReader(line), verbose, mode, modN); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			continue
 		}
@@ -127,19 +122,23 @@ func runREPL(verbose bool, prompt string, mode string, modN int) {
 
 func runParserOnFiles(filenames []string, verbose bool, mode string, modN int) error {
 	for _, filename := range filenames {
-		content, err := os.ReadFile(filename)
+		f, err := os.Open(filename)
 		if err != nil {
 			return err
 		}
-		if err := runParserOnce(string(content), verbose, mode, modN); err != nil {
+		if err := runParserOnce(f, verbose, mode, modN); err != nil {
+			_ = f.Close()
+			return err
+		}
+		if err := f.Close(); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func runParserOnce(input string, verbose bool, mode string, modN int) error {
-	ast, err := parseWithMode(input, mode)
+func runParserOnce(r io.Reader, verbose bool, mode string, modN int) error {
+	ast, err := parseWithMode(r, mode)
 	if err != nil {
 		return err
 	}
@@ -175,16 +174,16 @@ func runParserOnce(input string, verbose bool, mode string, modN int) error {
 }
 
 // parseWithMode returns an AST using the lexer/parser for the given mode.
-func parseWithMode(input string, mode string) (*asts.AST, error) {
+func parseWithMode(r io.Reader, mode string) (*asts.AST, error) {
 	switch mode {
 	case "int":
-		lexer := generatedlexers.NewPEMDASIntLexer(input)
+		lexer := generatedlexers.NewPEMDASIntLexer(r)
 		return generatedparsers.NewPEMDASIntParser().Parse(lexer, "")
 	case "float":
-		lexer := generatedlexers.NewPEMDASFloatLexer(input)
+		lexer := generatedlexers.NewPEMDASFloatLexer(r)
 		return generatedparsers.NewPEMDASFloatParser().Parse(lexer, "")
 	case "mod":
-		lexer := generatedlexers.NewPEMDASModLexer(input)
+		lexer := generatedlexers.NewPEMDASModLexer(r)
 		return generatedparsers.NewPEMDASModParser().Parse(lexer, "")
 	default:
 		return nil, fmt.Errorf("unsupported mode %q", mode)

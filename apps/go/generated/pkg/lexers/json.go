@@ -1,7 +1,9 @@
 package lexers
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"strings"
 	"unicode/utf8"
 
@@ -9,70 +11,133 @@ import (
 	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
+const JSONLexerBufSize = 4096
+
 type JSONLexer struct {
-	inputText     string
-	inputLength   int
+	reader        *bufio.Reader
+	buf           []byte
+	tokenStart    int
 	tokenLocation *tokens.TokenLocation
+	atEOF         bool
 }
 
 var _ liblexers.AbstractLexer = (*JSONLexer)(nil)
 
-func NewJSONLexer(inputText string) liblexers.AbstractLexer {
+func NewJSONLexer(r io.Reader) liblexers.AbstractLexer {
+	reader, ok := r.(*bufio.Reader)
+	if !ok {
+		reader = bufio.NewReader(r)
+	}
 	return &JSONLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		reader:        reader,
+		buf:           make([]byte, 0, JSONLexerBufSize),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }
 
+// NewJSONLexerFromString returns a lexer over s (convenience for tests and -e mode).
+func NewJSONLexerFromString(s string) liblexers.AbstractLexer {
+	return NewJSONLexer(strings.NewReader(s))
+}
+
+func (lexer *JSONLexer) ensureFill(needBytes int) {
+	for needBytes > len(lexer.buf) && !lexer.atEOF {
+		chunk := make([]byte, JSONLexerBufSize)
+		n, err := lexer.reader.Read(chunk)
+		if n > 0 {
+			lexer.buf = append(lexer.buf, chunk[:n]...)
+		}
+		if err == io.EOF {
+			lexer.atEOF = true
+			return
+		}
+		if err != nil {
+			lexer.atEOF = true
+			return
+		}
+	}
+}
+
+func (lexer *JSONLexer) peekRuneAt(byteOffset int) (rune, int) {
+	lexer.ensureFill(byteOffset + utf8.UTFMax)
+	if byteOffset >= len(lexer.buf) {
+		return 0, 0
+	}
+	r, width := utf8.DecodeRune(lexer.buf[byteOffset:])
+	if width == 0 {
+		return 0, 0
+	}
+	return r, width
+}
+
 func (lexer *JSONLexer) Scan() *tokens.Token {
+	lexer.ensureFill(lexer.tokenStart + 1)
+	if lexer.tokenStart >= len(lexer.buf) && lexer.atEOF {
+		return tokens.NewEOFToken(lexer.tokenLocation)
+	}
+
 	for {
-		if lexer.tokenLocation.ByteOffset >= lexer.inputLength {
-			return tokens.NewEOFToken(lexer.tokenLocation)
+		if lexer.tokenStart >= len(lexer.buf) {
+			if lexer.atEOF {
+				return tokens.NewEOFToken(lexer.tokenLocation)
+			}
+			lexer.ensureFill(lexer.tokenStart + 1)
+			if lexer.tokenStart >= len(lexer.buf) {
+				return tokens.NewEOFToken(lexer.tokenLocation)
+			}
 		}
 
 		startLocation := *lexer.tokenLocation
-		scanLocation := *lexer.tokenLocation
+		scanOffset := lexer.tokenStart
 		state := JSONLexerStartState
 		lastAcceptState := -1
-		lastAcceptLocation := scanLocation
+		lastAcceptOffset := scanOffset
 
 		for {
-			if scanLocation.ByteOffset >= lexer.inputLength {
+			if scanOffset >= len(lexer.buf) {
+				if !lexer.atEOF {
+					lexer.ensureFill(scanOffset + utf8.UTFMax)
+				}
+				if scanOffset >= len(lexer.buf) {
+					break
+				}
+			}
+			r, width := lexer.peekRuneAt(scanOffset)
+			if width == 0 {
 				break
 			}
-			r, width := lexer.peekRuneAt(scanLocation.ByteOffset)
 			nextState, ok := JSONLexerLookupTransition(state, r)
 			if !ok {
 				break
 			}
-			scanLocation.LocateRune(r, width)
+			scanOffset += width
 			state = nextState
 			if _, ok := JSONLexerActions[state]; ok {
 				lastAcceptState = state
-				lastAcceptLocation = scanLocation
+				lastAcceptOffset = scanOffset
 			}
 		}
 
 		if lastAcceptState < 0 {
-			r, _ := lexer.peekRuneAt(lexer.tokenLocation.ByteOffset)
+			r, _ := lexer.peekRuneAt(lexer.tokenStart)
 			return tokens.NewErrorToken(fmt.Sprintf("lexer: unrecognized input %q", r), lexer.tokenLocation)
 		}
 
-		lexemeText := lexer.inputText[lexer.tokenLocation.ByteOffset:lastAcceptLocation.ByteOffset]
+		lexemeText := string(lexer.buf[lexer.tokenStart:lastAcceptOffset])
 		lexeme := []rune(lexemeText)
-		*lexer.tokenLocation = lastAcceptLocation
+		for len(lexemeText) > 0 {
+			r, w := utf8.DecodeRuneInString(lexemeText)
+			lexer.tokenLocation.LocateRune(r, w)
+			lexemeText = lexemeText[w:]
+		}
+		lexer.buf = lexer.buf[lastAcceptOffset:]
+		lexer.tokenStart = 0
 		tokenType := JSONLexerActions[lastAcceptState]
 		if JSONLexerIsIgnoredToken(tokenType) {
 			continue
 		}
 		return tokens.NewToken(lexeme, tokenType, &startLocation)
 	}
-}
-
-func (lexer *JSONLexer) peekRuneAt(byteOffset int) (rune, int) {
-	r, width := utf8.DecodeRuneInString(lexer.inputText[byteOffset:])
-	return r, width
 }
 
 func JSONLexerLookupTransition(state int, r rune) (int, bool) {

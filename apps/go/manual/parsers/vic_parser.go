@@ -3,6 +3,7 @@ package parsers
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
@@ -26,8 +27,8 @@ func NewVICParser() parsers.AbstractParser {
 	return &VICParser{}
 }
 
-func (parser *VICParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewVICLexer(inputText))
+func (parser *VICParser) Parse(r io.Reader) (*asts.AST, error) {
+	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewVICLexer(r))
 
 	rootNode, err := parser.parseStatement()
 	if err != nil {

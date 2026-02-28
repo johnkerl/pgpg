@@ -1,6 +1,7 @@
 package parsers
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
@@ -16,7 +17,7 @@ func assertEBNFNodeType(t *testing.T, node *asts.ASTNode, nodeType asts.NodeType
 
 func TestEBNFParserSimpleGrammar(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse("rule = \"a\" | \"b\";")
+	ast, err := parser.Parse(strings.NewReader("rule = \"a\" | \"b\";"))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
@@ -30,7 +31,7 @@ func TestEBNFParserSimpleGrammar(t *testing.T) {
 
 func TestEBNFParserGroupingOptionalRepeat(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse("expr ::= term { ( \"+\" | \"-\" ) term } [ \";\" ]")
+	ast, err := parser.Parse(strings.NewReader("expr ::= term { ( \"+\" | \"-\" ) term } [ \";\" ]"))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
@@ -40,20 +41,20 @@ func TestEBNFParserGroupingOptionalRepeat(t *testing.T) {
 
 func TestEBNFParserMultipleRules(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse("a = \"x\"; b = \"y\";")
+	ast, err := parser.Parse(strings.NewReader("a = \"x\"; b = \"y\";"))
 	assert.NoError(t, err)
 	assert.Len(t, ast.RootNode.Children, 2)
 }
 
 func TestEBNFParserMissingRuleName(t *testing.T) {
 	parser := NewEBNFParser()
-	_, err := parser.Parse("= \"x\";")
+	_, err := parser.Parse(strings.NewReader("= \"x\";"))
 	assert.Error(t, err)
 }
 
 func TestEBNFParserHintSimple(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`A ::= B C D -> { "parent": 1, "children": [0, 2], "type": "sum" };`)
+	ast, err := parser.Parse(strings.NewReader(`A ::= B C D -> { "parent": 1, "children": [0, 2], "type": "sum" };`))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
@@ -82,10 +83,10 @@ func TestEBNFParserHintSimple(t *testing.T) {
 
 func TestEBNFParserHintPerAlternative(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`
+	ast, err := parser.Parse(strings.NewReader(`
 		Op ::= Left plus Right  -> { "parent": 1, "children": [0, 2] }
 		     | Left minus Right -> { "parent": 1, "children": [0, 2] };
-	`)
+	`))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
@@ -102,7 +103,7 @@ func TestEBNFParserHintPerAlternative(t *testing.T) {
 
 func TestEBNFParserHintEmptyChildren(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`A ::= B -> { "parent": 0, "children": [] };`)
+	ast, err := parser.Parse(strings.NewReader(`A ::= B -> { "parent": 0, "children": [] };`))
 	assert.NoError(t, err)
 
 	rule := ast.RootNode.Children[0]
@@ -121,7 +122,7 @@ func TestEBNFParserHintEmptyChildren(t *testing.T) {
 func TestEBNFParserNoHintStillWorks(t *testing.T) {
 	// A grammar without hints should parse as before
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`A ::= B C D;`)
+	ast, err := parser.Parse(strings.NewReader(`A ::= B C D;`))
 	assert.NoError(t, err)
 
 	rule := ast.RootNode.Children[0]
@@ -131,7 +132,7 @@ func TestEBNFParserNoHintStillWorks(t *testing.T) {
 
 func TestEBNFParserHintWithAppendedChildren(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`A ::= B C D E -> { "parent": 1, "with_appended_children": [2, 3] };`)
+	ast, err := parser.Parse(strings.NewReader(`A ::= B C D E -> { "parent": 1, "with_appended_children": [2, 3] };`))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
@@ -148,7 +149,7 @@ func TestEBNFParserHintWithAppendedChildren(t *testing.T) {
 
 func TestEBNFParserHintWithPrependedChildren(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`A ::= B C D E -> { "parent": 1, "with_prepended_children": [0, 2] };`)
+	ast, err := parser.Parse(strings.NewReader(`A ::= B C D E -> { "parent": 1, "with_prepended_children": [0, 2] };`))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
@@ -165,7 +166,7 @@ func TestEBNFParserHintWithPrependedChildren(t *testing.T) {
 
 func TestEBNFParserHintWithAdoptedGrandchildren(t *testing.T) {
 	parser := NewEBNFParser()
-	ast, err := parser.Parse(`A ::= B C D -> { "parent": 1, "with_adopted_grandchildren": [0, 2] };`)
+	ast, err := parser.Parse(strings.NewReader(`A ::= B C D -> { "parent": 1, "with_adopted_grandchildren": [0, 2] };`))
 	assert.NoError(t, err)
 
 	root := ast.RootNode
