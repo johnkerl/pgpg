@@ -10,6 +10,7 @@ echo; ./apps/go/tryparse -e m:pemdas '1+2*3'
 echo; ./apps/go/tryparse -e g:pemdas '1*2+3'
 echo; ./apps/go/tryparse -e g:pemdas '1+2*3'
 echo; ./apps/go/tryparse -e g:stmts  'print(1);y=2; if(x=3)y=4;'
+echo; ./apps/go/tryparse -e g:lisp   '(+ 1 (* 2 3) (* 4 5))'
 echo; ./apps/go/tryparse -e g:lisp   '(+ 1 (* 2 3) (* 4 5)) ; comment here'
 
 echo; echo ----------------------------------------------------------------
