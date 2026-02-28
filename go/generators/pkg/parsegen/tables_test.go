@@ -51,3 +51,58 @@ func TestGenerateTablesMultiObjectAddsLcurlyReduce(t *testing.T) {
 		t.Error("expected some state to have lcurly: reduce (multi-object fix); got none")
 	}
 }
+
+// JSON-like grammar with Value ::= Object | Array so multi-object must add reduce for both lcurly and lbracket.
+// Before the fix, states after [] had only lbracket reduce (so [] {} failed); after {} only lcurly (so {} [] failed).
+const jsonLikeMixedBNF = `
+!ws ::= " " ;
+lcurly  ::= "{" ;
+rcurly  ::= "}" ;
+lbracket ::= "[" ;
+rbracket ::= "]" ;
+Json   ::= Value ;
+Value  ::= Object | Array ;
+Object ::= lcurly rcurly ;
+Array  ::= lbracket rbracket ;
+`
+
+func TestGenerateTablesMultiObjectMixedTypeReduceTerminals(t *testing.T) {
+	r := bytes.NewBufferString(jsonLikeMixedBNF)
+	tables, err := GenerateTablesFromReader(r, &ParseTableOptions{SourceName: "test.bnf"})
+	if err != nil {
+		t.Fatalf("GenerateTablesFromReader: %v", err)
+	}
+	var stateWithLcurlyReduce, stateWithLbracketReduce int
+	foundLcurly := false
+	foundLbracket := false
+	for id, stateActions := range tables.Actions {
+		if act, ok := stateActions["lcurly"]; ok && act.Type == "reduce" {
+			stateWithLcurlyReduce = id
+			foundLcurly = true
+		}
+		if act, ok := stateActions["lbracket"]; ok && act.Type == "reduce" {
+			stateWithLbracketReduce = id
+			foundLbracket = true
+		}
+	}
+	if !foundLcurly {
+		t.Error("expected some state to have lcurly: reduce (multi-object mixed-type); got none")
+	}
+	if !foundLbracket {
+		t.Error("expected some state to have lbracket: reduce (multi-object mixed-type); got none")
+	}
+	// After fix: every state that can reduce to Value gets reduce for all of First(Value), so at least one
+	// state should have both (the state we reach after reducing Value -> Object or Value -> Array).
+	var hasBoth bool
+	for _, stateActions := range tables.Actions {
+		lc, okLcurly := stateActions["lcurly"]
+		lb, okLbracket := stateActions["lbracket"]
+		if okLcurly && okLbracket && lc.Type == "reduce" && lb.Type == "reduce" {
+			hasBoth = true
+			break
+		}
+	}
+	if !hasBoth {
+		t.Errorf("multi-object mixed-type fix: expected at least one state to have both lcurly: reduce and lbracket: reduce (stateWithLcurly=%d stateWithLbracket=%d)", stateWithLcurlyReduce, stateWithLbracketReduce)
+	}
+}
