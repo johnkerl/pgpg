@@ -15,6 +15,15 @@
       "EOF": {
         "type": "reduce",
         "target": 1
+      },
+      "identifier": {
+        "type": "accept_and_yield"
+      },
+      "lparen": {
+        "type": "accept_and_yield"
+      },
+      "rparen": {
+        "type": "accept_and_yield"
       }
     },
     "2": {
@@ -26,10 +35,23 @@
     "3": {
       "EOF": {
         "type": "accept"
+      },
+      "identifier": {
+        "type": "accept_and_yield"
+      },
+      "lparen": {
+        "type": "accept_and_yield"
+      },
+      "rparen": {
+        "type": "accept_and_yield"
       }
     },
     "4": {
       "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "identifier": {
         "type": "reduce",
         "target": 6
       }
@@ -46,30 +68,13 @@
     },
     "6": {
       "identifier": {
-        "type": "reduce",
-        "target": 1
+        "type": "accept_and_yield"
       },
       "lparen": {
-        "type": "reduce",
-        "target": 1
+        "type": "accept_and_yield"
       },
       "rparen": {
-        "type": "reduce",
-        "target": 1
-      }
-    },
-    "7": {
-      "identifier": {
-        "type": "reduce",
-        "target": 2
-      },
-      "lparen": {
-        "type": "reduce",
-        "target": 2
-      },
-      "rparen": {
-        "type": "reduce",
-        "target": 2
+        "type": "accept_and_yield"
       }
     },
     "8": {

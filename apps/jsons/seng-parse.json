@@ -48,11 +48,19 @@
       }
     },
     "3": {
+      "adjective": {
+        "type": "reduce",
+        "target": 5
+      },
       "adverb": {
         "type": "reduce",
         "target": 5
       },
       "intransitiveVerb": {
+        "type": "reduce",
+        "target": 5
+      },
+      "noun": {
         "type": "reduce",
         "target": 5
       },
@@ -64,6 +72,33 @@
     "4": {
       "EOF": {
         "type": "accept"
+      },
+      "adjective": {
+        "type": "accept_and_yield"
+      },
+      "adverb": {
+        "type": "accept_and_yield"
+      },
+      "article": {
+        "type": "accept_and_yield"
+      },
+      "intransitiveImperativeVerb": {
+        "type": "accept_and_yield"
+      },
+      "intransitiveVerb": {
+        "type": "accept_and_yield"
+      },
+      "noun": {
+        "type": "accept_and_yield"
+      },
+      "preposition": {
+        "type": "accept_and_yield"
+      },
+      "transitiveImperativeVerb": {
+        "type": "accept_and_yield"
+      },
+      "transitiveVerb": {
+        "type": "accept_and_yield"
       }
     },
     "5": {
@@ -130,6 +165,10 @@
         "target": 7
       },
       "intransitiveVerb": {
+        "type": "reduce",
+        "target": 7
+      },
+      "noun": {
         "type": "reduce",
         "target": 7
       },
@@ -220,6 +259,14 @@
       "EOF": {
         "type": "reduce",
         "target": 5
+      },
+      "adjective": {
+        "type": "reduce",
+        "target": 5
+      },
+      "noun": {
+        "type": "reduce",
+        "target": 5
       }
     },
     "19": {
@@ -246,9 +293,17 @@
       "EOF": {
         "type": "reduce",
         "target": 7
+      },
+      "noun": {
+        "type": "reduce",
+        "target": 7
       }
     },
     "22": {
+      "adjective": {
+        "type": "reduce",
+        "target": 8
+      },
       "adverb": {
         "type": "reduce",
         "target": 8
@@ -287,6 +342,10 @@
         "type": "reduce",
         "target": 6
       },
+      "article": {
+        "type": "reduce",
+        "target": 6
+      },
       "intransitiveVerb": {
         "type": "reduce",
         "target": 6
@@ -314,6 +373,33 @@
       "EOF": {
         "type": "reduce",
         "target": 1
+      },
+      "adjective": {
+        "type": "accept_and_yield"
+      },
+      "adverb": {
+        "type": "accept_and_yield"
+      },
+      "article": {
+        "type": "accept_and_yield"
+      },
+      "intransitiveImperativeVerb": {
+        "type": "accept_and_yield"
+      },
+      "intransitiveVerb": {
+        "type": "accept_and_yield"
+      },
+      "noun": {
+        "type": "accept_and_yield"
+      },
+      "preposition": {
+        "type": "accept_and_yield"
+      },
+      "transitiveImperativeVerb": {
+        "type": "accept_and_yield"
+      },
+      "transitiveVerb": {
+        "type": "accept_and_yield"
       }
     },
     "28": {
@@ -354,10 +440,18 @@
       "EOF": {
         "type": "reduce",
         "target": 8
+      },
+      "adjective": {
+        "type": "reduce",
+        "target": 8
       }
     },
     "32": {
       "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "article": {
         "type": "reduce",
         "target": 6
       }

@@ -11,7 +11,8 @@ import (
 )
 
 type PEMDASPlainParser struct {
-	Trace *PEMDASPlainParserTraceHooks
+	Trace            *PEMDASPlainParserTraceHooks
+	stashedLookahead *tokens.Token
 }
 
 type PEMDASPlainParserTraceHooks struct {
@@ -102,8 +103,113 @@ func (parser *PEMDASPlainParser) Parse(lexer liblexers.AbstractLexer, astMode st
 				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
+		case PEMDASPlainParserActionAcceptAndYield:
+			return nil, fmt.Errorf("parse error: multiple objects; use ParseOne for multi-object input")
 		default:
 			return nil, fmt.Errorf("parse error: no action")
+		}
+	}
+}
+
+// ParseOne parses one record from the lexer. It is for multi-object input: call in a loop until done.
+// Returns (ast, true, nil) on EOF after a record, (ast, false, nil) when more input follows, or (nil, false, err) on error.
+func (parser *PEMDASPlainParser) ParseOne(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, bool, error) {
+	if lexer == nil {
+		return nil, false, fmt.Errorf("parser: nil lexer")
+	}
+	stateStack := []int{0}
+	nodeStack := []*asts.ASTNode{}
+	var lookahead *tokens.Token
+	if parser.stashedLookahead != nil {
+		lookahead = parser.stashedLookahead
+		parser.stashedLookahead = nil
+	} else {
+		lookahead = lexer.Scan()
+	}
+	if parser.Trace != nil && parser.Trace.OnToken != nil {
+		parser.Trace.OnToken(lookahead)
+	}
+	for {
+		if lookahead == nil {
+			return nil, false, fmt.Errorf("parser: lexer returned nil token")
+		}
+		if lookahead.Type == tokens.TokenTypeError {
+			return nil, false, fmt.Errorf("lexer error: %s", string(lookahead.Lexeme))
+		}
+		state := stateStack[len(stateStack)-1]
+		action, ok := PEMDASPlainParserActions[state][lookahead.Type]
+		if !ok {
+			return nil, false, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
+		}
+		if parser.Trace != nil && parser.Trace.OnAction != nil {
+			parser.Trace.OnAction(state, action, lookahead)
+		}
+		switch action.Kind {
+		case PEMDASPlainParserActionShift:
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, PEMDASPlainParserNoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
+			stateStack = append(stateStack, action.Target)
+			lookahead = lexer.Scan()
+			if parser.Trace != nil && parser.Trace.OnToken != nil {
+				parser.Trace.OnToken(lookahead)
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case PEMDASPlainParserActionReduce:
+			prod := PEMDASPlainParserProductions[action.Target]
+			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
+			for i := prod.rhsCount - 1; i >= 0; i-- {
+				stateStack = stateStack[:len(stateStack)-1]
+				rhsNodes[i] = nodeStack[len(nodeStack)-1]
+				nodeStack = nodeStack[:len(nodeStack)-1]
+			}
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, PEMDASPlainParserNoASTSentinel)
+			} else {
+				if prod.rhsCount == 0 {
+					rhsNodes = []*asts.ASTNode{}
+				}
+				node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				nodeStack = append(nodeStack, node)
+			}
+			state = stateStack[len(stateStack)-1]
+			nextState, ok := PEMDASPlainParserGotos[state][prod.lhs]
+			if !ok {
+				return nil, false, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
+			}
+			stateStack = append(stateStack, nextState)
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case PEMDASPlainParserActionAccept:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, true, nil
+			}
+			return asts.NewAST(nodeStack[0]), true, nil
+		case PEMDASPlainParserActionAcceptAndYield:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			parser.stashedLookahead = lookahead
+			if astMode == "noast" {
+				return nil, false, nil
+			}
+			return asts.NewAST(nodeStack[0]), false, nil
+		default:
+			return nil, false, fmt.Errorf("parse error: no action")
 		}
 	}
 }
@@ -143,6 +249,7 @@ const (
 	PEMDASPlainParserActionShift PEMDASPlainParserActionKind = iota
 	PEMDASPlainParserActionReduce
 	PEMDASPlainParserActionAccept
+	PEMDASPlainParserActionAcceptAndYield
 )
 
 type PEMDASPlainParserAction struct {
@@ -200,6 +307,8 @@ func formatPEMDASPlainParserAction(action PEMDASPlainParserAction) string {
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case PEMDASPlainParserActionAccept:
 		return "accept"
+	case PEMDASPlainParserActionAcceptAndYield:
+		return "accept_and_yield"
 	default:
 		return "unknown"
 	}
@@ -218,9 +327,11 @@ var PEMDASPlainParserActions = map[int]map[tokens.TokenType]PEMDASPlainParserAct
 		tokens.TokenType("plus"):        {Kind: PEMDASPlainParserActionShift, Target: 13},
 	},
 	1: {
-		tokens.TokenTypeEOF:       {Kind: PEMDASPlainParserActionReduce, Target: 3},
-		tokens.TokenType("minus"): {Kind: PEMDASPlainParserActionShift, Target: 14},
-		tokens.TokenType("plus"):  {Kind: PEMDASPlainParserActionShift, Target: 15},
+		tokens.TokenTypeEOF:             {Kind: PEMDASPlainParserActionReduce, Target: 3},
+		tokens.TokenType("int_literal"): {Kind: PEMDASPlainParserActionReduce, Target: 3},
+		tokens.TokenType("lparen"):      {Kind: PEMDASPlainParserActionReduce, Target: 3},
+		tokens.TokenType("minus"):       {Kind: PEMDASPlainParserActionShift, Target: 14},
+		tokens.TokenType("plus"):        {Kind: PEMDASPlainParserActionShift, Target: 15},
 	},
 	2: {
 		tokens.TokenTypeEOF:        {Kind: PEMDASPlainParserActionReduce, Target: 13},
@@ -257,13 +368,35 @@ var PEMDASPlainParserActions = map[int]map[tokens.TokenType]PEMDASPlainParserAct
 		tokens.TokenType("times"):          {Kind: PEMDASPlainParserActionReduce, Target: 18},
 	},
 	6: {
-		tokens.TokenTypeEOF: {Kind: PEMDASPlainParserActionReduce, Target: 2},
+		tokens.TokenTypeEOF:             {Kind: PEMDASPlainParserActionReduce, Target: 2},
+		tokens.TokenType("int_literal"): {Kind: PEMDASPlainParserActionReduce, Target: 2},
+		tokens.TokenType("lparen"):      {Kind: PEMDASPlainParserActionReduce, Target: 2},
+		tokens.TokenType("minus"):       {Kind: PEMDASPlainParserActionReduce, Target: 2},
+		tokens.TokenType("plus"):        {Kind: PEMDASPlainParserActionReduce, Target: 2},
 	},
 	7: {
-		tokens.TokenTypeEOF: {Kind: PEMDASPlainParserActionAccept},
+		tokens.TokenTypeEOF:                {Kind: PEMDASPlainParserActionAccept},
+		tokens.TokenType("divide"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("exponentiation"): {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("int_literal"):    {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("lparen"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("minus"):          {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("modulo"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("plus"):           {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("rparen"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("times"):          {Kind: PEMDASPlainParserActionAcceptAndYield},
 	},
 	8: {
-		tokens.TokenTypeEOF: {Kind: PEMDASPlainParserActionReduce, Target: 1},
+		tokens.TokenTypeEOF:                {Kind: PEMDASPlainParserActionReduce, Target: 1},
+		tokens.TokenType("divide"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("exponentiation"): {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("int_literal"):    {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("lparen"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("minus"):          {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("modulo"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("plus"):           {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("rparen"):         {Kind: PEMDASPlainParserActionAcceptAndYield},
+		tokens.TokenType("times"):          {Kind: PEMDASPlainParserActionAcceptAndYield},
 	},
 	9: {
 		tokens.TokenTypeEOF:        {Kind: PEMDASPlainParserActionReduce, Target: 10},
@@ -334,9 +467,11 @@ var PEMDASPlainParserActions = map[int]map[tokens.TokenType]PEMDASPlainParserAct
 		tokens.TokenType("minus"):       {Kind: PEMDASPlainParserActionShift, Target: 39},
 	},
 	20: {
-		tokens.TokenType("minus"):  {Kind: PEMDASPlainParserActionShift, Target: 40},
-		tokens.TokenType("plus"):   {Kind: PEMDASPlainParserActionShift, Target: 41},
-		tokens.TokenType("rparen"): {Kind: PEMDASPlainParserActionReduce, Target: 3},
+		tokens.TokenType("int_literal"): {Kind: PEMDASPlainParserActionReduce, Target: 3},
+		tokens.TokenType("lparen"):      {Kind: PEMDASPlainParserActionReduce, Target: 3},
+		tokens.TokenType("minus"):       {Kind: PEMDASPlainParserActionShift, Target: 40},
+		tokens.TokenType("plus"):        {Kind: PEMDASPlainParserActionShift, Target: 41},
+		tokens.TokenType("rparen"):      {Kind: PEMDASPlainParserActionReduce, Target: 3},
 	},
 	21: {
 		tokens.TokenType("divide"): {Kind: PEMDASPlainParserActionReduce, Target: 13},

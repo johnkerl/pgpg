@@ -11,7 +11,8 @@ import (
 )
 
 type LISPParser struct {
-	Trace *LISPParserTraceHooks
+	Trace            *LISPParserTraceHooks
+	stashedLookahead *tokens.Token
 }
 
 type LISPParserTraceHooks struct {
@@ -102,8 +103,113 @@ func (parser *LISPParser) Parse(lexer liblexers.AbstractLexer, astMode string) (
 				return nil, nil
 			}
 			return asts.NewAST(nodeStack[0]), nil
+		case LISPParserActionAcceptAndYield:
+			return nil, fmt.Errorf("parse error: multiple objects; use ParseOne for multi-object input")
 		default:
 			return nil, fmt.Errorf("parse error: no action")
+		}
+	}
+}
+
+// ParseOne parses one record from the lexer. It is for multi-object input: call in a loop until done.
+// Returns (ast, true, nil) on EOF after a record, (ast, false, nil) when more input follows, or (nil, false, err) on error.
+func (parser *LISPParser) ParseOne(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, bool, error) {
+	if lexer == nil {
+		return nil, false, fmt.Errorf("parser: nil lexer")
+	}
+	stateStack := []int{0}
+	nodeStack := []*asts.ASTNode{}
+	var lookahead *tokens.Token
+	if parser.stashedLookahead != nil {
+		lookahead = parser.stashedLookahead
+		parser.stashedLookahead = nil
+	} else {
+		lookahead = lexer.Scan()
+	}
+	if parser.Trace != nil && parser.Trace.OnToken != nil {
+		parser.Trace.OnToken(lookahead)
+	}
+	for {
+		if lookahead == nil {
+			return nil, false, fmt.Errorf("parser: lexer returned nil token")
+		}
+		if lookahead.Type == tokens.TokenTypeError {
+			return nil, false, fmt.Errorf("lexer error: %s", string(lookahead.Lexeme))
+		}
+		state := stateStack[len(stateStack)-1]
+		action, ok := LISPParserActions[state][lookahead.Type]
+		if !ok {
+			return nil, false, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
+		}
+		if parser.Trace != nil && parser.Trace.OnAction != nil {
+			parser.Trace.OnAction(state, action, lookahead)
+		}
+		switch action.Kind {
+		case LISPParserActionShift:
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, LISPParserNoASTSentinel)
+			} else {
+				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
+			}
+			stateStack = append(stateStack, action.Target)
+			lookahead = lexer.Scan()
+			if parser.Trace != nil && parser.Trace.OnToken != nil {
+				parser.Trace.OnToken(lookahead)
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case LISPParserActionReduce:
+			prod := LISPParserProductions[action.Target]
+			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
+			for i := prod.rhsCount - 1; i >= 0; i-- {
+				stateStack = stateStack[:len(stateStack)-1]
+				rhsNodes[i] = nodeStack[len(nodeStack)-1]
+				nodeStack = nodeStack[:len(nodeStack)-1]
+			}
+			if astMode == "noast" {
+				nodeStack = append(nodeStack, LISPParserNoASTSentinel)
+			} else {
+				if prod.rhsCount == 0 {
+					rhsNodes = []*asts.ASTNode{}
+				}
+				node := asts.NewASTNode(nil, prod.lhs, rhsNodes)
+				nodeStack = append(nodeStack, node)
+			}
+			state = stateStack[len(stateStack)-1]
+			nextState, ok := LISPParserGotos[state][prod.lhs]
+			if !ok {
+				return nil, false, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
+			}
+			stateStack = append(stateStack, nextState)
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+		case LISPParserActionAccept:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			if astMode == "noast" {
+				return nil, true, nil
+			}
+			return asts.NewAST(nodeStack[0]), true, nil
+		case LISPParserActionAcceptAndYield:
+			if len(nodeStack) != 1 {
+				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
+			}
+			if parser.Trace != nil && parser.Trace.OnStack != nil {
+				parser.Trace.OnStack(stateStack, nodeStack)
+			}
+			parser.stashedLookahead = lookahead
+			if astMode == "noast" {
+				return nil, false, nil
+			}
+			return asts.NewAST(nodeStack[0]), false, nil
+		default:
+			return nil, false, fmt.Errorf("parse error: no action")
 		}
 	}
 }
@@ -143,6 +249,7 @@ const (
 	LISPParserActionShift LISPParserActionKind = iota
 	LISPParserActionReduce
 	LISPParserActionAccept
+	LISPParserActionAcceptAndYield
 )
 
 type LISPParserAction struct {
@@ -200,6 +307,8 @@ func formatLISPParserAction(action LISPParserAction) string {
 		return fmt.Sprintf("reduce(%d)", action.Target)
 	case LISPParserActionAccept:
 		return "accept"
+	case LISPParserActionAcceptAndYield:
+		return "accept_and_yield"
 	default:
 		return "unknown"
 	}
@@ -216,30 +325,32 @@ var LISPParserActions = map[int]map[tokens.TokenType]LISPParserAction{
 		tokens.TokenType("lparen"):     {Kind: LISPParserActionShift, Target: 5},
 	},
 	1: {
-		tokens.TokenTypeEOF: {Kind: LISPParserActionReduce, Target: 1},
+		tokens.TokenTypeEOF:            {Kind: LISPParserActionReduce, Target: 1},
+		tokens.TokenType("identifier"): {Kind: LISPParserActionAcceptAndYield},
+		tokens.TokenType("lparen"):     {Kind: LISPParserActionAcceptAndYield},
+		tokens.TokenType("rparen"):     {Kind: LISPParserActionAcceptAndYield},
 	},
 	2: {
 		tokens.TokenTypeEOF: {Kind: LISPParserActionReduce, Target: 2},
 	},
 	3: {
-		tokens.TokenTypeEOF: {Kind: LISPParserActionAccept},
+		tokens.TokenTypeEOF:            {Kind: LISPParserActionAccept},
+		tokens.TokenType("identifier"): {Kind: LISPParserActionAcceptAndYield},
+		tokens.TokenType("lparen"):     {Kind: LISPParserActionAcceptAndYield},
+		tokens.TokenType("rparen"):     {Kind: LISPParserActionAcceptAndYield},
 	},
 	4: {
-		tokens.TokenTypeEOF: {Kind: LISPParserActionReduce, Target: 6},
+		tokens.TokenTypeEOF:            {Kind: LISPParserActionReduce, Target: 6},
+		tokens.TokenType("identifier"): {Kind: LISPParserActionReduce, Target: 6},
 	},
 	5: {
 		tokens.TokenType("identifier"): {Kind: LISPParserActionShift, Target: 9},
 		tokens.TokenType("lparen"):     {Kind: LISPParserActionShift, Target: 10},
 	},
 	6: {
-		tokens.TokenType("identifier"): {Kind: LISPParserActionReduce, Target: 1},
-		tokens.TokenType("lparen"):     {Kind: LISPParserActionReduce, Target: 1},
-		tokens.TokenType("rparen"):     {Kind: LISPParserActionReduce, Target: 1},
-	},
-	7: {
-		tokens.TokenType("identifier"): {Kind: LISPParserActionReduce, Target: 2},
-		tokens.TokenType("lparen"):     {Kind: LISPParserActionReduce, Target: 2},
-		tokens.TokenType("rparen"):     {Kind: LISPParserActionReduce, Target: 2},
+		tokens.TokenType("identifier"): {Kind: LISPParserActionAcceptAndYield},
+		tokens.TokenType("lparen"):     {Kind: LISPParserActionAcceptAndYield},
+		tokens.TokenType("rparen"):     {Kind: LISPParserActionAcceptAndYield},
 	},
 	8: {
 		tokens.TokenType("identifier"): {Kind: LISPParserActionShift, Target: 9},
