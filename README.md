@@ -7,7 +7,7 @@ It's very much a work in progress!
 ## CI status
 
 [![Go build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-go.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-go.yml)
-[![Python build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-python.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-python.yml)
+[![Python build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-py.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-py.yml)
 [![JS build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-js.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-js.yml)
 
 ## Sample apps

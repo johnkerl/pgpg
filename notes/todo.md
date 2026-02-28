@@ -47,31 +47,34 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 
 # Tools to-do
 
-* Dependabot
-* Copilot reviews
-* Prohibit any parent/child indices the same
-* Port manuals to JavaScript
-* Re-organize and grok the lexer/parser tables etc.
-* D on ^D at CLI
-* Allow separate `.bnf` files for lex and parse? In case of all parser bits identical (e.g. `PEMDAS*`).
-* `go.work` narrative ..
-* `taginfo.sh` ... make this crisper ...
-* ??  `GOPROXY=direct go mod tidy`
-* Code neatens:
+* CI:
+  * Copilot reviews
+* UX:
+  * No D on ^D at CLI
+* Efficiency (memory and/or CPU):
+  * Scale-test everything for perf early on -- especially channel-switching
+  * DFA minimization
+* Docs:
+  * Doc `tryparse` with `-tokens`, `-states`, `-stack`.
+  * ??  `GOPROXY=direct go mod tidy`
+* Code-neatens:
   * Move types to tops of files
   * Dedupe
-  * Etc.
-* Doc `tryparse` with `-tokens`, `-states`, `-stack`.
-* Scale-test everything for perf early on -- especially channel-switching
-* DFA minimization
-* Hand-written recursive-ascent impls for simple grammars?
-* AST to-string factored out of printer
-  * Use for UT
-* Wrap lexers in LA1 and LA2 etc for lookahead level:
-  * Hide direct calls to Scan``
-  * `.First()`
-  * `.Second()`
-  * `.Advance()`
+  * Re-organize and grok the lexer/parser tables etc.
+  * Prohibit any parent/child indices the same
+  * Allow separate `.bnf` files for lex and parse? In case of all parser bits identical (e.g. `PEMDAS*`).
+  * AST to-string factored out of printer
+    * Use for UT
+  * [Maybe] Wrap lexers in LA1 and LA2 etc for lookahead level:
+    * Hide direct calls to Scan``
+    * `.First()`
+    * `.Second()`
+    * `.Advance()`
+* Implmementation languages:
+  * Catch more things up to Python
+  * Catch more things up to JS
+* Misc:
+  * Hand-written recursive-ascent impls for simple grammars?
 
 # Credits
 
