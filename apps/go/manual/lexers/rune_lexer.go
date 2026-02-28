@@ -1,8 +1,10 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
+	"io"
 	"unicode/utf8"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 const (
@@ -16,10 +18,15 @@ type RuneLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewRuneLexer(inputText string) AbstractLexer {
+func NewRuneLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return NewRuneLexerFromString(string(b))
+}
+
+func NewRuneLexerFromString(s string) AbstractLexer {
 	return &RuneLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		inputText:     s,
+		inputLength:   len(s),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }

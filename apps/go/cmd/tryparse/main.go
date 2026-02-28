@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/parsers"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
@@ -23,7 +24,7 @@ type generatedParser interface {
 }
 
 type parserInfoT struct {
-	run  func(string, traceOptions) (*asts.AST, error)
+	run  func(io.Reader, traceOptions) (*asts.AST, error)
 	help string
 }
 
@@ -141,7 +142,7 @@ func main() {
 			os.Exit(1)
 		}
 		for _, arg := range args {
-			if err := runParserOnce(run, arg, opts); err != nil {
+			if err := runParserOnce(run, strings.NewReader(arg), opts); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
@@ -149,12 +150,7 @@ func main() {
 		return
 	}
 	if len(args) == 0 {
-		content, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		if err := runParserOnce(run, string(content), opts); err != nil {
+		if err := runParserOnce(run, os.Stdin, opts); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -164,29 +160,27 @@ func main() {
 	}
 }
 
-func runManualParser(maker func() libparsers.AbstractParser) func(string, traceOptions) (*asts.AST, error) {
-	return func(input string, _ traceOptions) (*asts.AST, error) {
+func runManualParser(maker func() libparsers.AbstractParser) func(io.Reader, traceOptions) (*asts.AST, error) {
+	return func(r io.Reader, _ traceOptions) (*asts.AST, error) {
 		parser := maker()
-		return parser.Parse(input)
+		return parser.Parse(r)
 	}
 }
 
 func runGeneratedParser(
-	newLexer func(string) liblexers.AbstractLexer,
+	newLexer func(io.Reader) liblexers.AbstractLexer,
 	newParser func() generatedParser,
-) func(string, traceOptions) (*asts.AST, error) {
-	return func(input string, opts traceOptions) (*asts.AST, error) {
-		lexer := newLexer(input)
+) func(io.Reader, traceOptions) (*asts.AST, error) {
+	return func(r io.Reader, opts traceOptions) (*asts.AST, error) {
+		lexer := newLexer(r)
 		parser := newParser()
 		parser.AttachCLITrace(opts.tokens, opts.states, opts.stack)
 		return parser.Parse(lexer, opts.astMode)
 	}
 }
 
-func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input string, opts traceOptions) error {
-	// TODO: CLI option
-	fmt.Println(input)
-	ast, err := run(input, opts)
+func runParserOnce(run func(io.Reader, traceOptions) (*asts.AST, error), r io.Reader, opts traceOptions) error {
+	ast, err := run(r, opts)
 	if err != nil {
 		return err
 	}
@@ -196,13 +190,17 @@ func runParserOnce(run func(string, traceOptions) (*asts.AST, error), input stri
 	return nil
 }
 
-func runParserOnFiles(run func(string, traceOptions) (*asts.AST, error), filenames []string, opts traceOptions) error {
+func runParserOnFiles(run func(io.Reader, traceOptions) (*asts.AST, error), filenames []string, opts traceOptions) error {
 	for _, filename := range filenames {
-		content, err := os.ReadFile(filename)
+		f, err := os.Open(filename)
 		if err != nil {
 			return err
 		}
-		if err := runParserOnce(run, string(content), opts); err != nil {
+		if err := runParserOnce(run, f, opts); err != nil {
+			_ = f.Close()
+			return err
+		}
+		if err := f.Close(); err != nil {
 			return err
 		}
 	}

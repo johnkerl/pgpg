@@ -1,12 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"io"
 	"os"
 	"sort"
+	"strings"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
 	liblexers "github.com/johnkerl/pgpg/go/lib/pkg/lexers"
@@ -14,7 +14,8 @@ import (
 	generatedlexers "github.com/johnkerl/pgpg/apps/go/generated/pkg/lexers"
 )
 
-type lexerMaker func(string) lexers.AbstractLexer
+type lexerMaker func(io.Reader) liblexers.AbstractLexer
+
 type lexerInfoT struct {
 	maker lexerMaker
 	help  string
@@ -83,7 +84,7 @@ func main() {
 			os.Exit(1)
 		}
 		for _, arg := range args {
-			if err := runLexerOnce(lexerMaker, arg); err != nil {
+			if err := runLexerOnce(lexerMaker, strings.NewReader(arg)); err != nil {
 				fmt.Fprintln(os.Stderr, err)
 				os.Exit(1)
 			}
@@ -91,12 +92,7 @@ func main() {
 		return
 	}
 	if len(args) == 0 {
-		content, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		if err := runLexerOnce(lexerMaker, string(content)); err != nil {
+		if err := runLexerOnce(lexerMaker, os.Stdin); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -106,29 +102,22 @@ func main() {
 	}
 }
 
-func runLexerOnce(lexerMaker lexerMaker, input string) error {
-	lexer := lexerMaker(input)
+func runLexerOnce(lexerMaker lexerMaker, r io.Reader) error {
+	lexer := lexerMaker(r)
 	return lexers.Run(lexer)
 }
 
 func runLexerOnFiles(lexerMaker lexerMaker, filenames []string) error {
 	for _, filename := range filenames {
-		handle, err := os.Open(filename)
+		f, err := os.Open(filename)
 		if err != nil {
 			return err
 		}
-		scanner := bufio.NewScanner(handle)
-		for scanner.Scan() {
-			if err := runLexerOnce(lexerMaker, scanner.Text()); err != nil {
-				_ = handle.Close()
-				return err
-			}
-		}
-		if err := scanner.Err(); err != nil {
-			_ = handle.Close()
+		if err := runLexerOnce(lexerMaker, f); err != nil {
+			_ = f.Close()
 			return err
 		}
-		if err := handle.Close(); err != nil {
+		if err := f.Close(); err != nil {
 			return err
 		}
 	}

@@ -2,10 +2,11 @@ package lexers
 
 import (
 	"fmt"
-
-	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
+	"io"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 const amLexerInitialCapacity = 1024
@@ -25,10 +26,15 @@ type AMLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewAMLexer(inputText string) AbstractLexer {
+func NewAMLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return NewAMLexerFromString(string(b))
+}
+
+func NewAMLexerFromString(s string) AbstractLexer {
 	return &AMLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		inputText:     s,
+		inputLength:   len(s),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }

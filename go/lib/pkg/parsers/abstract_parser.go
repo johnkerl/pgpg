@@ -1,7 +1,11 @@
 package parsers
 
-import "github.com/johnkerl/pgpg/go/lib/pkg/asts"
+import (
+	"io"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
+)
 
 type AbstractParser interface {
-	Parse(inputText string) (*asts.AST, error)
+	Parse(r io.Reader) (*asts.AST, error)
 }

@@ -2,6 +2,7 @@ package lexers
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
@@ -65,9 +66,15 @@ type SENGLexer struct {
 	wordLexer AbstractLexer
 }
 
-func NewSENGLexer(inputText string) AbstractLexer {
+func NewSENGLexer(r io.Reader) AbstractLexer {
 	return &SENGLexer{
-		wordLexer: NewWordLexer(inputText),
+		wordLexer: NewWordLexer(r),
+	}
+}
+
+func NewSENGLexerFromString(s string) AbstractLexer {
+	return &SENGLexer{
+		wordLexer: NewWordLexerFromString(s),
 	}
 }
 

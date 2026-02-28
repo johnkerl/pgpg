@@ -140,7 +140,7 @@ func GenerateTables(grammarText string, opts *ParseTableOptions) (*Tables, error
 		sourceName = opts.SourceName
 	}
 	parser := parsers.NewEBNFParserWithSourceName(sourceName)
-	ast, err := parser.Parse(grammarText)
+	ast, err := parser.Parse(strings.NewReader(grammarText))
 	if err != nil {
 		return nil, err
 	}

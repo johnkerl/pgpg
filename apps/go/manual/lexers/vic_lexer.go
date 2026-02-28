@@ -2,10 +2,11 @@ package lexers
 
 import (
 	"fmt"
-
-	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
+	"io"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 const vicLexerInitialCapacity = 1024
@@ -30,7 +31,16 @@ type VICLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewVICLexer(inputText string) AbstractLexer {
+func NewVICLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return newVICLexerFromString(string(b))
+}
+
+func NewVICLexerFromString(s string) AbstractLexer {
+	return newVICLexerFromString(s)
+}
+
+func newVICLexerFromString(inputText string) AbstractLexer {
 	return &VICLexer{
 		inputText:     inputText,
 		inputLength:   len(inputText),

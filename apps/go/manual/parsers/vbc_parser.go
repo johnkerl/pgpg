@@ -3,6 +3,7 @@ package parsers
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
@@ -24,8 +25,8 @@ func NewVBCParser() parsers.AbstractParser {
 	return &VBCParser{}
 }
 
-func (parser *VBCParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewVBCLexer(inputText))
+func (parser *VBCParser) Parse(r io.Reader) (*asts.AST, error) {
+	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewVBCLexer(r))
 
 	rootNode, err := parser.parseOr()
 	if err != nil {

@@ -1,6 +1,8 @@
 package lexers
 
 import (
+	"io"
+
 	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 	"github.com/johnkerl/pgpg/go/lib/pkg/util"
 )
@@ -18,7 +20,12 @@ type CannedTextLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewCannedTextLexer(text string) AbstractLexer {
+func NewCannedTextLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return NewCannedTextLexerFromString(string(b))
+}
+
+func NewCannedTextLexerFromString(text string) AbstractLexer {
 	outputs := util.SplitString(text, " ")
 	return &CannedTextLexer{
 		outputs:       outputs,

@@ -1,9 +1,11 @@
 package lexers
 
 import (
-	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
+	"io"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 const wordLexerInitialCapacity = 1024
@@ -20,10 +22,15 @@ type WordLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewWordLexer(inputText string) AbstractLexer {
+func NewWordLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return NewWordLexerFromString(string(b))
+}
+
+func NewWordLexerFromString(s string) AbstractLexer {
 	return &WordLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		inputText:     s,
+		inputLength:   len(s),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }

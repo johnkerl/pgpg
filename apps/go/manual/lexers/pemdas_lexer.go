@@ -2,10 +2,11 @@ package lexers
 
 import (
 	"fmt"
-
-	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
+	"io"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/johnkerl/pgpg/go/lib/pkg/tokens"
 )
 
 const pemdasLexerInitialCapacity = 1024
@@ -29,10 +30,15 @@ type PEMDASLexer struct {
 	tokenLocation *tokens.TokenLocation
 }
 
-func NewPEMDASLexer(inputText string) AbstractLexer {
+func NewPEMDASLexer(r io.Reader) AbstractLexer {
+	b, _ := io.ReadAll(r)
+	return NewPEMDASLexerFromString(string(b))
+}
+
+func NewPEMDASLexerFromString(s string) AbstractLexer {
 	return &PEMDASLexer{
-		inputText:     inputText,
-		inputLength:   len(inputText),
+		inputText:     s,
+		inputLength:   len(s),
 		tokenLocation: tokens.NewTokenLocation(),
 	}
 }

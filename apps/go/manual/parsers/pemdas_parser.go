@@ -3,6 +3,7 @@ package parsers
 import (
 	"errors"
 	"fmt"
+	"io"
 
 	"github.com/johnkerl/pgpg/apps/go/manual/lexers"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
@@ -24,8 +25,8 @@ func NewPEMDASParser() parsers.AbstractParser {
 	return &PEMDASParser{}
 }
 
-func (parser *PEMDASParser) Parse(inputText string) (*asts.AST, error) {
-	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewPEMDASLexer(inputText))
+func (parser *PEMDASParser) Parse(r io.Reader) (*asts.AST, error) {
+	parser.lexer = liblexers.NewLookaheadLexer(lexers.NewPEMDASLexer(r))
 
 	rootNode, err := parser.parseSum()
 	if err != nil {
