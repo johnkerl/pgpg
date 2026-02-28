@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -44,10 +44,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Comment on PR (format advisory)
         if: steps.py-fmt.outputs.needs_format == '1'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         with:
