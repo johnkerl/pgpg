@@ -28,8 +28,9 @@ func (a *AST) StringParexOneLine() string {
 //
 // Example given parse of "a + b":
 // "+"
-//     "a"
-//     "b"
+//
+//	"a"
+//	"b"
 func (a *AST) Print() {
 	fmt.Print(a.String())
 }
