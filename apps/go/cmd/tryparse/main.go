@@ -43,6 +43,29 @@ type traceOptions struct {
 	astMode string // "", "noast", or "fullast"
 }
 
+// lineBufReader implements io.Reader and delivers stdin one line at a time so the
+// lexer sees input as soon as the user presses Enter (or the pipe sends a newline).
+type lineBufReader struct {
+	br  *bufio.Reader
+	buf []byte
+}
+
+func (l *lineBufReader) Read(p []byte) (n int, err error) {
+	for len(p) > 0 {
+		if len(l.buf) > 0 {
+			n = copy(p, l.buf)
+			l.buf = l.buf[n:]
+			return n, nil
+		}
+		l.buf, err = l.br.ReadBytes('\n')
+		if len(l.buf) > 0 {
+			continue
+		}
+		return 0, err
+	}
+	return 0, nil
+}
+
 var parserMakerTable = map[string]parserInfoT{
 	"m:ame":    {run: runManualParser(parsers.NewAMEParser), help: "Integers with + and * at equal precedence."},
 	"m:amne":   {run: runManualParser(parsers.NewAMNEParser), help: "Integers with + and * at unequal precedence."},
@@ -166,10 +189,8 @@ func main() {
 			}
 			r = strings.NewReader(strings.Join(args, "\n"))
 		} else if len(args) == 0 {
-			r = os.Stdin
-			// Small buffer so reads return sooner when typing at a terminal (avoids
-			// waiting for 4KB before the next parse in -multi mode).
-			r = bufio.NewReaderSize(r, 256)
+			// Line-buffer stdin so the lexer sees input as soon as user presses Enter.
+			r = &lineBufReader{br: bufio.NewReaderSize(os.Stdin, 64)}
 		} else if len(args) == 1 {
 			f, err := os.Open(args[0])
 			if err != nil {
