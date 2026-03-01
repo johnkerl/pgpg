@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io"
@@ -166,6 +167,9 @@ func main() {
 			r = strings.NewReader(strings.Join(args, "\n"))
 		} else if len(args) == 0 {
 			r = os.Stdin
+			// Small buffer so reads return sooner when typing at a terminal (avoids
+			// waiting for 4KB before the next parse in -multi mode).
+			r = bufio.NewReaderSize(r, 256)
 		} else if len(args) == 1 {
 			f, err := os.Open(args[0])
 			if err != nil {
