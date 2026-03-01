@@ -9,6 +9,8 @@
   * Write up: Better error messages with missing semicolons
   * Write up: Root must come first
 
+* Iterate on data languages
+
 * Error out on this:
 ```
 $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
@@ -31,7 +33,6 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 * DKVP
 * DKVPX
 * JSON obv
-* Try to get streaming reads over multiple objects
 
 ## Utility languages
 
