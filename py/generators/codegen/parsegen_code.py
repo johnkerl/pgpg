@@ -5,6 +5,7 @@ Reads the same *-parse.json files as the Go parsegen-code.
 Usage:
   python parsegen_code.py -o parsers/json_parser.py -c JSONParser [--prefix pgpg_] json-parse.json
 """
+
 from __future__ import annotations
 
 import argparse

@@ -1,4 +1,5 @@
 """Unit tests for parser codegen: ensure hint 'type' is applied for with_adopted_grandchildren."""
+
 from __future__ import annotations
 
 import json

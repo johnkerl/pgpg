@@ -56,1253 +56,632 @@ class Production:
 _pgpg_PEMDASParser_NO_AST_SENTINEL = ASTNode(token=None, type="", children=[])
 
 ACTIONS: dict[int, dict[str, Action]] = {
-
     0: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     1: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=3),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=16),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=17),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=3),
+        "minus": Action(kind=ActionKind.SHIFT, target=16),
+        "plus": Action(kind=ActionKind.SHIFT, target=17),
     },
-
     2: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=13),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=13),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=13),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=13),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=13),
-
-        'times': Action(kind=ActionKind.REDUCE, target=13),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=13),
+        "divide": Action(kind=ActionKind.REDUCE, target=13),
+        "minus": Action(kind=ActionKind.REDUCE, target=13),
+        "modulo": Action(kind=ActionKind.REDUCE, target=13),
+        "plus": Action(kind=ActionKind.REDUCE, target=13),
+        "times": Action(kind=ActionKind.REDUCE, target=13),
     },
-
     3: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=6),
-
-        'divide': Action(kind=ActionKind.SHIFT, target=18),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=6),
-
-        'modulo': Action(kind=ActionKind.SHIFT, target=19),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=6),
-
-        'times': Action(kind=ActionKind.SHIFT, target=20),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=6),
+        "divide": Action(kind=ActionKind.SHIFT, target=18),
+        "minus": Action(kind=ActionKind.REDUCE, target=6),
+        "modulo": Action(kind=ActionKind.SHIFT, target=19),
+        "plus": Action(kind=ActionKind.REDUCE, target=6),
+        "times": Action(kind=ActionKind.SHIFT, target=20),
     },
-
     4: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=16),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=16),
-
-        'exponentiation': Action(kind=ActionKind.SHIFT, target=21),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=16),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=16),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=16),
-
-        'times': Action(kind=ActionKind.REDUCE, target=16),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=16),
+        "divide": Action(kind=ActionKind.REDUCE, target=16),
+        "exponentiation": Action(kind=ActionKind.SHIFT, target=21),
+        "minus": Action(kind=ActionKind.REDUCE, target=16),
+        "modulo": Action(kind=ActionKind.REDUCE, target=16),
+        "plus": Action(kind=ActionKind.REDUCE, target=16),
+        "times": Action(kind=ActionKind.REDUCE, target=16),
     },
-
     5: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=18),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=18),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=18),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=18),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=18),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=18),
-
-        'times': Action(kind=ActionKind.REDUCE, target=18),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=18),
+        "divide": Action(kind=ActionKind.REDUCE, target=18),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=18),
+        "minus": Action(kind=ActionKind.REDUCE, target=18),
+        "modulo": Action(kind=ActionKind.REDUCE, target=18),
+        "plus": Action(kind=ActionKind.REDUCE, target=18),
+        "times": Action(kind=ActionKind.REDUCE, target=18),
     },
-
     6: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=2),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=2),
     },
-
     7: {
-
-        'EOF': Action(kind=ActionKind.ACCEPT, target=0),
-
+        "EOF": Action(kind=ActionKind.ACCEPT, target=0),
     },
-
     8: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=1),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=1),
     },
-
     9: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=10),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=10),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=10),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=10),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=10),
-
-        'times': Action(kind=ActionKind.REDUCE, target=10),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=10),
+        "divide": Action(kind=ActionKind.REDUCE, target=10),
+        "minus": Action(kind=ActionKind.REDUCE, target=10),
+        "modulo": Action(kind=ActionKind.REDUCE, target=10),
+        "plus": Action(kind=ActionKind.REDUCE, target=10),
+        "times": Action(kind=ActionKind.REDUCE, target=10),
     },
-
     10: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=21),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=21),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=21),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=21),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=21),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=21),
-
-        'times': Action(kind=ActionKind.REDUCE, target=21),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=21),
+        "divide": Action(kind=ActionKind.REDUCE, target=21),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=21),
+        "minus": Action(kind=ActionKind.REDUCE, target=21),
+        "modulo": Action(kind=ActionKind.REDUCE, target=21),
+        "plus": Action(kind=ActionKind.REDUCE, target=21),
+        "times": Action(kind=ActionKind.REDUCE, target=21),
     },
-
     11: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=20),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=20),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=20),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=20),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=20),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=20),
-
-        'times': Action(kind=ActionKind.REDUCE, target=20),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=20),
+        "divide": Action(kind=ActionKind.REDUCE, target=20),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=20),
+        "minus": Action(kind=ActionKind.REDUCE, target=20),
+        "modulo": Action(kind=ActionKind.REDUCE, target=20),
+        "plus": Action(kind=ActionKind.REDUCE, target=20),
+        "times": Action(kind=ActionKind.REDUCE, target=20),
     },
-
     12: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=19),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=19),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=19),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=19),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=19),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=19),
-
-        'times': Action(kind=ActionKind.REDUCE, target=19),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=19),
+        "divide": Action(kind=ActionKind.REDUCE, target=19),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=19),
+        "minus": Action(kind=ActionKind.REDUCE, target=19),
+        "modulo": Action(kind=ActionKind.REDUCE, target=19),
+        "plus": Action(kind=ActionKind.REDUCE, target=19),
+        "times": Action(kind=ActionKind.REDUCE, target=19),
     },
-
     13: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     14: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     15: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
     },
-
     16: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     17: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     18: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     19: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     20: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=14),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=15),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=14),
+        "plus": Action(kind=ActionKind.SHIFT, target=15),
     },
-
     21: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=43),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
+        "minus": Action(kind=ActionKind.SHIFT, target=43),
     },
-
     22: {
-
-        'minus': Action(kind=ActionKind.SHIFT, target=44),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=45),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=3),
-
+        "minus": Action(kind=ActionKind.SHIFT, target=44),
+        "plus": Action(kind=ActionKind.SHIFT, target=45),
+        "rparen": Action(kind=ActionKind.REDUCE, target=3),
     },
-
     23: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=13),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=13),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=13),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=13),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=13),
-
-        'times': Action(kind=ActionKind.REDUCE, target=13),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=13),
+        "minus": Action(kind=ActionKind.REDUCE, target=13),
+        "modulo": Action(kind=ActionKind.REDUCE, target=13),
+        "plus": Action(kind=ActionKind.REDUCE, target=13),
+        "rparen": Action(kind=ActionKind.REDUCE, target=13),
+        "times": Action(kind=ActionKind.REDUCE, target=13),
     },
-
     24: {
-
-        'divide': Action(kind=ActionKind.SHIFT, target=46),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=6),
-
-        'modulo': Action(kind=ActionKind.SHIFT, target=47),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=6),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=6),
-
-        'times': Action(kind=ActionKind.SHIFT, target=48),
-
+        "divide": Action(kind=ActionKind.SHIFT, target=46),
+        "minus": Action(kind=ActionKind.REDUCE, target=6),
+        "modulo": Action(kind=ActionKind.SHIFT, target=47),
+        "plus": Action(kind=ActionKind.REDUCE, target=6),
+        "rparen": Action(kind=ActionKind.REDUCE, target=6),
+        "times": Action(kind=ActionKind.SHIFT, target=48),
     },
-
     25: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=16),
-
-        'exponentiation': Action(kind=ActionKind.SHIFT, target=49),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=16),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=16),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=16),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=16),
-
-        'times': Action(kind=ActionKind.REDUCE, target=16),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=16),
+        "exponentiation": Action(kind=ActionKind.SHIFT, target=49),
+        "minus": Action(kind=ActionKind.REDUCE, target=16),
+        "modulo": Action(kind=ActionKind.REDUCE, target=16),
+        "plus": Action(kind=ActionKind.REDUCE, target=16),
+        "rparen": Action(kind=ActionKind.REDUCE, target=16),
+        "times": Action(kind=ActionKind.REDUCE, target=16),
     },
-
     26: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=18),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=18),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=18),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=18),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=18),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=18),
-
-        'times': Action(kind=ActionKind.REDUCE, target=18),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=18),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=18),
+        "minus": Action(kind=ActionKind.REDUCE, target=18),
+        "modulo": Action(kind=ActionKind.REDUCE, target=18),
+        "plus": Action(kind=ActionKind.REDUCE, target=18),
+        "rparen": Action(kind=ActionKind.REDUCE, target=18),
+        "times": Action(kind=ActionKind.REDUCE, target=18),
     },
-
     27: {
-
-        'rparen': Action(kind=ActionKind.SHIFT, target=50),
-
+        "rparen": Action(kind=ActionKind.SHIFT, target=50),
     },
-
     28: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=10),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=10),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=10),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=10),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=10),
-
-        'times': Action(kind=ActionKind.REDUCE, target=10),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=10),
+        "minus": Action(kind=ActionKind.REDUCE, target=10),
+        "modulo": Action(kind=ActionKind.REDUCE, target=10),
+        "plus": Action(kind=ActionKind.REDUCE, target=10),
+        "rparen": Action(kind=ActionKind.REDUCE, target=10),
+        "times": Action(kind=ActionKind.REDUCE, target=10),
     },
-
     29: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=21),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=21),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=21),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=21),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=21),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=21),
-
-        'times': Action(kind=ActionKind.REDUCE, target=21),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=21),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=21),
+        "minus": Action(kind=ActionKind.REDUCE, target=21),
+        "modulo": Action(kind=ActionKind.REDUCE, target=21),
+        "plus": Action(kind=ActionKind.REDUCE, target=21),
+        "rparen": Action(kind=ActionKind.REDUCE, target=21),
+        "times": Action(kind=ActionKind.REDUCE, target=21),
     },
-
     30: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=20),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=20),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=20),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=20),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=20),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=20),
-
-        'times': Action(kind=ActionKind.REDUCE, target=20),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=20),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=20),
+        "minus": Action(kind=ActionKind.REDUCE, target=20),
+        "modulo": Action(kind=ActionKind.REDUCE, target=20),
+        "plus": Action(kind=ActionKind.REDUCE, target=20),
+        "rparen": Action(kind=ActionKind.REDUCE, target=20),
+        "times": Action(kind=ActionKind.REDUCE, target=20),
     },
-
     31: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=19),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=19),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=19),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=19),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=19),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=19),
-
-        'times': Action(kind=ActionKind.REDUCE, target=19),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=19),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=19),
+        "minus": Action(kind=ActionKind.REDUCE, target=19),
+        "modulo": Action(kind=ActionKind.REDUCE, target=19),
+        "plus": Action(kind=ActionKind.REDUCE, target=19),
+        "rparen": Action(kind=ActionKind.REDUCE, target=19),
+        "times": Action(kind=ActionKind.REDUCE, target=19),
     },
-
     32: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     33: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     34: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
     },
-
     35: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=12),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=12),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=12),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=12),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=12),
-
-        'times': Action(kind=ActionKind.REDUCE, target=12),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=12),
+        "divide": Action(kind=ActionKind.REDUCE, target=12),
+        "minus": Action(kind=ActionKind.REDUCE, target=12),
+        "modulo": Action(kind=ActionKind.REDUCE, target=12),
+        "plus": Action(kind=ActionKind.REDUCE, target=12),
+        "times": Action(kind=ActionKind.REDUCE, target=12),
     },
-
     36: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=11),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=11),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=11),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=11),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=11),
-
-        'times': Action(kind=ActionKind.REDUCE, target=11),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=11),
+        "divide": Action(kind=ActionKind.REDUCE, target=11),
+        "minus": Action(kind=ActionKind.REDUCE, target=11),
+        "modulo": Action(kind=ActionKind.REDUCE, target=11),
+        "plus": Action(kind=ActionKind.REDUCE, target=11),
+        "times": Action(kind=ActionKind.REDUCE, target=11),
     },
-
     37: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=5),
-
-        'divide': Action(kind=ActionKind.SHIFT, target=18),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=5),
-
-        'modulo': Action(kind=ActionKind.SHIFT, target=19),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=5),
-
-        'times': Action(kind=ActionKind.SHIFT, target=20),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=5),
+        "divide": Action(kind=ActionKind.SHIFT, target=18),
+        "minus": Action(kind=ActionKind.REDUCE, target=5),
+        "modulo": Action(kind=ActionKind.SHIFT, target=19),
+        "plus": Action(kind=ActionKind.REDUCE, target=5),
+        "times": Action(kind=ActionKind.SHIFT, target=20),
     },
-
     38: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=4),
-
-        'divide': Action(kind=ActionKind.SHIFT, target=18),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=4),
-
-        'modulo': Action(kind=ActionKind.SHIFT, target=19),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=4),
-
-        'times': Action(kind=ActionKind.SHIFT, target=20),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=4),
+        "divide": Action(kind=ActionKind.SHIFT, target=18),
+        "minus": Action(kind=ActionKind.REDUCE, target=4),
+        "modulo": Action(kind=ActionKind.SHIFT, target=19),
+        "plus": Action(kind=ActionKind.REDUCE, target=4),
+        "times": Action(kind=ActionKind.SHIFT, target=20),
     },
-
     39: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=8),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=8),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=8),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=8),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=8),
-
-        'times': Action(kind=ActionKind.REDUCE, target=8),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=8),
+        "divide": Action(kind=ActionKind.REDUCE, target=8),
+        "minus": Action(kind=ActionKind.REDUCE, target=8),
+        "modulo": Action(kind=ActionKind.REDUCE, target=8),
+        "plus": Action(kind=ActionKind.REDUCE, target=8),
+        "times": Action(kind=ActionKind.REDUCE, target=8),
     },
-
     40: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=9),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=9),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=9),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=9),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=9),
-
-        'times': Action(kind=ActionKind.REDUCE, target=9),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=9),
+        "divide": Action(kind=ActionKind.REDUCE, target=9),
+        "minus": Action(kind=ActionKind.REDUCE, target=9),
+        "modulo": Action(kind=ActionKind.REDUCE, target=9),
+        "plus": Action(kind=ActionKind.REDUCE, target=9),
+        "times": Action(kind=ActionKind.REDUCE, target=9),
     },
-
     41: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=7),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=7),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=7),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=7),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=7),
-
-        'times': Action(kind=ActionKind.REDUCE, target=7),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=7),
+        "divide": Action(kind=ActionKind.REDUCE, target=7),
+        "minus": Action(kind=ActionKind.REDUCE, target=7),
+        "modulo": Action(kind=ActionKind.REDUCE, target=7),
+        "plus": Action(kind=ActionKind.REDUCE, target=7),
+        "times": Action(kind=ActionKind.REDUCE, target=7),
     },
-
     42: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=14),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=14),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=14),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=14),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=14),
-
-        'times': Action(kind=ActionKind.REDUCE, target=14),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=14),
+        "divide": Action(kind=ActionKind.REDUCE, target=14),
+        "minus": Action(kind=ActionKind.REDUCE, target=14),
+        "modulo": Action(kind=ActionKind.REDUCE, target=14),
+        "plus": Action(kind=ActionKind.REDUCE, target=14),
+        "times": Action(kind=ActionKind.REDUCE, target=14),
     },
-
     43: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=10),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=11),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=12),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=13),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=10),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=11),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=12),
+        "lparen": Action(kind=ActionKind.SHIFT, target=13),
     },
-
     44: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     45: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     46: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     47: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     48: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=33),
-
-        'plus': Action(kind=ActionKind.SHIFT, target=34),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=33),
+        "plus": Action(kind=ActionKind.SHIFT, target=34),
     },
-
     49: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
-        'minus': Action(kind=ActionKind.SHIFT, target=61),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
+        "minus": Action(kind=ActionKind.SHIFT, target=61),
     },
-
     50: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=17),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=17),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=17),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=17),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=17),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=17),
-
-        'times': Action(kind=ActionKind.REDUCE, target=17),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=17),
+        "divide": Action(kind=ActionKind.REDUCE, target=17),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=17),
+        "minus": Action(kind=ActionKind.REDUCE, target=17),
+        "modulo": Action(kind=ActionKind.REDUCE, target=17),
+        "plus": Action(kind=ActionKind.REDUCE, target=17),
+        "times": Action(kind=ActionKind.REDUCE, target=17),
     },
-
     51: {
-
-        'rparen': Action(kind=ActionKind.SHIFT, target=62),
-
+        "rparen": Action(kind=ActionKind.SHIFT, target=62),
     },
-
     52: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=12),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=12),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=12),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=12),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=12),
-
-        'times': Action(kind=ActionKind.REDUCE, target=12),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=12),
+        "minus": Action(kind=ActionKind.REDUCE, target=12),
+        "modulo": Action(kind=ActionKind.REDUCE, target=12),
+        "plus": Action(kind=ActionKind.REDUCE, target=12),
+        "rparen": Action(kind=ActionKind.REDUCE, target=12),
+        "times": Action(kind=ActionKind.REDUCE, target=12),
     },
-
     53: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=11),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=11),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=11),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=11),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=11),
-
-        'times': Action(kind=ActionKind.REDUCE, target=11),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=11),
+        "minus": Action(kind=ActionKind.REDUCE, target=11),
+        "modulo": Action(kind=ActionKind.REDUCE, target=11),
+        "plus": Action(kind=ActionKind.REDUCE, target=11),
+        "rparen": Action(kind=ActionKind.REDUCE, target=11),
+        "times": Action(kind=ActionKind.REDUCE, target=11),
     },
-
     54: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=15),
-
-        'divide': Action(kind=ActionKind.REDUCE, target=15),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=15),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=15),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=15),
-
-        'times': Action(kind=ActionKind.REDUCE, target=15),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=15),
+        "divide": Action(kind=ActionKind.REDUCE, target=15),
+        "minus": Action(kind=ActionKind.REDUCE, target=15),
+        "modulo": Action(kind=ActionKind.REDUCE, target=15),
+        "plus": Action(kind=ActionKind.REDUCE, target=15),
+        "times": Action(kind=ActionKind.REDUCE, target=15),
     },
-
     55: {
-
-        'divide': Action(kind=ActionKind.SHIFT, target=46),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=5),
-
-        'modulo': Action(kind=ActionKind.SHIFT, target=47),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=5),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=5),
-
-        'times': Action(kind=ActionKind.SHIFT, target=48),
-
+        "divide": Action(kind=ActionKind.SHIFT, target=46),
+        "minus": Action(kind=ActionKind.REDUCE, target=5),
+        "modulo": Action(kind=ActionKind.SHIFT, target=47),
+        "plus": Action(kind=ActionKind.REDUCE, target=5),
+        "rparen": Action(kind=ActionKind.REDUCE, target=5),
+        "times": Action(kind=ActionKind.SHIFT, target=48),
     },
-
     56: {
-
-        'divide': Action(kind=ActionKind.SHIFT, target=46),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=4),
-
-        'modulo': Action(kind=ActionKind.SHIFT, target=47),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=4),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=4),
-
-        'times': Action(kind=ActionKind.SHIFT, target=48),
-
+        "divide": Action(kind=ActionKind.SHIFT, target=46),
+        "minus": Action(kind=ActionKind.REDUCE, target=4),
+        "modulo": Action(kind=ActionKind.SHIFT, target=47),
+        "plus": Action(kind=ActionKind.REDUCE, target=4),
+        "rparen": Action(kind=ActionKind.REDUCE, target=4),
+        "times": Action(kind=ActionKind.SHIFT, target=48),
     },
-
     57: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=8),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=8),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=8),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=8),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=8),
-
-        'times': Action(kind=ActionKind.REDUCE, target=8),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=8),
+        "minus": Action(kind=ActionKind.REDUCE, target=8),
+        "modulo": Action(kind=ActionKind.REDUCE, target=8),
+        "plus": Action(kind=ActionKind.REDUCE, target=8),
+        "rparen": Action(kind=ActionKind.REDUCE, target=8),
+        "times": Action(kind=ActionKind.REDUCE, target=8),
     },
-
     58: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=9),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=9),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=9),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=9),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=9),
-
-        'times': Action(kind=ActionKind.REDUCE, target=9),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=9),
+        "minus": Action(kind=ActionKind.REDUCE, target=9),
+        "modulo": Action(kind=ActionKind.REDUCE, target=9),
+        "plus": Action(kind=ActionKind.REDUCE, target=9),
+        "rparen": Action(kind=ActionKind.REDUCE, target=9),
+        "times": Action(kind=ActionKind.REDUCE, target=9),
     },
-
     59: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=7),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=7),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=7),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=7),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=7),
-
-        'times': Action(kind=ActionKind.REDUCE, target=7),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=7),
+        "minus": Action(kind=ActionKind.REDUCE, target=7),
+        "modulo": Action(kind=ActionKind.REDUCE, target=7),
+        "plus": Action(kind=ActionKind.REDUCE, target=7),
+        "rparen": Action(kind=ActionKind.REDUCE, target=7),
+        "times": Action(kind=ActionKind.REDUCE, target=7),
     },
-
     60: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=14),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=14),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=14),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=14),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=14),
-
-        'times': Action(kind=ActionKind.REDUCE, target=14),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=14),
+        "minus": Action(kind=ActionKind.REDUCE, target=14),
+        "modulo": Action(kind=ActionKind.REDUCE, target=14),
+        "plus": Action(kind=ActionKind.REDUCE, target=14),
+        "rparen": Action(kind=ActionKind.REDUCE, target=14),
+        "times": Action(kind=ActionKind.REDUCE, target=14),
     },
-
     61: {
-
-        'float_literal': Action(kind=ActionKind.SHIFT, target=29),
-
-        'hex_literal': Action(kind=ActionKind.SHIFT, target=30),
-
-        'int_literal': Action(kind=ActionKind.SHIFT, target=31),
-
-        'lparen': Action(kind=ActionKind.SHIFT, target=32),
-
+        "float_literal": Action(kind=ActionKind.SHIFT, target=29),
+        "hex_literal": Action(kind=ActionKind.SHIFT, target=30),
+        "int_literal": Action(kind=ActionKind.SHIFT, target=31),
+        "lparen": Action(kind=ActionKind.SHIFT, target=32),
     },
-
     62: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=17),
-
-        'exponentiation': Action(kind=ActionKind.REDUCE, target=17),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=17),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=17),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=17),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=17),
-
-        'times': Action(kind=ActionKind.REDUCE, target=17),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=17),
+        "exponentiation": Action(kind=ActionKind.REDUCE, target=17),
+        "minus": Action(kind=ActionKind.REDUCE, target=17),
+        "modulo": Action(kind=ActionKind.REDUCE, target=17),
+        "plus": Action(kind=ActionKind.REDUCE, target=17),
+        "rparen": Action(kind=ActionKind.REDUCE, target=17),
+        "times": Action(kind=ActionKind.REDUCE, target=17),
     },
-
     63: {
-
-        'divide': Action(kind=ActionKind.REDUCE, target=15),
-
-        'minus': Action(kind=ActionKind.REDUCE, target=15),
-
-        'modulo': Action(kind=ActionKind.REDUCE, target=15),
-
-        'plus': Action(kind=ActionKind.REDUCE, target=15),
-
-        'rparen': Action(kind=ActionKind.REDUCE, target=15),
-
-        'times': Action(kind=ActionKind.REDUCE, target=15),
-
+        "divide": Action(kind=ActionKind.REDUCE, target=15),
+        "minus": Action(kind=ActionKind.REDUCE, target=15),
+        "modulo": Action(kind=ActionKind.REDUCE, target=15),
+        "plus": Action(kind=ActionKind.REDUCE, target=15),
+        "rparen": Action(kind=ActionKind.REDUCE, target=15),
+        "times": Action(kind=ActionKind.REDUCE, target=15),
     },
-
 }
 
 GOTOS: dict[int, dict[str, int]] = {
-
     0: {
-
-        'AddSubTerm': 1,
-
-        'ExponentiationTerm': 2,
-
-        'MulDivTerm': 3,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'PrecedenceChainStart': 6,
-
-        'Root': 7,
-
-        'Rvalue': 8,
-
-        'UnaryTerm': 9,
-
+        "AddSubTerm": 1,
+        "ExponentiationTerm": 2,
+        "MulDivTerm": 3,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "PrecedenceChainStart": 6,
+        "Root": 7,
+        "Rvalue": 8,
+        "UnaryTerm": 9,
     },
-
     13: {
-
-        'AddSubTerm': 22,
-
-        'ExponentiationTerm': 23,
-
-        'MulDivTerm': 24,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'PrecedenceChainStart': 27,
-
-        'UnaryTerm': 28,
-
+        "AddSubTerm": 22,
+        "ExponentiationTerm": 23,
+        "MulDivTerm": 24,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "PrecedenceChainStart": 27,
+        "UnaryTerm": 28,
     },
-
     14: {
-
-        'ExponentiationTerm': 2,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'UnaryTerm': 35,
-
+        "ExponentiationTerm": 2,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "UnaryTerm": 35,
     },
-
     15: {
-
-        'ExponentiationTerm': 36,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
+        "ExponentiationTerm": 36,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
     },
-
     16: {
-
-        'ExponentiationTerm': 2,
-
-        'MulDivTerm': 37,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'UnaryTerm': 9,
-
+        "ExponentiationTerm": 2,
+        "MulDivTerm": 37,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "UnaryTerm": 9,
     },
-
     17: {
-
-        'ExponentiationTerm': 2,
-
-        'MulDivTerm': 38,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'UnaryTerm': 9,
-
+        "ExponentiationTerm": 2,
+        "MulDivTerm": 38,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "UnaryTerm": 9,
     },
-
     18: {
-
-        'ExponentiationTerm': 2,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'UnaryTerm': 39,
-
+        "ExponentiationTerm": 2,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "UnaryTerm": 39,
     },
-
     19: {
-
-        'ExponentiationTerm': 2,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'UnaryTerm': 40,
-
+        "ExponentiationTerm": 2,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "UnaryTerm": 40,
     },
-
     20: {
-
-        'ExponentiationTerm': 2,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
-        'UnaryTerm': 41,
-
+        "ExponentiationTerm": 2,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
+        "UnaryTerm": 41,
     },
-
     21: {
-
-        'ExponentiationTerm': 42,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
+        "ExponentiationTerm": 42,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
     },
-
     32: {
-
-        'AddSubTerm': 22,
-
-        'ExponentiationTerm': 23,
-
-        'MulDivTerm': 24,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'PrecedenceChainStart': 51,
-
-        'UnaryTerm': 28,
-
+        "AddSubTerm": 22,
+        "ExponentiationTerm": 23,
+        "MulDivTerm": 24,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "PrecedenceChainStart": 51,
+        "UnaryTerm": 28,
     },
-
     33: {
-
-        'ExponentiationTerm': 23,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'UnaryTerm': 52,
-
+        "ExponentiationTerm": 23,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "UnaryTerm": 52,
     },
-
     34: {
-
-        'ExponentiationTerm': 53,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
+        "ExponentiationTerm": 53,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
     },
-
     43: {
-
-        'ExponentiationTerm': 54,
-
-        'ParenTerm': 4,
-
-        'PrecedenceChainEnd': 5,
-
+        "ExponentiationTerm": 54,
+        "ParenTerm": 4,
+        "PrecedenceChainEnd": 5,
     },
-
     44: {
-
-        'ExponentiationTerm': 23,
-
-        'MulDivTerm': 55,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'UnaryTerm': 28,
-
+        "ExponentiationTerm": 23,
+        "MulDivTerm": 55,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "UnaryTerm": 28,
     },
-
     45: {
-
-        'ExponentiationTerm': 23,
-
-        'MulDivTerm': 56,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'UnaryTerm': 28,
-
+        "ExponentiationTerm": 23,
+        "MulDivTerm": 56,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "UnaryTerm": 28,
     },
-
     46: {
-
-        'ExponentiationTerm': 23,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'UnaryTerm': 57,
-
+        "ExponentiationTerm": 23,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "UnaryTerm": 57,
     },
-
     47: {
-
-        'ExponentiationTerm': 23,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'UnaryTerm': 58,
-
+        "ExponentiationTerm": 23,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "UnaryTerm": 58,
     },
-
     48: {
-
-        'ExponentiationTerm': 23,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
-        'UnaryTerm': 59,
-
+        "ExponentiationTerm": 23,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
+        "UnaryTerm": 59,
     },
-
     49: {
-
-        'ExponentiationTerm': 60,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
+        "ExponentiationTerm": 60,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
     },
-
     61: {
-
-        'ExponentiationTerm': 63,
-
-        'ParenTerm': 25,
-
-        'PrecedenceChainEnd': 26,
-
+        "ExponentiationTerm": 63,
+        "ParenTerm": 25,
+        "PrecedenceChainEnd": 26,
     },
-
 }
 
 PRODUCTIONS: list[Production] = [
-
     Production(
-        lhs='__pgpg_start_1',
+        lhs="__pgpg_start_1",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1312,16 +691,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Root',
+        lhs="Root",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1331,16 +709,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Rvalue',
+        lhs="Rvalue",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1350,16 +727,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='PrecedenceChainStart',
+        lhs="PrecedenceChainStart",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1369,16 +745,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='AddSubTerm',
+        lhs="AddSubTerm",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -1388,16 +763,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='AddSubTerm',
+        lhs="AddSubTerm",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -1407,16 +781,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='AddSubTerm',
+        lhs="AddSubTerm",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1426,16 +799,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='MulDivTerm',
+        lhs="MulDivTerm",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -1445,16 +817,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='MulDivTerm',
+        lhs="MulDivTerm",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -1464,16 +835,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='MulDivTerm',
+        lhs="MulDivTerm",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -1483,16 +853,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='MulDivTerm',
+        lhs="MulDivTerm",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1502,16 +871,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='UnaryTerm',
+        lhs="UnaryTerm",
         rhs_count=2,
         has_hint=True,
         has_passthrough=False,
@@ -1521,16 +889,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[1],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='unary',
+        node_type="unary",
     ),
-
     Production(
-        lhs='UnaryTerm',
+        lhs="UnaryTerm",
         rhs_count=2,
         has_hint=True,
         has_passthrough=False,
@@ -1540,16 +907,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[1],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='unary',
+        node_type="unary",
     ),
-
     Production(
-        lhs='UnaryTerm',
+        lhs="UnaryTerm",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1559,16 +925,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='ExponentiationTerm',
+        lhs="ExponentiationTerm",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -1578,16 +943,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='ExponentiationTerm',
+        lhs="ExponentiationTerm",
         rhs_count=4,
         has_hint=True,
         has_passthrough=False,
@@ -1597,16 +961,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 3],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='operator',
+        node_type="operator",
     ),
-
     Production(
-        lhs='ExponentiationTerm',
+        lhs="ExponentiationTerm",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1616,16 +979,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='ParenTerm',
+        lhs="ParenTerm",
         rhs_count=3,
         has_hint=False,
         has_passthrough=True,
@@ -1635,16 +997,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=1,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='ParenTerm',
+        lhs="ParenTerm",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -1654,16 +1015,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='PrecedenceChainEnd',
+        lhs="PrecedenceChainEnd",
         rhs_count=1,
         has_hint=True,
         has_passthrough=False,
@@ -1673,16 +1033,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='int_literal',
+        node_type="int_literal",
     ),
-
     Production(
-        lhs='PrecedenceChainEnd',
+        lhs="PrecedenceChainEnd",
         rhs_count=1,
         has_hint=True,
         has_passthrough=False,
@@ -1692,16 +1051,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='hex_literal',
+        node_type="hex_literal",
     ),
-
     Production(
-        lhs='PrecedenceChainEnd',
+        lhs="PrecedenceChainEnd",
         rhs_count=1,
         has_hint=True,
         has_passthrough=False,
@@ -1711,14 +1069,13 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='float_literal',
+        node_type="float_literal",
     ),
-
 ]
 
 
@@ -1762,9 +1119,7 @@ class pgpg_PEMDASParser:
                 if ast_mode == "noast":
                     node_stack.append(_pgpg_PEMDASParser_NO_AST_SENTINEL)
                 else:
-                    node_stack.append(
-                        new_ast_node_terminal(lookahead, lookahead.type)
-                    )
+                    node_stack.append(new_ast_node_terminal(lookahead, lookahead.type))
                 state_stack.append(action.target)
                 lookahead = lexer.scan()
                 if self.trace and self.trace.on_token and lookahead:
@@ -1810,30 +1165,57 @@ class pgpg_PEMDASParser:
         if not (trace_tokens or trace_states or trace_stack):
             return
         import sys
+
         self.trace = TraceHooks()
         if trace_tokens:
+
             def on_token(tok: Optional[Token]) -> None:
                 if tok:
-                    loc = f" line={tok.location.line} col={tok.location.column}" if tok.location else ""
-                    print(f"TOK type={tok.type} lexeme={tok.lexeme!r}{loc}", file=sys.stderr)
+                    loc = (
+                        f" line={tok.location.line} col={tok.location.column}"
+                        if tok.location
+                        else ""
+                    )
+                    print(
+                        f"TOK type={tok.type} lexeme={tok.lexeme!r}{loc}",
+                        file=sys.stderr,
+                    )
+
             self.trace.on_token = on_token
         if trace_states:
-            def on_action(state: int, action: Action, lookahead: Optional[Token]) -> None:
-                kind_str = "shift" if action.kind == ActionKind.SHIFT else ("reduce" if action.kind == ActionKind.REDUCE else "accept")
-                target = f"({action.target})" if action.kind != ActionKind.ACCEPT else ""
+
+            def on_action(
+                state: int, action: Action, lookahead: Optional[Token]
+            ) -> None:
+                kind_str = (
+                    "shift"
+                    if action.kind == ActionKind.SHIFT
+                    else ("reduce" if action.kind == ActionKind.REDUCE else "accept")
+                )
+                target = (
+                    f"({action.target})" if action.kind != ActionKind.ACCEPT else ""
+                )
                 la_type = lookahead.type if lookahead else ""
                 la_lex = lookahead.lexeme if lookahead else ""
-                print(f"STATE {state} {kind_str}{target} on {la_type}({la_lex!r})", file=sys.stderr)
+                print(
+                    f"STATE {state} {kind_str}{target} on {la_type}({la_lex!r})",
+                    file=sys.stderr,
+                )
+
             self.trace.on_action = on_action
         if trace_stack:
+
             def on_stack(state_stack: list[int], node_stack: list[ASTNode]) -> None:
                 states = "[" + " ".join(str(s) for s in state_stack) + "]"
                 nodes = "[" + " ".join(n.type for n in node_stack) + "]"
                 print(f"STACK states={states} nodes={nodes}", file=sys.stderr)
+
             self.trace.on_stack = on_stack
 
 
-def _reduce_pgpg_PEMDASParser(prod: Production, rhs_nodes: list[ASTNode], ast_mode: str) -> ASTNode:
+def _reduce_pgpg_PEMDASParser(
+    prod: Production, rhs_nodes: list[ASTNode], ast_mode: str
+) -> ASTNode:
     use_full_tree = ast_mode == "fullast"
     if not use_full_tree and prod.has_passthrough:
         return rhs_nodes[prod.passthrough_index]
@@ -1890,7 +1272,10 @@ def _reduce_pgpg_PEMDASParser(prod: Production, rhs_nodes: list[ASTNode], ast_mo
         node_type = prod.node_type or prod.lhs
         if prod.has_parent_literal:
             parent_token = new_token(prod.parent_literal, prod.parent_literal)
-        elif 0 <= prod.parent_index < len(rhs_nodes) and rhs_nodes[prod.parent_index].token:
+        elif (
+            0 <= prod.parent_index < len(rhs_nodes)
+            and rhs_nodes[prod.parent_index].token
+        ):
             parent_token = rhs_nodes[prod.parent_index].token
         else:
             parent_token = None

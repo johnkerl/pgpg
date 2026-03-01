@@ -1,4 +1,5 @@
 """AST node and root type for parser output."""
+
 from dataclasses import dataclass, field
 from typing import Optional
 

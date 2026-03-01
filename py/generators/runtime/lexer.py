@@ -1,4 +1,5 @@
 """Lexer protocol for parser input."""
+
 from typing import Optional, Protocol
 
 from runtime.token import Token  # noqa: I001

@@ -5,6 +5,7 @@ Usage: trylex.py {lexer name} [-e] [file ...]
   With -e: one or more arguments are expressions to lex (error if none).
   Without -e: zero arguments = read from stdin; one or more = read from those files.
 """
+
 from __future__ import annotations
 
 import argparse

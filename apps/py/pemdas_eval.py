@@ -5,6 +5,7 @@ Usage: pemdas_eval.py [options] [-e] [file ...]
   With -e: one or more arguments are expressions to parse (error if none).
   Without -e: zero arguments = read from stdin; one or more = read from those files.
 """
+
 from __future__ import annotations
 
 import argparse

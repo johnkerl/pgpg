@@ -56,607 +56,309 @@ class Production:
 _pgpg_JSONParser_NO_AST_SENTINEL = ASTNode(token=None, type="", children=[])
 
 ACTIONS: dict[int, dict[str, Action]] = {
-
     0: {
-
-        'false': Action(kind=ActionKind.SHIFT, target=5),
-
-        'lbracket': Action(kind=ActionKind.SHIFT, target=6),
-
-        'lcurly': Action(kind=ActionKind.SHIFT, target=7),
-
-        'null': Action(kind=ActionKind.SHIFT, target=8),
-
-        'number': Action(kind=ActionKind.SHIFT, target=9),
-
-        'string': Action(kind=ActionKind.SHIFT, target=10),
-
-        'true': Action(kind=ActionKind.SHIFT, target=11),
-
+        "false": Action(kind=ActionKind.SHIFT, target=5),
+        "lbracket": Action(kind=ActionKind.SHIFT, target=6),
+        "lcurly": Action(kind=ActionKind.SHIFT, target=7),
+        "null": Action(kind=ActionKind.SHIFT, target=8),
+        "number": Action(kind=ActionKind.SHIFT, target=9),
+        "string": Action(kind=ActionKind.SHIFT, target=10),
+        "true": Action(kind=ActionKind.SHIFT, target=11),
     },
-
     1: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=3),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=3),
     },
-
     2: {
-
-        'EOF': Action(kind=ActionKind.ACCEPT, target=0),
-
+        "EOF": Action(kind=ActionKind.ACCEPT, target=0),
     },
-
     3: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=2),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=2),
     },
-
     4: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=1),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=1),
     },
-
     5: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=7),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=7),
     },
-
     6: {
-
-        'false': Action(kind=ActionKind.SHIFT, target=16),
-
-        'lbracket': Action(kind=ActionKind.SHIFT, target=17),
-
-        'lcurly': Action(kind=ActionKind.SHIFT, target=18),
-
-        'null': Action(kind=ActionKind.SHIFT, target=19),
-
-        'number': Action(kind=ActionKind.SHIFT, target=20),
-
-        'rbracket': Action(kind=ActionKind.SHIFT, target=21),
-
-        'string': Action(kind=ActionKind.SHIFT, target=22),
-
-        'true': Action(kind=ActionKind.SHIFT, target=23),
-
+        "false": Action(kind=ActionKind.SHIFT, target=16),
+        "lbracket": Action(kind=ActionKind.SHIFT, target=17),
+        "lcurly": Action(kind=ActionKind.SHIFT, target=18),
+        "null": Action(kind=ActionKind.SHIFT, target=19),
+        "number": Action(kind=ActionKind.SHIFT, target=20),
+        "rbracket": Action(kind=ActionKind.SHIFT, target=21),
+        "string": Action(kind=ActionKind.SHIFT, target=22),
+        "true": Action(kind=ActionKind.SHIFT, target=23),
     },
-
     7: {
-
-        'rcurly': Action(kind=ActionKind.SHIFT, target=26),
-
-        'string': Action(kind=ActionKind.SHIFT, target=27),
-
+        "rcurly": Action(kind=ActionKind.SHIFT, target=26),
+        "string": Action(kind=ActionKind.SHIFT, target=27),
     },
-
     8: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=8),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=8),
     },
-
     9: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=5),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=5),
     },
-
     10: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=4),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=4),
     },
-
     11: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=6),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=6),
     },
-
     12: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=3),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=3),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=3),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=3),
     },
-
     13: {
-
-        'comma': Action(kind=ActionKind.SHIFT, target=28),
-
-        'rbracket': Action(kind=ActionKind.SHIFT, target=29),
-
+        "comma": Action(kind=ActionKind.SHIFT, target=28),
+        "rbracket": Action(kind=ActionKind.SHIFT, target=29),
     },
-
     14: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=2),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=2),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=2),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=2),
     },
-
     15: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=16),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=16),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=16),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=16),
     },
-
     16: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=7),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=7),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=7),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=7),
     },
-
     17: {
-
-        'false': Action(kind=ActionKind.SHIFT, target=16),
-
-        'lbracket': Action(kind=ActionKind.SHIFT, target=17),
-
-        'lcurly': Action(kind=ActionKind.SHIFT, target=18),
-
-        'null': Action(kind=ActionKind.SHIFT, target=19),
-
-        'number': Action(kind=ActionKind.SHIFT, target=20),
-
-        'rbracket': Action(kind=ActionKind.SHIFT, target=31),
-
-        'string': Action(kind=ActionKind.SHIFT, target=22),
-
-        'true': Action(kind=ActionKind.SHIFT, target=23),
-
+        "false": Action(kind=ActionKind.SHIFT, target=16),
+        "lbracket": Action(kind=ActionKind.SHIFT, target=17),
+        "lcurly": Action(kind=ActionKind.SHIFT, target=18),
+        "null": Action(kind=ActionKind.SHIFT, target=19),
+        "number": Action(kind=ActionKind.SHIFT, target=20),
+        "rbracket": Action(kind=ActionKind.SHIFT, target=31),
+        "string": Action(kind=ActionKind.SHIFT, target=22),
+        "true": Action(kind=ActionKind.SHIFT, target=23),
     },
-
     18: {
-
-        'rcurly': Action(kind=ActionKind.SHIFT, target=33),
-
-        'string': Action(kind=ActionKind.SHIFT, target=27),
-
+        "rcurly": Action(kind=ActionKind.SHIFT, target=33),
+        "string": Action(kind=ActionKind.SHIFT, target=27),
     },
-
     19: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=8),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=8),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=8),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=8),
     },
-
     20: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=5),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=5),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=5),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=5),
     },
-
     21: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=14),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=14),
     },
-
     22: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=4),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=4),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=4),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=4),
     },
-
     23: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=6),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=6),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=6),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=6),
     },
-
     24: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=11),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=11),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=11),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=11),
     },
-
     25: {
-
-        'comma': Action(kind=ActionKind.SHIFT, target=34),
-
-        'rcurly': Action(kind=ActionKind.SHIFT, target=35),
-
+        "comma": Action(kind=ActionKind.SHIFT, target=34),
+        "rcurly": Action(kind=ActionKind.SHIFT, target=35),
     },
-
     26: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=9),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=9),
     },
-
     27: {
-
-        'colon': Action(kind=ActionKind.SHIFT, target=36),
-
+        "colon": Action(kind=ActionKind.SHIFT, target=36),
     },
-
     28: {
-
-        'false': Action(kind=ActionKind.SHIFT, target=16),
-
-        'lbracket': Action(kind=ActionKind.SHIFT, target=17),
-
-        'lcurly': Action(kind=ActionKind.SHIFT, target=18),
-
-        'null': Action(kind=ActionKind.SHIFT, target=19),
-
-        'number': Action(kind=ActionKind.SHIFT, target=20),
-
-        'string': Action(kind=ActionKind.SHIFT, target=22),
-
-        'true': Action(kind=ActionKind.SHIFT, target=23),
-
+        "false": Action(kind=ActionKind.SHIFT, target=16),
+        "lbracket": Action(kind=ActionKind.SHIFT, target=17),
+        "lcurly": Action(kind=ActionKind.SHIFT, target=18),
+        "null": Action(kind=ActionKind.SHIFT, target=19),
+        "number": Action(kind=ActionKind.SHIFT, target=20),
+        "string": Action(kind=ActionKind.SHIFT, target=22),
+        "true": Action(kind=ActionKind.SHIFT, target=23),
     },
-
     29: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=15),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=15),
     },
-
     30: {
-
-        'comma': Action(kind=ActionKind.SHIFT, target=28),
-
-        'rbracket': Action(kind=ActionKind.SHIFT, target=38),
-
+        "comma": Action(kind=ActionKind.SHIFT, target=28),
+        "rbracket": Action(kind=ActionKind.SHIFT, target=38),
     },
-
     31: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=14),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=14),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=14),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=14),
     },
-
     32: {
-
-        'comma': Action(kind=ActionKind.SHIFT, target=34),
-
-        'rcurly': Action(kind=ActionKind.SHIFT, target=39),
-
+        "comma": Action(kind=ActionKind.SHIFT, target=34),
+        "rcurly": Action(kind=ActionKind.SHIFT, target=39),
     },
-
     33: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=9),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=9),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=9),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=9),
     },
-
     34: {
-
-        'string': Action(kind=ActionKind.SHIFT, target=27),
-
+        "string": Action(kind=ActionKind.SHIFT, target=27),
     },
-
     35: {
-
-        'EOF': Action(kind=ActionKind.REDUCE, target=10),
-
+        "EOF": Action(kind=ActionKind.REDUCE, target=10),
     },
-
     36: {
-
-        'false': Action(kind=ActionKind.SHIFT, target=44),
-
-        'lbracket': Action(kind=ActionKind.SHIFT, target=45),
-
-        'lcurly': Action(kind=ActionKind.SHIFT, target=46),
-
-        'null': Action(kind=ActionKind.SHIFT, target=47),
-
-        'number': Action(kind=ActionKind.SHIFT, target=48),
-
-        'string': Action(kind=ActionKind.SHIFT, target=49),
-
-        'true': Action(kind=ActionKind.SHIFT, target=50),
-
+        "false": Action(kind=ActionKind.SHIFT, target=44),
+        "lbracket": Action(kind=ActionKind.SHIFT, target=45),
+        "lcurly": Action(kind=ActionKind.SHIFT, target=46),
+        "null": Action(kind=ActionKind.SHIFT, target=47),
+        "number": Action(kind=ActionKind.SHIFT, target=48),
+        "string": Action(kind=ActionKind.SHIFT, target=49),
+        "true": Action(kind=ActionKind.SHIFT, target=50),
     },
-
     37: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=17),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=17),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=17),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=17),
     },
-
     38: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=15),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=15),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=15),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=15),
     },
-
     39: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=10),
-
-        'rbracket': Action(kind=ActionKind.REDUCE, target=10),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=10),
+        "rbracket": Action(kind=ActionKind.REDUCE, target=10),
     },
-
     40: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=12),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=12),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=12),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=12),
     },
-
     41: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=3),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=3),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=3),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=3),
     },
-
     42: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=2),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=2),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=2),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=2),
     },
-
     43: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=13),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=13),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=13),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=13),
     },
-
     44: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=7),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=7),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=7),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=7),
     },
-
     45: {
-
-        'false': Action(kind=ActionKind.SHIFT, target=16),
-
-        'lbracket': Action(kind=ActionKind.SHIFT, target=17),
-
-        'lcurly': Action(kind=ActionKind.SHIFT, target=18),
-
-        'null': Action(kind=ActionKind.SHIFT, target=19),
-
-        'number': Action(kind=ActionKind.SHIFT, target=20),
-
-        'rbracket': Action(kind=ActionKind.SHIFT, target=52),
-
-        'string': Action(kind=ActionKind.SHIFT, target=22),
-
-        'true': Action(kind=ActionKind.SHIFT, target=23),
-
+        "false": Action(kind=ActionKind.SHIFT, target=16),
+        "lbracket": Action(kind=ActionKind.SHIFT, target=17),
+        "lcurly": Action(kind=ActionKind.SHIFT, target=18),
+        "null": Action(kind=ActionKind.SHIFT, target=19),
+        "number": Action(kind=ActionKind.SHIFT, target=20),
+        "rbracket": Action(kind=ActionKind.SHIFT, target=52),
+        "string": Action(kind=ActionKind.SHIFT, target=22),
+        "true": Action(kind=ActionKind.SHIFT, target=23),
     },
-
     46: {
-
-        'rcurly': Action(kind=ActionKind.SHIFT, target=54),
-
-        'string': Action(kind=ActionKind.SHIFT, target=27),
-
+        "rcurly": Action(kind=ActionKind.SHIFT, target=54),
+        "string": Action(kind=ActionKind.SHIFT, target=27),
     },
-
     47: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=8),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=8),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=8),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=8),
     },
-
     48: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=5),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=5),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=5),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=5),
     },
-
     49: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=4),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=4),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=4),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=4),
     },
-
     50: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=6),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=6),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=6),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=6),
     },
-
     51: {
-
-        'comma': Action(kind=ActionKind.SHIFT, target=28),
-
-        'rbracket': Action(kind=ActionKind.SHIFT, target=55),
-
+        "comma": Action(kind=ActionKind.SHIFT, target=28),
+        "rbracket": Action(kind=ActionKind.SHIFT, target=55),
     },
-
     52: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=14),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=14),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=14),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=14),
     },
-
     53: {
-
-        'comma': Action(kind=ActionKind.SHIFT, target=34),
-
-        'rcurly': Action(kind=ActionKind.SHIFT, target=56),
-
+        "comma": Action(kind=ActionKind.SHIFT, target=34),
+        "rcurly": Action(kind=ActionKind.SHIFT, target=56),
     },
-
     54: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=9),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=9),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=9),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=9),
     },
-
     55: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=15),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=15),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=15),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=15),
     },
-
     56: {
-
-        'comma': Action(kind=ActionKind.REDUCE, target=10),
-
-        'rcurly': Action(kind=ActionKind.REDUCE, target=10),
-
+        "comma": Action(kind=ActionKind.REDUCE, target=10),
+        "rcurly": Action(kind=ActionKind.REDUCE, target=10),
     },
-
 }
 
 GOTOS: dict[int, dict[str, int]] = {
-
     0: {
-
-        'Array': 1,
-
-        'Json': 2,
-
-        'Object': 3,
-
-        'Value': 4,
-
+        "Array": 1,
+        "Json": 2,
+        "Object": 3,
+        "Value": 4,
     },
-
     6: {
-
-        'Array': 12,
-
-        'Elements': 13,
-
-        'Object': 14,
-
-        'Value': 15,
-
+        "Array": 12,
+        "Elements": 13,
+        "Object": 14,
+        "Value": 15,
     },
-
     7: {
-
-        'Member': 24,
-
-        'Members': 25,
-
+        "Member": 24,
+        "Members": 25,
     },
-
     17: {
-
-        'Array': 12,
-
-        'Elements': 30,
-
-        'Object': 14,
-
-        'Value': 15,
-
+        "Array": 12,
+        "Elements": 30,
+        "Object": 14,
+        "Value": 15,
     },
-
     18: {
-
-        'Member': 24,
-
-        'Members': 32,
-
+        "Member": 24,
+        "Members": 32,
     },
-
     28: {
-
-        'Array': 12,
-
-        'Object': 14,
-
-        'Value': 37,
-
+        "Array": 12,
+        "Object": 14,
+        "Value": 37,
     },
-
     34: {
-
-        'Member': 40,
-
+        "Member": 40,
     },
-
     36: {
-
-        'Array': 41,
-
-        'Object': 42,
-
-        'Value': 43,
-
+        "Array": 41,
+        "Object": 42,
+        "Value": 43,
     },
-
     45: {
-
-        'Array': 12,
-
-        'Elements': 51,
-
-        'Object': 14,
-
-        'Value': 15,
-
+        "Array": 12,
+        "Elements": 51,
+        "Object": 14,
+        "Value": 15,
     },
-
     46: {
-
-        'Member': 24,
-
-        'Members': 53,
-
+        "Member": 24,
+        "Members": 53,
     },
-
 }
 
 PRODUCTIONS: list[Production] = [
-
     Production(
-        lhs='__pgpg_start_1',
+        lhs="__pgpg_start_1",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -666,16 +368,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Json',
+        lhs="Json",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -685,16 +386,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -704,16 +404,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -723,16 +422,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -742,16 +440,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -761,16 +458,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -780,16 +476,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -799,16 +494,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Value',
+        lhs="Value",
         rhs_count=1,
         has_hint=False,
         has_passthrough=False,
@@ -818,16 +512,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Object',
+        lhs="Object",
         rhs_count=2,
         has_hint=True,
         has_passthrough=False,
@@ -837,16 +530,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='{}',
+        parent_literal="{}",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='object',
+        node_type="object",
     ),
-
     Production(
-        lhs='Object',
+        lhs="Object",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -856,16 +548,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=True,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='{}',
+        parent_literal="{}",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[1],
-        node_type='object',
+        node_type="object",
     ),
-
     Production(
-        lhs='Members',
+        lhs="Members",
         rhs_count=1,
         has_hint=True,
         has_passthrough=False,
@@ -875,16 +566,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='{temp}',
+        parent_literal="{temp}",
         child_indices=[0],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Members',
+        lhs="Members",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -894,16 +584,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[2],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Member',
+        lhs="Member",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -913,16 +602,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=1,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[0, 2],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Array',
+        lhs="Array",
         rhs_count=2,
         has_hint=True,
         has_passthrough=False,
@@ -932,16 +620,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='[]',
+        parent_literal="[]",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='array',
+        node_type="array",
     ),
-
     Production(
-        lhs='Array',
+        lhs="Array",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -951,16 +638,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=True,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='[]',
+        parent_literal="[]",
         child_indices=[],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[1],
-        node_type='array',
+        node_type="array",
     ),
-
     Production(
-        lhs='Elements',
+        lhs="Elements",
         rhs_count=1,
         has_hint=True,
         has_passthrough=False,
@@ -970,16 +656,15 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='[temp]',
+        parent_literal="[temp]",
         child_indices=[0],
         with_appended_children=[],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
     Production(
-        lhs='Elements',
+        lhs="Elements",
         rhs_count=3,
         has_hint=True,
         has_passthrough=False,
@@ -989,14 +674,13 @@ PRODUCTIONS: list[Production] = [
         has_with_adopted_grandchildren=False,
         parent_index=0,
         passthrough_index=0,
-        parent_literal='',
+        parent_literal="",
         child_indices=[],
         with_appended_children=[2],
         with_prepended_children=[],
         with_adopted_grandchildren=[],
-        node_type='',
+        node_type="",
     ),
-
 ]
 
 
@@ -1040,9 +724,7 @@ class pgpg_JSONParser:
                 if ast_mode == "noast":
                     node_stack.append(_pgpg_JSONParser_NO_AST_SENTINEL)
                 else:
-                    node_stack.append(
-                        new_ast_node_terminal(lookahead, lookahead.type)
-                    )
+                    node_stack.append(new_ast_node_terminal(lookahead, lookahead.type))
                 state_stack.append(action.target)
                 lookahead = lexer.scan()
                 if self.trace and self.trace.on_token and lookahead:
@@ -1088,30 +770,57 @@ class pgpg_JSONParser:
         if not (trace_tokens or trace_states or trace_stack):
             return
         import sys
+
         self.trace = TraceHooks()
         if trace_tokens:
+
             def on_token(tok: Optional[Token]) -> None:
                 if tok:
-                    loc = f" line={tok.location.line} col={tok.location.column}" if tok.location else ""
-                    print(f"TOK type={tok.type} lexeme={tok.lexeme!r}{loc}", file=sys.stderr)
+                    loc = (
+                        f" line={tok.location.line} col={tok.location.column}"
+                        if tok.location
+                        else ""
+                    )
+                    print(
+                        f"TOK type={tok.type} lexeme={tok.lexeme!r}{loc}",
+                        file=sys.stderr,
+                    )
+
             self.trace.on_token = on_token
         if trace_states:
-            def on_action(state: int, action: Action, lookahead: Optional[Token]) -> None:
-                kind_str = "shift" if action.kind == ActionKind.SHIFT else ("reduce" if action.kind == ActionKind.REDUCE else "accept")
-                target = f"({action.target})" if action.kind != ActionKind.ACCEPT else ""
+
+            def on_action(
+                state: int, action: Action, lookahead: Optional[Token]
+            ) -> None:
+                kind_str = (
+                    "shift"
+                    if action.kind == ActionKind.SHIFT
+                    else ("reduce" if action.kind == ActionKind.REDUCE else "accept")
+                )
+                target = (
+                    f"({action.target})" if action.kind != ActionKind.ACCEPT else ""
+                )
                 la_type = lookahead.type if lookahead else ""
                 la_lex = lookahead.lexeme if lookahead else ""
-                print(f"STATE {state} {kind_str}{target} on {la_type}({la_lex!r})", file=sys.stderr)
+                print(
+                    f"STATE {state} {kind_str}{target} on {la_type}({la_lex!r})",
+                    file=sys.stderr,
+                )
+
             self.trace.on_action = on_action
         if trace_stack:
+
             def on_stack(state_stack: list[int], node_stack: list[ASTNode]) -> None:
                 states = "[" + " ".join(str(s) for s in state_stack) + "]"
                 nodes = "[" + " ".join(n.type for n in node_stack) + "]"
                 print(f"STACK states={states} nodes={nodes}", file=sys.stderr)
+
             self.trace.on_stack = on_stack
 
 
-def _reduce_pgpg_JSONParser(prod: Production, rhs_nodes: list[ASTNode], ast_mode: str) -> ASTNode:
+def _reduce_pgpg_JSONParser(
+    prod: Production, rhs_nodes: list[ASTNode], ast_mode: str
+) -> ASTNode:
     use_full_tree = ast_mode == "fullast"
     if not use_full_tree and prod.has_passthrough:
         return rhs_nodes[prod.passthrough_index]
@@ -1168,7 +877,10 @@ def _reduce_pgpg_JSONParser(prod: Production, rhs_nodes: list[ASTNode], ast_mode
         node_type = prod.node_type or prod.lhs
         if prod.has_parent_literal:
             parent_token = new_token(prod.parent_literal, prod.parent_literal)
-        elif 0 <= prod.parent_index < len(rhs_nodes) and rhs_nodes[prod.parent_index].token:
+        elif (
+            0 <= prod.parent_index < len(rhs_nodes)
+            and rhs_nodes[prod.parent_index].token
+        ):
             parent_token = rhs_nodes[prod.parent_index].token
         else:
             parent_token = None

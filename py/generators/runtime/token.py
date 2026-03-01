@@ -1,4 +1,5 @@
 """Token and location types for lexer/parser."""
+
 from dataclasses import dataclass
 from typing import Optional
 

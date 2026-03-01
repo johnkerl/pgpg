@@ -5,6 +5,7 @@ Reads the same *-lex.json files as the Go lexgen-code.
 Usage:
   python lexgen_code.py -o lexers/json_lexer.py -c JSONLexer [--prefix pgpg_] json-lex.json
 """
+
 from __future__ import annotations
 
 import argparse

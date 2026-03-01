@@ -11,6 +11,9 @@ fmt:
 	make -C go                fmt
 	make -C apps/go/generated fmt
 	make -C apps/go           fmt
+	make -C py/generators     fmt
+	make -C apps/py           fmt
+	make -C apps/py/generated fmt
 
 clean:
 	make -C go                clean
