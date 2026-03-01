@@ -9,8 +9,6 @@
   * Write up: Better error messages with missing semicolons
   * Write up: Root must come first
 
-* Perf-analyze the JSON lexer
-
 * Error out on this:
 ```
 $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
@@ -39,6 +37,27 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 
 * Config-file language for Miller -- ? Presumably there are standard config-file packages already out there.
 * Something shell-like -- ?
+
+# Perf-analyze the JSON lexer/parser
+
+```
+$ justtime jq . ~/data/big.json > /dev/null
+TIME IN SECONDS 8.835 -- jq . /Users/kerl/data/big.json
+
+$ justtime mlr -j nothing ~/data/big.json > /dev/null
+TIME IN SECONDS 7.668 -- mlr -j nothing /Users/kerl/data/big.json
+
+$ justtime mlr -j cat ~/data/big.json > /dev/null
+TIME IN SECONDS 9.599 -- mlr -j cat /Users/kerl/data/big.json
+
+$ justtime apps/go/tryparse -multi -noast g:json ~/data/big.jsonl > /dev/null
+TIME IN SECONDS 10.502 -- apps/go/tryparse -multi -noast g:json /Users/kerl/data/big.jsonl
+
+$ justtime apps/go/tryparse -multi g:json ~/data/big.jsonl > /dev/null
+TIME IN SECONDS 15.796 -- apps/go/tryparse -multi g:json /Users/kerl/data/big.jsonl
+
+...
+```
 
 # Tools to-do
 

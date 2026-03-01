@@ -6,7 +6,23 @@ package asts
 
 import (
 	"fmt"
+	"strings"
 )
+
+// String returns the indent-style multiline string representation.
+func (a *AST) String() string {
+	return a.RootNode.String()
+}
+
+// StringParex returns the parenthesized-expression string representation.
+func (a *AST) StringParex() string {
+	return a.RootNode.StringParex()
+}
+
+// StringParexOneLine returns the parenthesized-expression string, all on one line.
+func (a *AST) StringParexOneLine() string {
+	return a.RootNode.StringParexOneLine()
+}
 
 // Print is indent-style multiline print.
 //
@@ -14,9 +30,8 @@ import (
 // "+"
 //     "a"
 //     "b"
-
 func (a *AST) Print() {
-	a.RootNode.Print()
+	fmt.Print(a.String())
 }
 
 // PrintParex is parenthesized-expression print.
@@ -24,7 +39,7 @@ func (a *AST) Print() {
 // Example, given parse of 'a + b':
 // (+ a b)
 func (a *AST) PrintParex() {
-	a.RootNode.PrintParex()
+	fmt.Print(a.StringParex())
 }
 
 // PrintParexOneLine is parenthesized-expression print, all on one line.
@@ -32,105 +47,135 @@ func (a *AST) PrintParex() {
 // Example, given parse of 'a + b':
 // (+ a b)
 func (a *AST) PrintParexOneLine() {
-	a.RootNode.PrintParexOneLine()
+	fmt.Print(a.StringParexOneLine())
+}
+
+// String returns the indent-style multiline string representation.
+func (n *ASTNode) String() string {
+	var buf strings.Builder
+	n.printAux(&buf, 0)
+	return buf.String()
 }
 
 // Print is indent-style multiline print.
 func (n *ASTNode) Print() {
-	n.printAux(0)
+	fmt.Print(n.String())
 }
 
 // printAux is a recursion-helper for Print.
-func (n *ASTNode) printAux(depth int) {
+func (n *ASTNode) printAux(buf *strings.Builder, depth int) {
 	// Indent
 	for i := 0; i < depth; i++ {
-		fmt.Print("    ")
+		buf.WriteString("    ")
 	}
 
 	// Token text (if non-nil) and token type
 	tok := n.Token
 	if tok != nil {
-		fmt.Printf("\"%s\" [tt:%s] [nt:%s]", tok.LexemeText(), tok.TokenTypeText(), n.Type)
+		buf.WriteString("\"")
+		buf.WriteString(tok.LexemeText())
+		buf.WriteString("\" [tt:")
+		buf.WriteString(tok.TokenTypeText())
+		buf.WriteString("] [nt:")
+		buf.WriteString(string(n.Type))
+		buf.WriteString("]")
 	} else {
-		fmt.Printf("[nt:%s]", n.Type)
+		buf.WriteString("[nt:")
+		buf.WriteString(string(n.Type))
+		buf.WriteString("]")
 	}
-	fmt.Println()
+	buf.WriteString("\n")
 
 	// Children, indented one level further
 	if n.Children != nil {
 		for _, child := range n.Children {
-			child.printAux(depth + 1)
+			child.printAux(buf, depth+1)
 		}
 	}
+}
+
+// StringParex returns the parenthesized-expression string representation.
+func (n *ASTNode) StringParex() string {
+	var buf strings.Builder
+	n.printParexAux(&buf, 0)
+	return buf.String()
 }
 
 // PrintParex is parenthesized-expression print.
 func (n *ASTNode) PrintParex() {
-	n.printParexAux(0)
+	fmt.Print(n.StringParex())
 }
 
 // printParexAux is a recursion-helper for PrintParex.
-func (n *ASTNode) printParexAux(depth int) {
+func (n *ASTNode) printParexAux(buf *strings.Builder, depth int) {
 	if n.IsLeaf() {
 		for i := 0; i < depth; i++ {
-			fmt.Print("    ")
+			buf.WriteString("    ")
 		}
-		fmt.Println(n.Text())
+		buf.WriteString(n.Text())
+		buf.WriteString("\n")
 
 	} else if n.ChildrenAreAllLeaves() {
 		// E.g. (= sum 0) or (+ 1 2)
 		for i := 0; i < depth; i++ {
-			fmt.Print("    ")
+			buf.WriteString("    ")
 		}
-		fmt.Print("(")
-		fmt.Print(n.Text())
-
+		buf.WriteString("(")
+		buf.WriteString(n.Text())
 		for _, child := range n.Children {
-			fmt.Print(" ")
-			fmt.Print(child.Text())
+			buf.WriteString(" ")
+			buf.WriteString(child.Text())
 		}
-		fmt.Println(")")
+		buf.WriteString(")\n")
 
 	} else {
 		// Parent and opening parenthesis on first line
 		for i := 0; i < depth; i++ {
-			fmt.Print("    ")
+			buf.WriteString("    ")
 		}
-		fmt.Print("(")
-		fmt.Println(n.Text())
+		buf.WriteString("(")
+		buf.WriteString(n.Text())
+		buf.WriteString("\n")
 
 		// Children on their own lines
 		for _, child := range n.Children {
-			child.printParexAux(depth + 1)
+			child.printParexAux(buf, depth+1)
 		}
 
 		// Closing parenthesis on last line
 		for i := 0; i < depth; i++ {
-			fmt.Print("    ")
+			buf.WriteString("    ")
 		}
-		fmt.Println(")")
+		buf.WriteString(")\n")
 	}
+}
+
+// StringParexOneLine returns the parenthesized-expression string, all on one line.
+func (n *ASTNode) StringParexOneLine() string {
+	var buf strings.Builder
+	n.printParexOneLineAux(&buf)
+	buf.WriteString("\n")
+	return buf.String()
 }
 
 // PrintParexOneLine is parenthesized-expression print, all on one line.
 func (n *ASTNode) PrintParexOneLine() {
-	n.printParexOneLineAux()
-	fmt.Println()
+	fmt.Print(n.StringParexOneLine())
 }
 
 // printParexOneLineAux is a recursion-helper for PrintParexOneLine.
-func (n *ASTNode) printParexOneLineAux() {
+func (n *ASTNode) printParexOneLineAux(buf *strings.Builder) {
 	if n.IsLeaf() {
-		fmt.Print(n.Text())
+		buf.WriteString(n.Text())
 		return
 	}
-	fmt.Print("(")
-	fmt.Print(n.Text())
+	buf.WriteString("(")
+	buf.WriteString(n.Text())
 	for _, child := range n.Children {
-		fmt.Print(" ")
-		child.printParexOneLineAux()
+		buf.WriteString(" ")
+		child.printParexOneLineAux(buf)
 	}
-	fmt.Print(")")
+	buf.WriteString(")")
 }
 
 // IsLeaf determines if an AST node is a leaf node.
