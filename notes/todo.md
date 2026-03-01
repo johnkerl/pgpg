@@ -1,8 +1,5 @@
 # Top
 
-* Multi-object:
-  * Make sure truly streaming
-
 * PASCAL-S
 
 * UX findings from PASCAL-S:
