@@ -9,12 +9,12 @@
   * Write up: Better error messages with missing semicolons
   * Write up: Root must come first
 
+* Perf-analyze the JSON lexer
+
 * Error out on this:
 ```
 $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 ```
-
-* Perf-analyze the JSON lexer
 
 # Language ideas
 
