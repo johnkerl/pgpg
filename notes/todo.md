@@ -1,5 +1,7 @@
 # Top
 
+* PL/0
+
 * PASCAL-S
 
 * UX findings from PASCAL-S:
@@ -21,11 +23,11 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
 ## Programming languages
 
 * PEMDAS & VIC obv
-* Miller/millerish ...
 * LISP/ish
 * PASCAL-S and/or PL/0
   * BNFs
   * Manual recursive descent
+* Miller/millerish ...
 
 ## Data languages
 

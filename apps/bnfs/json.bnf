@@ -33,10 +33,6 @@ Json ::= Value;
 
 Value ::= Object | Array | string | number | true | false | null;
 
-# Want/need:
-# * parent can be a string token not an integer, e.g. "[]"
-# * with-adopted-children
-
 Object
   ::= lcurly rcurly -> { "parent_literal": "{}", "children": [], "type": "object" }
   |   lcurly Members rcurly -> { "parent_literal": "{}", "with_adopted_grandchildren": [1] , "type": "object" };
