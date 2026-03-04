@@ -66,11 +66,13 @@ TIME IN SECONDS 15.796 -- apps/go/tryparse -multi g:json /Users/kerl/data/big.js
 
 # Miller to-do
 
+* Let `-f` for `cut` et al. handle `foo.bar` etc.
 * Re-think `emit`: make it a function with reshaping-helper functions
 * Re-think `[[...]]`
 * `print` update ...
 * Syntax errors / expected-one-of
 * Group-by-and-apply
+* CSV error/weirdness-handling: die immediately; skip and continue; accept more gracefully
 
 # Tools to-do
 
