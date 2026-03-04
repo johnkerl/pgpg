@@ -112,3 +112,158 @@ A `join -against-computed` or the ability to reference a prior verb's aggregatio
 ---
 
 The common thread across most of these is the same one you identified for group-by-and-apply: **the verb layer is thin, and the DSL layer requires knowing about out-of-stream variables, `for` loops over `$*`, and `emit` semantics** — a fairly steep jump from "I know the basic verbs" to "I can do this moderately complex thing." The gap between those two levels of fluency is wide, and there's a lot of useful functionality sitting just on the far side of it.
+
+---
+
+_Can you please suggest some improved DSL syntax for the examples on this page?_
+
+[https://miller.readthedocs.io/en/latest/two-pass-algorithms/](https://miller.readthedocs.io/en/latest/two-pass-algorithms/)
+
+---
+
+## 1. Min-max normalization (percentile between min and max)
+
+**Current:**
+```
+mlr --from data/small --opprint put -q '
+  @x_min = min($x, @x_min);
+  @x_max = max($x, @x_max);
+  @x[NR] = $x;
+  end {
+    for (nr, x in @x) {
+      @x_pct[nr] = 100 * (x - @x_min) / (@x_max - @x_min);
+    }
+    emit (@x, @x_pct), "NR"
+  }
+'
+```
+
+There are several things going on here that require explanation: manually tracking min/max, indexing a parallel array by `NR`, then fusing two arrays together at emit time with the `"NR"` join key. The `emit (a, b), "key"` syntax in particular is one of the more opaque corners of the DSL.
+
+**Proposed:**
+
+```
+mlr --from data/small --opprint normalize -f x --mode minmax --pct
+```
+
+Or, if this stays in the DSL, a `twopass` block that makes the two phases explicit:
+```
+mlr --from data/small --opprint put '
+  twopass {
+    pass1: { @x_min = min(x,@xmin);@xmax=max(x, @x_min); @x_max = max(
+x,@xm​in);@xm​ax=max(x, @x_max) }
+    pass2: { xpct=100∗(x_pct = 100 * (
+xp​ct=100∗(x - @x_min) / (@x_max - @x_min) }
+  }
+'
+```
+
+The `twopass` idea captures what is actually happening structurally. The current idiom hides pass 2 inside an `end` block and requires manually buffering values via `@x[NR]` -- a non-obvious indirection.
+
+---
+
+## 2. Field-presence counting and fractions
+
+**Current:**
+```
+mlr put -q '
+  for (key in $*) {
+    @key_counts[key] += 1
+  }
+  @record_count += 1;
+  end {
+    for (key in @key_counts) {
+      @key_fraction[key] = @key_counts[key] / @record_count
+    }
+    emit @record_count;
+    emit @key_counts, "key";
+    emit @key_fraction, "key"
+  }
+'
+```
+
+Three separate `emit` calls produce three separate output blocks, with different shapes. Understanding why `emit @key_counts, "key"` produces a two-column table (and what the `"key"` argument means) requires reading the emit docs carefully.
+
+**Proposed:**
+
+This is really a summarization query, and the output shape question (three separate blocks vs. one joined table) is separate from the computation. A cleaner split might be:
+
+```
+mlr --from data summary '
+  count_per_field as key_counts,
+  fraction_per_field as key_fraction,
+  total_record_count as record_count
+'
+```
+
+If staying in the DSL, at minimum the multi-emit pattern could be replaced with assembling a map and emitting it once:
+
+```
+end {
+  for (key in @key_counts) {
+    emit {
+      "key": key,
+      "count": @key_counts[key],
+      "fraction": @key_counts[key] / @record_count
+    }
+  }
+}
+```
+
+This produces one flat stream of records instead of three separate blocks, which is usually what you actually want and much easier to pipe downstream.
+
+---
+
+## 3. Unsparsify (rectangularizing sparse JSON)
+
+**Current:**
+
+```
+mlr put -q '
+  for (key in $*) {
+    @all_keys[key] = 1
+  }
+  @records[NR] = $*;
+  end {
+    for (nr, record in @records) {
+      for (key in @all_keys) {
+        if (! haskey(record, key)) { @records[nr][key] = "" }
+      }
+      emit @records[nr]
+    }
+  }
+'
+```
+
+The page itself notes this is already handled by `unsparsify`. But the DSL version is instructive because it shows the `@records[NR] = $*` buffering idiom -- capturing entire records by NR -- which is the general escape hatch for any two-pass operation that needs to modify records. It's powerful but completely implicit; nothing in the syntax tells you that all records are now in memory.
+
+**Proposed:**
+
+For the DSL, making the buffering explicit and the second-pass pattern composable would help. A hypothetical `collect`/`replay` construct:
+
+```
+mlr put '
+  collect $* into @records;
+  end {
+    let all_keys = union_keys(@records);
+    for (rec in @records) {
+      emit fill_missing(rec, all_keys, "")
+    }
+  }
+'
+```
+
+Where `union_keys` and `fill_missing` are built-in functions rather than patterns the user assembles manually. The key insight is that `collect` + `replay` is a very common two-pass structure, and making it a first-class idiom (rather than `@records[NR] = $*` + `for (nr, r in @records)`) would reduce the surface area users need to understand.
+
+---
+
+## The common thread
+
+All three examples have the same underlying structure:
+
+1. **Accumulate** something across records (min/max, counts, full record buffer)
+2. **Compute** something that requires the accumulated state
+3. **Emit** transformed records
+
+The current DSL forces users to manually wire together all three phases using `@oosvar`, `NR`-indexed arrays, `end` blocks, and `emit`. A cleaner design would surface this structure directly -- either via a `twopass` block that names the phases, or via higher-level built-ins (`normalize`, `collect`, `union_keys`) that encapsulate the common accumulate-then-replay patterns. The `emit (a, b), "key"` multi-array fusion form in particular could be retired entirely in favor of just building and emitting a map inline.
+
