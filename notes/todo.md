@@ -1,17 +1,16 @@
 # Top
 
-* PL/0
-
-* PASCAL-S
+* PL/0; PASCAL-S
 
 * UX findings from PASCAL-S:
   * Have more parsing-debug tools available in sample apps
   * Write up: Sharp edge if this isn't first b/c first-found & it matches identifier
-  * Write up: `./generate.sh  && go build && ./astprint -e 'program foo'`
-  * Write up: Better error messages with missing semicolons
+  * Write up: Better error messages when semicolons are missing
   * Write up: Root must come first
 
 * Iterate on data languages
+  * `pgpg-experiments` show parsing too heavy ... lexers maybe?
+  * Try to adapt Go CSV -> DKVP
 
 * Error out on this:
 ```
@@ -28,13 +27,16 @@ $ rlwrap ./apps/go/pemdas-eval -mode f2poly -mod-poly 1f -l
   * BNFs
   * Manual recursive descent
 * Miller/millerish ...
+  * Re-think `emit`: make it a function with reshaping-helper functions
+  * Re-think `[[...]]`
 
 ## Data languages
 
+* JSON obv
 * CSV
 * DKVP
-* DKVPX
-* JSON obv
+  * Note: for JSON newlines are irrelevant so there is accept-and-yield logic.
+  * For DKVP, newlines are record boundaries.
 
 ## Utility languages
 
@@ -61,6 +63,14 @@ TIME IN SECONDS 15.796 -- apps/go/tryparse -multi g:json /Users/kerl/data/big.js
 
 ...
 ```
+
+# Miller to-do
+
+* Re-think `emit`: make it a function with reshaping-helper functions
+* Re-think `[[...]]`
+* `print` update ...
+* Syntax errors / expected-one-of
+* Group-by-and-apply
 
 # Tools to-do
 
