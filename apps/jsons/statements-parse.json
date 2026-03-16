@@ -21,56 +21,68 @@
       "print": {
         "type": "shift",
         "target": 10
-      }
-    },
-    "1": {
+      },
       "semicolon": {
         "type": "shift",
         "target": 11
       }
     },
+    "1": {
+      "semicolon": {
+        "type": "shift",
+        "target": 12
+      }
+    },
     "2": {
       "EOF": {
         "type": "reduce",
-        "target": 5
+        "target": 6
       },
       "id": {
         "type": "reduce",
-        "target": 5
+        "target": 6
       },
       "if": {
         "type": "reduce",
-        "target": 5
+        "target": 6
       },
       "int_literal": {
         "type": "reduce",
-        "target": 5
+        "target": 6
       },
       "print": {
         "type": "reduce",
-        "target": 5
+        "target": 6
+      },
+      "semicolon": {
+        "type": "reduce",
+        "target": 6
       }
     },
     "3": {
       "EOF": {
         "type": "reduce",
-        "target": 6
+        "target": 7
       },
       "id": {
         "type": "reduce",
-        "target": 6
+        "target": 7
       },
       "if": {
         "type": "reduce",
-        "target": 6
+        "target": 7
       },
       "int_literal": {
         "type": "reduce",
-        "target": 6
+        "target": 7
       },
       "print": {
         "type": "reduce",
-        "target": 6
+        "target": 7
+      },
+      "semicolon": {
+        "type": "reduce",
+        "target": 7
       }
     },
     "4": {
@@ -122,6 +134,10 @@
       "print": {
         "type": "shift",
         "target": 10
+      },
+      "semicolon": {
+        "type": "shift",
+        "target": 11
       }
     },
     "6": {
@@ -133,25 +149,25 @@
     "7": {
       "equals": {
         "type": "shift",
-        "target": 13
+        "target": 14
       }
     },
     "8": {
       "lparen": {
         "type": "shift",
-        "target": 14
+        "target": 15
       }
     },
     "9": {
       "semicolon": {
         "type": "reduce",
-        "target": 8
+        "target": 9
       }
     },
     "10": {
       "lparen": {
         "type": "shift",
-        "target": 15
+        "target": 16
       }
     },
     "11": {
@@ -174,71 +190,101 @@
       "print": {
         "type": "reduce",
         "target": 4
+      },
+      "semicolon": {
+        "type": "reduce",
+        "target": 4
       }
     },
     "12": {
       "EOF": {
         "type": "reduce",
-        "target": 2
+        "target": 5
+      },
+      "id": {
+        "type": "reduce",
+        "target": 5
+      },
+      "if": {
+        "type": "reduce",
+        "target": 5
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 5
+      },
+      "print": {
+        "type": "reduce",
+        "target": 5
+      },
+      "semicolon": {
+        "type": "reduce",
+        "target": 5
       }
     },
     "13": {
-      "int_literal": {
-        "type": "shift",
-        "target": 16
+      "EOF": {
+        "type": "reduce",
+        "target": 2
       }
     },
     "14": {
-      "id": {
-        "type": "shift",
-        "target": 18
-      },
       "int_literal": {
         "type": "shift",
-        "target": 19
+        "target": 17
       }
     },
     "15": {
       "id": {
         "type": "shift",
-        "target": 18
+        "target": 19
       },
       "int_literal": {
         "type": "shift",
-        "target": 19
+        "target": 20
       }
     },
     "16": {
-      "semicolon": {
-        "type": "reduce",
-        "target": 7
+      "id": {
+        "type": "shift",
+        "target": 19
+      },
+      "int_literal": {
+        "type": "shift",
+        "target": 20
       }
     },
     "17": {
-      "rparen": {
-        "type": "shift",
-        "target": 21
+      "semicolon": {
+        "type": "reduce",
+        "target": 8
       }
     },
     "18": {
-      "equals": {
+      "rparen": {
         "type": "shift",
         "target": 22
       }
     },
     "19": {
-      "rparen": {
-        "type": "reduce",
-        "target": 8
-      }
-    },
-    "20": {
-      "rparen": {
+      "equals": {
         "type": "shift",
         "target": 23
       }
     },
+    "20": {
+      "rparen": {
+        "type": "reduce",
+        "target": 9
+      }
+    },
     "21": {
+      "rparen": {
+        "type": "shift",
+        "target": 24
+      }
+    },
+    "22": {
       "id": {
         "type": "shift",
         "target": 7
@@ -254,49 +300,25 @@
       "print": {
         "type": "shift",
         "target": 10
-      }
-    },
-    "22": {
-      "int_literal": {
+      },
+      "semicolon": {
         "type": "shift",
-        "target": 25
+        "target": 11
       }
     },
     "23": {
-      "semicolon": {
+      "int_literal": {
         "type": "shift",
         "target": 26
       }
     },
     "24": {
-      "EOF": {
-        "type": "reduce",
-        "target": 9
-      },
-      "id": {
-        "type": "reduce",
-        "target": 9
-      },
-      "if": {
-        "type": "reduce",
-        "target": 9
-      },
-      "int_literal": {
-        "type": "reduce",
-        "target": 9
-      },
-      "print": {
-        "type": "reduce",
-        "target": 9
+      "semicolon": {
+        "type": "shift",
+        "target": 27
       }
     },
     "25": {
-      "rparen": {
-        "type": "reduce",
-        "target": 7
-      }
-    },
-    "26": {
       "EOF": {
         "type": "reduce",
         "target": 10
@@ -316,6 +338,42 @@
       "print": {
         "type": "reduce",
         "target": 10
+      },
+      "semicolon": {
+        "type": "reduce",
+        "target": 10
+      }
+    },
+    "26": {
+      "rparen": {
+        "type": "reduce",
+        "target": 8
+      }
+    },
+    "27": {
+      "EOF": {
+        "type": "reduce",
+        "target": 11
+      },
+      "id": {
+        "type": "reduce",
+        "target": 11
+      },
+      "if": {
+        "type": "reduce",
+        "target": 11
+      },
+      "int_literal": {
+        "type": "reduce",
+        "target": 11
+      },
+      "print": {
+        "type": "reduce",
+        "target": 11
+      },
+      "semicolon": {
+        "type": "reduce",
+        "target": 11
       }
     }
   },
@@ -333,19 +391,19 @@
       "IfStatement": 2,
       "PrintStatement": 3,
       "Statement": 5,
-      "__pgpg_repeat_1": 12
-    },
-    "14": {
-      "Expression": 17
+      "__pgpg_repeat_1": 13
     },
     "15": {
-      "Expression": 20
+      "Expression": 18
     },
-    "21": {
+    "16": {
+      "Expression": 21
+    },
+    "22": {
       "Expression": 1,
       "IfStatement": 2,
       "PrintStatement": 3,
-      "Statement": 24
+      "Statement": 25
     }
   },
   "productions": [
@@ -381,6 +439,15 @@
         {
           "name": "__pgpg_repeat_1",
           "terminal": false
+        }
+      ]
+    },
+    {
+      "lhs": "Statement",
+      "rhs": [
+        {
+          "name": "semicolon",
+          "terminal": true
         }
       ]
     },

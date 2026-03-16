@@ -32,6 +32,7 @@ const (
 	EBNFParserNodeTypeHintInt        asts.NodeType = "hint_int"
 	EBNFParserNodeTypeHintString     asts.NodeType = "hint_string"
 	EBNFParserNodeTypeHintArray      asts.NodeType = "hint_array"
+	EBNFParserNodeTypeEmpty          asts.NodeType = "empty"
 )
 
 func NewEBNFParser() AbstractParser {
@@ -175,6 +176,9 @@ func (parser *EBNFParser) parseTermIfPresent() (*asts.ASTNode, bool, error) {
 		return nil, false, err
 	}
 	if accepted {
+		if string(token.Lexeme) == "empty" {
+			return asts.NewASTNode(nil, EBNFParserNodeTypeEmpty, nil), true, nil
+		}
 		return asts.NewASTNode(token, EBNFParserNodeTypeIdentifier, nil), true, nil
 	}
 
