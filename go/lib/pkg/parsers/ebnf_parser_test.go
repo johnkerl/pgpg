@@ -180,3 +180,32 @@ func TestEBNFParserHintWithAdoptedGrandchildren(t *testing.T) {
 	// Hint should have two fields: parent and with_adopted_grandchildren
 	assert.Len(t, hint.Children, 2)
 }
+
+func TestEBNFParserEmptyKeyword(t *testing.T) {
+	parser := NewEBNFParser()
+	ast, err := parser.Parse(strings.NewReader("A ::= empty ;"))
+	assert.NoError(t, err)
+
+	root := ast.RootNode
+	assertEBNFNodeType(t, root, EBNFParserNodeTypeGrammar)
+	assert.Len(t, root.Children, 1)
+
+	rule := root.Children[0]
+	assertEBNFNodeType(t, rule, EBNFParserNodeTypeRule)
+	expr := rule.Children[1]
+	assertEBNFNodeType(t, expr, EBNFParserNodeTypeEmpty)
+}
+
+func TestEBNFParserEmptyAsAlternative(t *testing.T) {
+	parser := NewEBNFParser()
+	ast, err := parser.Parse(strings.NewReader(`A ::= empty | "a" ;`))
+	assert.NoError(t, err)
+
+	root := ast.RootNode
+	rule := root.Children[0]
+	expr := rule.Children[1]
+	assertEBNFNodeType(t, expr, EBNFParserNodeTypeAlternates)
+	assert.Len(t, expr.Children, 2)
+	assertEBNFNodeType(t, expr.Children[0], EBNFParserNodeTypeEmpty)
+	assertEBNFNodeType(t, expr.Children[1], EBNFParserNodeTypeLiteral)
+}

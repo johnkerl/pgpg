@@ -525,6 +525,8 @@ func (builder *grammarBuilder) expandExpr(node *asts.ASTNode) ([]expandedAlterna
 			return nil, fmt.Errorf("undefined rule %q", identifier)
 		}
 		return []expandedAlternative{{symbols: []Symbol{{Name: identifier, Terminal: false}}}}, nil
+	case parsers.EBNFParserNodeTypeEmpty:
+		return []expandedAlternative{{symbols: []Symbol{}}}, nil
 	case parsers.EBNFParserNodeTypeSequence:
 		if len(node.Children) == 0 {
 			return []expandedAlternative{{symbols: []Symbol{}}}, nil

@@ -326,23 +326,26 @@ var StatementsParserActions = map[int]map[tokens.TokenType]StatementsParserActio
 		tokens.TokenType("if"):          {Kind: StatementsParserActionShift, Target: 8},
 		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 9},
 		tokens.TokenType("print"):       {Kind: StatementsParserActionShift, Target: 10},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionShift, Target: 11},
 	},
 	1: {
-		tokens.TokenType("semicolon"): {Kind: StatementsParserActionShift, Target: 11},
+		tokens.TokenType("semicolon"): {Kind: StatementsParserActionShift, Target: 12},
 	},
 	2: {
-		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 5},
-		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 5},
-		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 5},
-		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 5},
-		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 5},
-	},
-	3: {
 		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 6},
 		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 6},
 		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 6},
 		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 6},
 		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 6},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionReduce, Target: 6},
+	},
+	3: {
+		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 7},
+		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 7},
+		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 7},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 7},
+		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 7},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionReduce, Target: 7},
 	},
 	4: {
 		tokens.TokenTypeEOF:             {Kind: StatementsParserActionAccept},
@@ -361,21 +364,22 @@ var StatementsParserActions = map[int]map[tokens.TokenType]StatementsParserActio
 		tokens.TokenType("if"):          {Kind: StatementsParserActionShift, Target: 8},
 		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 9},
 		tokens.TokenType("print"):       {Kind: StatementsParserActionShift, Target: 10},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionShift, Target: 11},
 	},
 	6: {
 		tokens.TokenTypeEOF: {Kind: StatementsParserActionReduce, Target: 3},
 	},
 	7: {
-		tokens.TokenType("equals"): {Kind: StatementsParserActionShift, Target: 13},
+		tokens.TokenType("equals"): {Kind: StatementsParserActionShift, Target: 14},
 	},
 	8: {
-		tokens.TokenType("lparen"): {Kind: StatementsParserActionShift, Target: 14},
+		tokens.TokenType("lparen"): {Kind: StatementsParserActionShift, Target: 15},
 	},
 	9: {
-		tokens.TokenType("semicolon"): {Kind: StatementsParserActionReduce, Target: 8},
+		tokens.TokenType("semicolon"): {Kind: StatementsParserActionReduce, Target: 9},
 	},
 	10: {
-		tokens.TokenType("lparen"): {Kind: StatementsParserActionShift, Target: 15},
+		tokens.TokenType("lparen"): {Kind: StatementsParserActionShift, Target: 16},
 	},
 	11: {
 		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 4},
@@ -383,64 +387,76 @@ var StatementsParserActions = map[int]map[tokens.TokenType]StatementsParserActio
 		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 4},
 		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 4},
 		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 4},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionReduce, Target: 4},
 	},
 	12: {
-		tokens.TokenTypeEOF: {Kind: StatementsParserActionReduce, Target: 2},
+		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 5},
+		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 5},
+		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 5},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 5},
+		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 5},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionReduce, Target: 5},
 	},
 	13: {
-		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 16},
+		tokens.TokenTypeEOF: {Kind: StatementsParserActionReduce, Target: 2},
 	},
 	14: {
-		tokens.TokenType("id"):          {Kind: StatementsParserActionShift, Target: 18},
-		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 19},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 17},
 	},
 	15: {
-		tokens.TokenType("id"):          {Kind: StatementsParserActionShift, Target: 18},
-		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 19},
+		tokens.TokenType("id"):          {Kind: StatementsParserActionShift, Target: 19},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 20},
 	},
 	16: {
-		tokens.TokenType("semicolon"): {Kind: StatementsParserActionReduce, Target: 7},
+		tokens.TokenType("id"):          {Kind: StatementsParserActionShift, Target: 19},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 20},
 	},
 	17: {
-		tokens.TokenType("rparen"): {Kind: StatementsParserActionShift, Target: 21},
+		tokens.TokenType("semicolon"): {Kind: StatementsParserActionReduce, Target: 8},
 	},
 	18: {
-		tokens.TokenType("equals"): {Kind: StatementsParserActionShift, Target: 22},
+		tokens.TokenType("rparen"): {Kind: StatementsParserActionShift, Target: 22},
 	},
 	19: {
-		tokens.TokenType("rparen"): {Kind: StatementsParserActionReduce, Target: 8},
+		tokens.TokenType("equals"): {Kind: StatementsParserActionShift, Target: 23},
 	},
 	20: {
-		tokens.TokenType("rparen"): {Kind: StatementsParserActionShift, Target: 23},
+		tokens.TokenType("rparen"): {Kind: StatementsParserActionReduce, Target: 9},
 	},
 	21: {
+		tokens.TokenType("rparen"): {Kind: StatementsParserActionShift, Target: 24},
+	},
+	22: {
 		tokens.TokenType("id"):          {Kind: StatementsParserActionShift, Target: 7},
 		tokens.TokenType("if"):          {Kind: StatementsParserActionShift, Target: 8},
 		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 9},
 		tokens.TokenType("print"):       {Kind: StatementsParserActionShift, Target: 10},
-	},
-	22: {
-		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 25},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionShift, Target: 11},
 	},
 	23: {
-		tokens.TokenType("semicolon"): {Kind: StatementsParserActionShift, Target: 26},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionShift, Target: 26},
 	},
 	24: {
-		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 9},
-		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 9},
-		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 9},
-		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 9},
-		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 9},
+		tokens.TokenType("semicolon"): {Kind: StatementsParserActionShift, Target: 27},
 	},
 	25: {
-		tokens.TokenType("rparen"): {Kind: StatementsParserActionReduce, Target: 7},
-	},
-	26: {
 		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 10},
 		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 10},
 		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 10},
 		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 10},
 		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 10},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionReduce, Target: 10},
+	},
+	26: {
+		tokens.TokenType("rparen"): {Kind: StatementsParserActionReduce, Target: 8},
+	},
+	27: {
+		tokens.TokenTypeEOF:             {Kind: StatementsParserActionReduce, Target: 11},
+		tokens.TokenType("id"):          {Kind: StatementsParserActionReduce, Target: 11},
+		tokens.TokenType("if"):          {Kind: StatementsParserActionReduce, Target: 11},
+		tokens.TokenType("int_literal"): {Kind: StatementsParserActionReduce, Target: 11},
+		tokens.TokenType("print"):       {Kind: StatementsParserActionReduce, Target: 11},
+		tokens.TokenType("semicolon"):   {Kind: StatementsParserActionReduce, Target: 11},
 	},
 }
 
@@ -458,19 +474,19 @@ var StatementsParserGotos = map[int]map[asts.NodeType]int{
 		asts.NodeType("IfStatement"):     2,
 		asts.NodeType("PrintStatement"):  3,
 		asts.NodeType("Statement"):       5,
-		asts.NodeType("__pgpg_repeat_1"): 12,
-	},
-	14: {
-		asts.NodeType("Expression"): 17,
+		asts.NodeType("__pgpg_repeat_1"): 13,
 	},
 	15: {
-		asts.NodeType("Expression"): 20,
+		asts.NodeType("Expression"): 18,
 	},
-	21: {
+	16: {
+		asts.NodeType("Expression"): 21,
+	},
+	22: {
 		asts.NodeType("Expression"):     1,
 		asts.NodeType("IfStatement"):    2,
 		asts.NodeType("PrintStatement"): 3,
-		asts.NodeType("Statement"):      24,
+		asts.NodeType("Statement"):      25,
 	},
 }
 
@@ -479,6 +495,7 @@ var StatementsParserProductions = []StatementsParserProduction{
 	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 0},
 	{lhs: asts.NodeType("__pgpg_repeat_1"), rhsCount: 2},
 	{lhs: asts.NodeType("Program"), rhsCount: 1},
+	{lhs: asts.NodeType("Statement"), rhsCount: 1},
 	{lhs: asts.NodeType("Statement"), rhsCount: 2},
 	{lhs: asts.NodeType("Statement"), rhsCount: 1},
 	{lhs: asts.NodeType("Statement"), rhsCount: 1},
