@@ -2,8 +2,6 @@
 
 PGPG is the Pretty Good Parser Generator.
 
-It's very much a work in progress!
-
 ## CI status
 
 [![Go build status](https://github.com/johnkerl/pgpg/actions/workflows/ci-go.yml/badge.svg)](https://github.com/johnkerl/pgpg/actions/workflows/ci-go.yml)
