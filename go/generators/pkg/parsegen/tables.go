@@ -884,20 +884,6 @@ type grammar struct {
 
 func newGrammar(builder *grammarBuilder, startSymbol string) *grammar {
 	productions := append([]Production{}, builder.productions...)
-	byLHS := map[string][]int{}
-	nonterms := map[string]bool{}
-	terminals := map[string]bool{}
-	for i, prod := range productions {
-		byLHS[prod.LHS] = append(byLHS[prod.LHS], i)
-		nonterms[prod.LHS] = true
-		for _, sym := range prod.RHS {
-			if sym.Terminal {
-				terminals[sym.Name] = true
-			} else {
-				nonterms[sym.Name] = true
-			}
-		}
-	}
 
 	augmented := builder.newSyntheticName("start")
 	productions = append([]Production{{
@@ -905,9 +891,9 @@ func newGrammar(builder *grammarBuilder, startSymbol string) *grammar {
 		RHS: []Symbol{{Name: startSymbol, Terminal: false}},
 	}}, productions...)
 
-	byLHS = map[string][]int{}
-	nonterms = map[string]bool{}
-	terminals = map[string]bool{}
+	byLHS := map[string][]int{}
+	nonterms := map[string]bool{}
+	terminals := map[string]bool{}
 	for i, prod := range productions {
 		byLHS[prod.LHS] = append(byLHS[prod.LHS], i)
 		nonterms[prod.LHS] = true
