@@ -36,7 +36,31 @@
         "type": "reduce",
         "target": 3
       },
+      "false": {
+        "type": "reduce",
+        "target": 3
+      },
       "lbracket": {
+        "type": "reduce",
+        "target": 3
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 3
+      },
+      "null": {
+        "type": "reduce",
+        "target": 3
+      },
+      "number": {
+        "type": "reduce",
+        "target": 3
+      },
+      "string": {
+        "type": "reduce",
+        "target": 3
+      },
+      "true": {
         "type": "reduce",
         "target": 3
       }
@@ -84,7 +108,31 @@
         "type": "reduce",
         "target": 2
       },
+      "false": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 2
+      },
       "lcurly": {
+        "type": "reduce",
+        "target": 2
+      },
+      "null": {
+        "type": "reduce",
+        "target": 2
+      },
+      "number": {
+        "type": "reduce",
+        "target": 2
+      },
+      "string": {
+        "type": "reduce",
+        "target": 2
+      },
+      "true": {
         "type": "reduce",
         "target": 2
       }
@@ -134,6 +182,30 @@
         "target": 7
       },
       "false": {
+        "type": "reduce",
+        "target": 7
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 7
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 7
+      },
+      "null": {
+        "type": "reduce",
+        "target": 7
+      },
+      "number": {
+        "type": "reduce",
+        "target": 7
+      },
+      "string": {
+        "type": "reduce",
+        "target": 7
+      },
+      "true": {
         "type": "reduce",
         "target": 7
       }
@@ -211,7 +283,31 @@
         "type": "reduce",
         "target": 8
       },
+      "false": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 8
+      },
       "null": {
+        "type": "reduce",
+        "target": 8
+      },
+      "number": {
+        "type": "reduce",
+        "target": 8
+      },
+      "string": {
+        "type": "reduce",
+        "target": 8
+      },
+      "true": {
         "type": "reduce",
         "target": 8
       }
@@ -221,7 +317,31 @@
         "type": "reduce",
         "target": 5
       },
+      "false": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 5
+      },
+      "null": {
+        "type": "reduce",
+        "target": 5
+      },
       "number": {
+        "type": "reduce",
+        "target": 5
+      },
+      "string": {
+        "type": "reduce",
+        "target": 5
+      },
+      "true": {
         "type": "reduce",
         "target": 5
       }
@@ -231,13 +351,61 @@
         "type": "reduce",
         "target": 4
       },
+      "false": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 4
+      },
+      "null": {
+        "type": "reduce",
+        "target": 4
+      },
+      "number": {
+        "type": "reduce",
+        "target": 4
+      },
       "string": {
+        "type": "reduce",
+        "target": 4
+      },
+      "true": {
         "type": "reduce",
         "target": 4
       }
     },
     "11": {
       "EOF": {
+        "type": "reduce",
+        "target": 6
+      },
+      "false": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "null": {
+        "type": "reduce",
+        "target": 6
+      },
+      "number": {
+        "type": "reduce",
+        "target": 6
+      },
+      "string": {
         "type": "reduce",
         "target": 6
       },
@@ -251,11 +419,35 @@
         "type": "reduce",
         "target": 3
       },
+      "false": {
+        "type": "reduce",
+        "target": 3
+      },
       "lbracket": {
         "type": "reduce",
         "target": 3
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 3
+      },
+      "null": {
+        "type": "reduce",
+        "target": 3
+      },
+      "number": {
+        "type": "reduce",
+        "target": 3
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 3
+      },
+      "string": {
+        "type": "reduce",
+        "target": 3
+      },
+      "true": {
         "type": "reduce",
         "target": 3
       }
@@ -271,11 +463,35 @@
         "type": "reduce",
         "target": 2
       },
+      "false": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 2
+      },
       "lcurly": {
         "type": "reduce",
         "target": 2
       },
+      "null": {
+        "type": "reduce",
+        "target": 2
+      },
+      "number": {
+        "type": "reduce",
+        "target": 2
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 2
+      },
+      "string": {
+        "type": "reduce",
+        "target": 2
+      },
+      "true": {
         "type": "reduce",
         "target": 2
       }
@@ -299,7 +515,31 @@
         "type": "reduce",
         "target": 7
       },
+      "lbracket": {
+        "type": "reduce",
+        "target": 7
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 7
+      },
+      "null": {
+        "type": "reduce",
+        "target": 7
+      },
+      "number": {
+        "type": "reduce",
+        "target": 7
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 7
+      },
+      "string": {
+        "type": "reduce",
+        "target": 7
+      },
+      "true": {
         "type": "reduce",
         "target": 7
       }
@@ -353,17 +593,57 @@
         "type": "reduce",
         "target": 8
       },
+      "false": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 8
+      },
       "null": {
+        "type": "reduce",
+        "target": 8
+      },
+      "number": {
         "type": "reduce",
         "target": 8
       },
       "rbracket": {
         "type": "reduce",
         "target": 8
+      },
+      "string": {
+        "type": "reduce",
+        "target": 8
+      },
+      "true": {
+        "type": "reduce",
+        "target": 8
       }
     },
     "20": {
       "comma": {
+        "type": "reduce",
+        "target": 5
+      },
+      "false": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 5
+      },
+      "null": {
         "type": "reduce",
         "target": 5
       },
@@ -374,6 +654,14 @@
       "rbracket": {
         "type": "reduce",
         "target": 5
+      },
+      "string": {
+        "type": "reduce",
+        "target": 5
+      },
+      "true": {
+        "type": "reduce",
+        "target": 5
       }
     },
     "21": {
@@ -381,13 +669,57 @@
         "type": "reduce",
         "target": 16
       },
+      "false": {
+        "type": "reduce",
+        "target": 16
+      },
       "lbracket": {
+        "type": "reduce",
+        "target": 16
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 16
+      },
+      "null": {
+        "type": "reduce",
+        "target": 16
+      },
+      "number": {
+        "type": "reduce",
+        "target": 16
+      },
+      "string": {
+        "type": "reduce",
+        "target": 16
+      },
+      "true": {
         "type": "reduce",
         "target": 16
       }
     },
     "22": {
       "comma": {
+        "type": "reduce",
+        "target": 4
+      },
+      "false": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 4
+      },
+      "null": {
+        "type": "reduce",
+        "target": 4
+      },
+      "number": {
         "type": "reduce",
         "target": 4
       },
@@ -398,6 +730,10 @@
       "string": {
         "type": "reduce",
         "target": 4
+      },
+      "true": {
+        "type": "reduce",
+        "target": 4
       }
     },
     "23": {
@@ -405,7 +741,31 @@
         "type": "reduce",
         "target": 6
       },
+      "false": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "null": {
+        "type": "reduce",
+        "target": 6
+      },
+      "number": {
+        "type": "reduce",
+        "target": 6
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 6
+      },
+      "string": {
         "type": "reduce",
         "target": 6
       },
@@ -415,11 +775,35 @@
       }
     },
     "24": {
+      "false": {
+        "type": "reduce",
+        "target": 3
+      },
       "lbracket": {
         "type": "reduce",
         "target": 3
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 3
+      },
+      "null": {
+        "type": "reduce",
+        "target": 3
+      },
+      "number": {
+        "type": "reduce",
+        "target": 3
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 3
+      },
+      "string": {
+        "type": "reduce",
+        "target": 3
+      },
+      "true": {
         "type": "reduce",
         "target": 3
       }
@@ -476,11 +860,35 @@
       }
     },
     "28": {
+      "false": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 2
+      },
       "lcurly": {
         "type": "reduce",
         "target": 2
       },
+      "null": {
+        "type": "reduce",
+        "target": 2
+      },
+      "number": {
+        "type": "reduce",
+        "target": 2
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 2
+      },
+      "string": {
+        "type": "reduce",
+        "target": 2
+      },
+      "true": {
         "type": "reduce",
         "target": 2
       }
@@ -525,7 +933,31 @@
         "type": "reduce",
         "target": 7
       },
+      "lbracket": {
+        "type": "reduce",
+        "target": 7
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 7
+      },
+      "null": {
+        "type": "reduce",
+        "target": 7
+      },
+      "number": {
+        "type": "reduce",
+        "target": 7
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 7
+      },
+      "string": {
+        "type": "reduce",
+        "target": 7
+      },
+      "true": {
         "type": "reduce",
         "target": 7
       }
@@ -575,21 +1007,69 @@
       }
     },
     "33": {
+      "false": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 8
+      },
       "null": {
         "type": "reduce",
         "target": 8
       },
+      "number": {
+        "type": "reduce",
+        "target": 8
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 8
+      },
+      "string": {
+        "type": "reduce",
+        "target": 8
+      },
+      "true": {
         "type": "reduce",
         "target": 8
       }
     },
     "34": {
+      "false": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 5
+      },
+      "null": {
+        "type": "reduce",
+        "target": 5
+      },
       "number": {
         "type": "reduce",
         "target": 5
       },
       "rcurly": {
+        "type": "reduce",
+        "target": 5
+      },
+      "string": {
+        "type": "reduce",
+        "target": 5
+      },
+      "true": {
         "type": "reduce",
         "target": 5
       }
@@ -599,7 +1079,31 @@
         "type": "reduce",
         "target": 10
       },
+      "false": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 10
+      },
       "lcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "null": {
+        "type": "reduce",
+        "target": 10
+      },
+      "number": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "reduce",
+        "target": 10
+      },
+      "true": {
         "type": "reduce",
         "target": 10
       }
@@ -609,6 +1113,26 @@
         "type": "shift",
         "target": 53
       },
+      "false": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 4
+      },
+      "null": {
+        "type": "reduce",
+        "target": 4
+      },
+      "number": {
+        "type": "reduce",
+        "target": 4
+      },
       "rcurly": {
         "type": "reduce",
         "target": 4
@@ -616,10 +1140,38 @@
       "string": {
         "type": "reduce",
         "target": 4
+      },
+      "true": {
+        "type": "reduce",
+        "target": 4
       }
     },
     "37": {
+      "false": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "null": {
+        "type": "reduce",
+        "target": 6
+      },
+      "number": {
+        "type": "reduce",
+        "target": 6
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "string": {
         "type": "reduce",
         "target": 6
       },
@@ -633,7 +1185,31 @@
         "type": "reduce",
         "target": 15
       },
+      "false": {
+        "type": "reduce",
+        "target": 15
+      },
       "lbracket": {
+        "type": "reduce",
+        "target": 15
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 15
+      },
+      "null": {
+        "type": "reduce",
+        "target": 15
+      },
+      "number": {
+        "type": "reduce",
+        "target": 15
+      },
+      "string": {
+        "type": "reduce",
+        "target": 15
+      },
+      "true": {
         "type": "reduce",
         "target": 15
       }
@@ -685,11 +1261,35 @@
         "type": "reduce",
         "target": 16
       },
+      "false": {
+        "type": "reduce",
+        "target": 16
+      },
       "lbracket": {
         "type": "reduce",
         "target": 16
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 16
+      },
+      "null": {
+        "type": "reduce",
+        "target": 16
+      },
+      "number": {
+        "type": "reduce",
+        "target": 16
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 16
+      },
+      "string": {
+        "type": "reduce",
+        "target": 16
+      },
+      "true": {
         "type": "reduce",
         "target": 16
       }
@@ -705,11 +1305,35 @@
         "type": "reduce",
         "target": 10
       },
+      "false": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 10
+      },
       "lcurly": {
         "type": "reduce",
         "target": 10
       },
+      "null": {
+        "type": "reduce",
+        "target": 10
+      },
+      "number": {
+        "type": "reduce",
+        "target": 10
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "reduce",
+        "target": 10
+      },
+      "true": {
         "type": "reduce",
         "target": 10
       }
@@ -737,7 +1361,31 @@
         "type": "reduce",
         "target": 9
       },
+      "false": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 9
+      },
       "lcurly": {
+        "type": "reduce",
+        "target": 9
+      },
+      "null": {
+        "type": "reduce",
+        "target": 9
+      },
+      "number": {
+        "type": "reduce",
+        "target": 9
+      },
+      "string": {
+        "type": "reduce",
+        "target": 9
+      },
+      "true": {
         "type": "reduce",
         "target": 9
       }
@@ -749,11 +1397,35 @@
       }
     },
     "50": {
+      "false": {
+        "type": "reduce",
+        "target": 16
+      },
       "lbracket": {
         "type": "reduce",
         "target": 16
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 16
+      },
+      "null": {
+        "type": "reduce",
+        "target": 16
+      },
+      "number": {
+        "type": "reduce",
+        "target": 16
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 16
+      },
+      "string": {
+        "type": "reduce",
+        "target": 16
+      },
+      "true": {
         "type": "reduce",
         "target": 16
       }
@@ -765,11 +1437,35 @@
       }
     },
     "52": {
+      "false": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 10
+      },
       "lcurly": {
         "type": "reduce",
         "target": 10
       },
+      "null": {
+        "type": "reduce",
+        "target": 10
+      },
+      "number": {
+        "type": "reduce",
+        "target": 10
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "reduce",
+        "target": 10
+      },
+      "true": {
         "type": "reduce",
         "target": 10
       }
@@ -819,11 +1515,35 @@
         "type": "reduce",
         "target": 15
       },
+      "false": {
+        "type": "reduce",
+        "target": 15
+      },
       "lbracket": {
         "type": "reduce",
         "target": 15
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 15
+      },
+      "null": {
+        "type": "reduce",
+        "target": 15
+      },
+      "number": {
+        "type": "reduce",
+        "target": 15
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 15
+      },
+      "string": {
+        "type": "reduce",
+        "target": 15
+      },
+      "true": {
         "type": "reduce",
         "target": 15
       }
@@ -833,11 +1553,35 @@
         "type": "reduce",
         "target": 9
       },
+      "false": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 9
+      },
       "lcurly": {
         "type": "reduce",
         "target": 9
       },
+      "null": {
+        "type": "reduce",
+        "target": 9
+      },
+      "number": {
+        "type": "reduce",
+        "target": 9
+      },
       "rbracket": {
+        "type": "reduce",
+        "target": 9
+      },
+      "string": {
+        "type": "reduce",
+        "target": 9
+      },
+      "true": {
         "type": "reduce",
         "target": 9
       }
@@ -853,21 +1597,69 @@
       }
     },
     "58": {
+      "false": {
+        "type": "reduce",
+        "target": 15
+      },
       "lbracket": {
         "type": "reduce",
         "target": 15
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 15
+      },
+      "null": {
+        "type": "reduce",
+        "target": 15
+      },
+      "number": {
+        "type": "reduce",
+        "target": 15
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 15
+      },
+      "string": {
+        "type": "reduce",
+        "target": 15
+      },
+      "true": {
         "type": "reduce",
         "target": 15
       }
     },
     "59": {
+      "false": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 9
+      },
       "lcurly": {
         "type": "reduce",
         "target": 9
       },
+      "null": {
+        "type": "reduce",
+        "target": 9
+      },
+      "number": {
+        "type": "reduce",
+        "target": 9
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 9
+      },
+      "string": {
+        "type": "reduce",
+        "target": 9
+      },
+      "true": {
         "type": "reduce",
         "target": 9
       }
@@ -877,11 +1669,35 @@
         "type": "reduce",
         "target": 3
       },
+      "false": {
+        "type": "reduce",
+        "target": 3
+      },
       "lbracket": {
         "type": "reduce",
         "target": 3
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 3
+      },
+      "null": {
+        "type": "reduce",
+        "target": 3
+      },
+      "number": {
+        "type": "reduce",
+        "target": 3
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 3
+      },
+      "string": {
+        "type": "reduce",
+        "target": 3
+      },
+      "true": {
         "type": "reduce",
         "target": 3
       }
@@ -891,11 +1707,35 @@
         "type": "reduce",
         "target": 2
       },
+      "false": {
+        "type": "reduce",
+        "target": 2
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 2
+      },
       "lcurly": {
         "type": "reduce",
         "target": 2
       },
+      "null": {
+        "type": "reduce",
+        "target": 2
+      },
+      "number": {
+        "type": "reduce",
+        "target": 2
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 2
+      },
+      "string": {
+        "type": "reduce",
+        "target": 2
+      },
+      "true": {
         "type": "reduce",
         "target": 2
       }
@@ -919,7 +1759,31 @@
         "type": "reduce",
         "target": 7
       },
+      "lbracket": {
+        "type": "reduce",
+        "target": 7
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 7
+      },
+      "null": {
+        "type": "reduce",
+        "target": 7
+      },
+      "number": {
+        "type": "reduce",
+        "target": 7
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 7
+      },
+      "string": {
+        "type": "reduce",
+        "target": 7
+      },
+      "true": {
         "type": "reduce",
         "target": 7
       }
@@ -973,17 +1837,57 @@
         "type": "reduce",
         "target": 8
       },
+      "false": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 8
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 8
+      },
       "null": {
+        "type": "reduce",
+        "target": 8
+      },
+      "number": {
         "type": "reduce",
         "target": 8
       },
       "rcurly": {
         "type": "reduce",
         "target": 8
+      },
+      "string": {
+        "type": "reduce",
+        "target": 8
+      },
+      "true": {
+        "type": "reduce",
+        "target": 8
       }
     },
     "67": {
       "comma": {
+        "type": "reduce",
+        "target": 5
+      },
+      "false": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 5
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 5
+      },
+      "null": {
         "type": "reduce",
         "target": 5
       },
@@ -994,10 +1898,38 @@
       "rcurly": {
         "type": "reduce",
         "target": 5
+      },
+      "string": {
+        "type": "reduce",
+        "target": 5
+      },
+      "true": {
+        "type": "reduce",
+        "target": 5
       }
     },
     "68": {
       "comma": {
+        "type": "reduce",
+        "target": 4
+      },
+      "false": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 4
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 4
+      },
+      "null": {
+        "type": "reduce",
+        "target": 4
+      },
+      "number": {
         "type": "reduce",
         "target": 4
       },
@@ -1008,6 +1940,10 @@
       "string": {
         "type": "reduce",
         "target": 4
+      },
+      "true": {
+        "type": "reduce",
+        "target": 4
       }
     },
     "69": {
@@ -1015,7 +1951,31 @@
         "type": "reduce",
         "target": 6
       },
+      "false": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 6
+      },
+      "lcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "null": {
+        "type": "reduce",
+        "target": 6
+      },
+      "number": {
+        "type": "reduce",
+        "target": 6
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 6
+      },
+      "string": {
         "type": "reduce",
         "target": 6
       },
@@ -1047,11 +2007,35 @@
         "type": "reduce",
         "target": 16
       },
+      "false": {
+        "type": "reduce",
+        "target": 16
+      },
       "lbracket": {
         "type": "reduce",
         "target": 16
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 16
+      },
+      "null": {
+        "type": "reduce",
+        "target": 16
+      },
+      "number": {
+        "type": "reduce",
+        "target": 16
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 16
+      },
+      "string": {
+        "type": "reduce",
+        "target": 16
+      },
+      "true": {
         "type": "reduce",
         "target": 16
       }
@@ -1067,11 +2051,35 @@
         "type": "reduce",
         "target": 10
       },
+      "false": {
+        "type": "reduce",
+        "target": 10
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 10
+      },
       "lcurly": {
         "type": "reduce",
         "target": 10
       },
+      "null": {
+        "type": "reduce",
+        "target": 10
+      },
+      "number": {
+        "type": "reduce",
+        "target": 10
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 10
+      },
+      "string": {
+        "type": "reduce",
+        "target": 10
+      },
+      "true": {
         "type": "reduce",
         "target": 10
       }
@@ -1081,11 +2089,35 @@
         "type": "reduce",
         "target": 15
       },
+      "false": {
+        "type": "reduce",
+        "target": 15
+      },
       "lbracket": {
         "type": "reduce",
         "target": 15
       },
+      "lcurly": {
+        "type": "reduce",
+        "target": 15
+      },
+      "null": {
+        "type": "reduce",
+        "target": 15
+      },
+      "number": {
+        "type": "reduce",
+        "target": 15
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 15
+      },
+      "string": {
+        "type": "reduce",
+        "target": 15
+      },
+      "true": {
         "type": "reduce",
         "target": 15
       }
@@ -1095,11 +2127,35 @@
         "type": "reduce",
         "target": 9
       },
+      "false": {
+        "type": "reduce",
+        "target": 9
+      },
+      "lbracket": {
+        "type": "reduce",
+        "target": 9
+      },
       "lcurly": {
         "type": "reduce",
         "target": 9
       },
+      "null": {
+        "type": "reduce",
+        "target": 9
+      },
+      "number": {
+        "type": "reduce",
+        "target": 9
+      },
       "rcurly": {
+        "type": "reduce",
+        "target": 9
+      },
+      "string": {
+        "type": "reduce",
+        "target": 9
+      },
+      "true": {
         "type": "reduce",
         "target": 9
       }

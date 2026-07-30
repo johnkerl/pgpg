@@ -56,6 +56,10 @@
         "type": "reduce",
         "target": 5
       },
+      "article": {
+        "type": "reduce",
+        "target": 5
+      },
       "intransitiveVerb": {
         "type": "reduce",
         "target": 5
@@ -160,7 +164,15 @@
       }
     },
     "10": {
+      "adjective": {
+        "type": "reduce",
+        "target": 7
+      },
       "adverb": {
+        "type": "reduce",
+        "target": 7
+      },
+      "article": {
         "type": "reduce",
         "target": 7
       },
@@ -264,6 +276,10 @@
         "type": "reduce",
         "target": 5
       },
+      "article": {
+        "type": "reduce",
+        "target": 5
+      },
       "noun": {
         "type": "reduce",
         "target": 5
@@ -294,6 +310,14 @@
         "type": "reduce",
         "target": 7
       },
+      "adjective": {
+        "type": "reduce",
+        "target": 7
+      },
+      "article": {
+        "type": "reduce",
+        "target": 7
+      },
       "noun": {
         "type": "reduce",
         "target": 7
@@ -308,7 +332,15 @@
         "type": "reduce",
         "target": 8
       },
+      "article": {
+        "type": "reduce",
+        "target": 8
+      },
       "intransitiveVerb": {
+        "type": "reduce",
+        "target": 8
+      },
+      "noun": {
         "type": "reduce",
         "target": 8
       },
@@ -338,6 +370,10 @@
       }
     },
     "25": {
+      "adjective": {
+        "type": "reduce",
+        "target": 6
+      },
       "adverb": {
         "type": "reduce",
         "target": 6
@@ -347,6 +383,10 @@
         "target": 6
       },
       "intransitiveVerb": {
+        "type": "reduce",
+        "target": 6
+      },
+      "noun": {
         "type": "reduce",
         "target": 6
       },
@@ -444,6 +484,14 @@
       "adjective": {
         "type": "reduce",
         "target": 8
+      },
+      "article": {
+        "type": "reduce",
+        "target": 8
+      },
+      "noun": {
+        "type": "reduce",
+        "target": 8
       }
     },
     "32": {
@@ -451,7 +499,15 @@
         "type": "reduce",
         "target": 6
       },
+      "adjective": {
+        "type": "reduce",
+        "target": 6
+      },
       "article": {
+        "type": "reduce",
+        "target": 6
+      },
+      "noun": {
         "type": "reduce",
         "target": 6
       }
