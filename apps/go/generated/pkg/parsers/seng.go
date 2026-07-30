@@ -339,6 +339,7 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 	3: {
 		tokens.TokenType("adjective"):        {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 5},
+		tokens.TokenType("article"):          {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("noun"):             {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 5},
@@ -378,7 +379,9 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("preposition"): {Kind: SENGParserActionShift, Target: 26},
 	},
 	10: {
+		tokens.TokenType("adjective"):        {Kind: SENGParserActionReduce, Target: 7},
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenType("article"):          {Kind: SENGParserActionReduce, Target: 7},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 7},
 		tokens.TokenType("noun"):             {Kind: SENGParserActionReduce, Target: 7},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 7},
@@ -416,6 +419,7 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 	18: {
 		tokens.TokenTypeEOF:           {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("adjective"): {Kind: SENGParserActionReduce, Target: 5},
+		tokens.TokenType("article"):   {Kind: SENGParserActionReduce, Target: 5},
 		tokens.TokenType("noun"):      {Kind: SENGParserActionReduce, Target: 5},
 	},
 	19: {
@@ -427,13 +431,17 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("noun"):      {Kind: SENGParserActionShift, Target: 21},
 	},
 	21: {
-		tokens.TokenTypeEOF:      {Kind: SENGParserActionReduce, Target: 7},
-		tokens.TokenType("noun"): {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenTypeEOF:           {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenType("adjective"): {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenType("article"):   {Kind: SENGParserActionReduce, Target: 7},
+		tokens.TokenType("noun"):      {Kind: SENGParserActionReduce, Target: 7},
 	},
 	22: {
 		tokens.TokenType("adjective"):        {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 8},
+		tokens.TokenType("article"):          {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 8},
+		tokens.TokenType("noun"):             {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 8},
 	},
 	23: {
@@ -445,9 +453,11 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 		tokens.TokenType("noun"):      {Kind: SENGParserActionReduce, Target: 15},
 	},
 	25: {
+		tokens.TokenType("adjective"):        {Kind: SENGParserActionReduce, Target: 6},
 		tokens.TokenType("adverb"):           {Kind: SENGParserActionReduce, Target: 6},
 		tokens.TokenType("article"):          {Kind: SENGParserActionReduce, Target: 6},
 		tokens.TokenType("intransitiveVerb"): {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenType("noun"):             {Kind: SENGParserActionReduce, Target: 6},
 		tokens.TokenType("transitiveVerb"):   {Kind: SENGParserActionReduce, Target: 6},
 	},
 	26: {
@@ -483,10 +493,14 @@ var SENGParserActions = map[int]map[tokens.TokenType]SENGParserAction{
 	31: {
 		tokens.TokenTypeEOF:           {Kind: SENGParserActionReduce, Target: 8},
 		tokens.TokenType("adjective"): {Kind: SENGParserActionReduce, Target: 8},
+		tokens.TokenType("article"):   {Kind: SENGParserActionReduce, Target: 8},
+		tokens.TokenType("noun"):      {Kind: SENGParserActionReduce, Target: 8},
 	},
 	32: {
-		tokens.TokenTypeEOF:         {Kind: SENGParserActionReduce, Target: 6},
-		tokens.TokenType("article"): {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenTypeEOF:           {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenType("adjective"): {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenType("article"):   {Kind: SENGParserActionReduce, Target: 6},
+		tokens.TokenType("noun"):      {Kind: SENGParserActionReduce, Target: 6},
 	},
 	33: {
 		tokens.TokenTypeEOF: {Kind: SENGParserActionReduce, Target: 18},

@@ -1,4 +1,4 @@
-./tryparse ebnf '
+./tryparse -e m:ebnf '
   integer   = [sign] digit {digit} ;
   sign      = "+" | "-";
   digit     = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";

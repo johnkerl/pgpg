@@ -97,7 +97,7 @@ func (parser *AMNEParser) parseIntLiteral() (*asts.ASTNode, error) {
 	if accepted && err == nil {
 		return asts.NewASTNode(token, AMNEParserNodeTypeNumber, nil), nil
 	}
-	return nil, errors.New("syntax error: expected int literal; got " + token.String())
+	return nil, errors.New("syntax error: expected int literal; got " + parser.lexer.LookAhead().String())
 }
 
 func (parser *AMNEParser) accept(tokenType tokens.TokenType) (bool, *tokens.Token, error) {

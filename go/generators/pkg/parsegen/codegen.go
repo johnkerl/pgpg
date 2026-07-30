@@ -38,7 +38,7 @@ var parserTemplate = template.Must(
 type ParseCodegenOptions struct {
 	Package string // Go package name for generated code
 	Type    string // Go type name for the parser
-	Format  bool   // run go/format.Source on output (default true when zero)
+	Format  bool   // run go/format.Source on output
 }
 
 // DecodeTables reads tables JSON into Tables.
