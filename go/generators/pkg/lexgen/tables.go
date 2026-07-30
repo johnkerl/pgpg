@@ -8,9 +8,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"unicode"
 	"unicode/utf8"
 
+	"github.com/johnkerl/pgpg/go/generators/internal/jsonutil"
+	"github.com/johnkerl/pgpg/go/generators/internal/ruledefs"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
 	"github.com/johnkerl/pgpg/go/lib/pkg/parsers"
 )
@@ -53,147 +54,43 @@ func marshalTablesDeterministic(tables *Tables) ([]byte, error) {
 	if tables == nil {
 		return []byte("null"), nil
 	}
-	var fields []jsonField
+	var fields []jsonutil.Field
 
 	startStateBytes, err := json.Marshal(tables.StartState)
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "start_state", value: startStateBytes})
+	fields = append(fields, jsonutil.Field{Name: "start_state", Value: startStateBytes})
 
-	transitionsBytes, err := marshalMapIntRangeTransitions(tables.Transitions)
+	transitionsBytes, err := jsonutil.MarshalSortedMapJSON(tables.Transitions)
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "transitions", value: transitionsBytes})
+	fields = append(fields, jsonutil.Field{Name: "transitions", Value: transitionsBytes})
 
-	actionsBytes, err := marshalMapIntString(tables.Actions)
+	actionsBytes, err := jsonutil.MarshalSortedMapJSON(tables.Actions)
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "actions", value: actionsBytes})
+	fields = append(fields, jsonutil.Field{Name: "actions", Value: actionsBytes})
 
 	if len(tables.Rules) > 0 {
-		rulesBytes, err := marshalMapStringString(tables.Rules)
+		rulesBytes, err := jsonutil.MarshalSortedMapJSON(tables.Rules)
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, jsonField{name: "rules", value: rulesBytes})
+		fields = append(fields, jsonutil.Field{Name: "rules", Value: rulesBytes})
 	}
 
 	if len(tables.Metadata) > 0 {
-		metadataBytes, err := marshalMapStringString(tables.Metadata)
+		metadataBytes, err := jsonutil.MarshalSortedMapJSON(tables.Metadata)
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, jsonField{name: "metadata", value: metadataBytes})
+		fields = append(fields, jsonutil.Field{Name: "metadata", Value: metadataBytes})
 	}
 
-	return marshalOrderedFields(fields), nil
-}
-
-type jsonField struct {
-	name  string
-	value []byte
-}
-
-func marshalOrderedFields(fields []jsonField) []byte {
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, field := range fields {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(field.name))
-		buf.WriteByte(':')
-		buf.Write(field.value)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes()
-}
-
-func marshalMapIntRangeTransitions(m map[int][]RangeTransition) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]int, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Ints(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
-		buf.WriteByte(':')
-		valueBytes, err := json.Marshal(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-func marshalMapIntString(m map[int]string) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]int, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Ints(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
-		buf.WriteByte(':')
-		valueBytes, err := json.Marshal(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-func marshalMapStringString(m map[string]string) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(key))
-		buf.WriteByte(':')
-		valueBytes, err := json.Marshal(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
+	return jsonutil.MarshalOrderedFields(fields), nil
 }
 
 // GenerateTablesFromReader reads a BNF grammar from r and produces lexer tables.
@@ -221,12 +118,12 @@ func GenerateTables(grammarText string, opts *LexTableOptions) (*Tables, error) 
 		return nil, err
 	}
 
-	ruleDefs, err := extractRuleDefs(ast)
+	ruleDefs, err := ruledefs.Extract(ast)
 	if err != nil {
 		return nil, err
 	}
 
-	lexerRuleNames := selectLexerRuleNames(ruleDefs)
+	lexerRuleNames := ruledefs.SelectLexerRuleNames(ruleDefs)
 	if len(lexerRuleNames) == 0 {
 		return nil, fmt.Errorf("no lexer rules found")
 	}
@@ -241,7 +138,7 @@ func GenerateTables(grammarText string, opts *LexTableOptions) (*Tables, error) 
 
 	ruleMap := map[string]*asts.ASTNode{}
 	for _, rule := range ruleDefs {
-		ruleMap[rule.name] = rule.expr
+		ruleMap[rule.Name] = rule.Expr
 	}
 
 	regexCache := map[string]*regexNode{}
@@ -293,70 +190,18 @@ func GenerateTables(grammarText string, opts *LexTableOptions) (*Tables, error) 
 	}, nil
 }
 
-type ruleDef struct {
-	name string
-	expr *asts.ASTNode
-}
-
-func extractRuleDefs(ast *asts.AST) ([]ruleDef, error) {
-	if ast == nil || ast.RootNode == nil {
-		return nil, fmt.Errorf("nil AST")
-	}
-	if ast.RootNode.Type != parsers.EBNFParserNodeTypeGrammar {
-		return nil, fmt.Errorf("expected grammar root, got %q", ast.RootNode.Type)
-	}
-	var rules []ruleDef
-	for _, ruleNode := range ast.RootNode.Children {
-		if ruleNode.Type != parsers.EBNFParserNodeTypeRule {
-			return nil, fmt.Errorf("expected rule node, got %q", ruleNode.Type)
-		}
-		if err := ruleNode.CheckArity(2); err != nil {
-			return nil, err
-		}
-		nameNode := ruleNode.Children[0]
-		exprNode := ruleNode.Children[1]
-		if nameNode.Type != parsers.EBNFParserNodeTypeIdentifier || nameNode.Token == nil {
-			return nil, fmt.Errorf("rule name must be identifier")
-		}
-		ruleName := string(nameNode.Token.Lexeme)
-		rules = append(rules, ruleDef{name: ruleName, expr: exprNode})
-	}
-	return rules, nil
-}
-
-func selectLexerRuleNames(ruleDefs []ruleDef) []string {
+func selectTokenRuleNames(ruleDefs []ruledefs.RuleDef) []string {
 	var names []string
 	for _, rule := range ruleDefs {
-		if isLexerRuleName(rule.name) {
-			names = append(names, rule.name)
+		if isTokenRuleName(rule.Name) {
+			names = append(names, rule.Name)
 		}
 	}
 	return names
-}
-
-func selectTokenRuleNames(ruleDefs []ruleDef) []string {
-	var names []string
-	for _, rule := range ruleDefs {
-		if isTokenRuleName(rule.name) {
-			names = append(names, rule.name)
-		}
-	}
-	return names
-}
-
-func isLexerRuleName(name string) bool {
-	if name == "" {
-		return false
-	}
-	first := []rune(name)[0]
-	if first == '!' {
-		return true
-	}
-	return first == '_' || unicode.IsLower(first)
 }
 
 func isTokenRuleName(name string) bool {
-	return isLexerRuleName(name) && !strings.HasPrefix(name, "_")
+	return ruledefs.IsLexerRuleName(name) && !strings.HasPrefix(name, "_")
 }
 
 type regexKind int
