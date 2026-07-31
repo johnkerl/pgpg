@@ -1,15 +1,16 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"runtime"
 	"runtime/pprof"
 	"runtime/trace"
 
 	"github.com/johnkerl/pgpg/go/generators/pkg/parsegen"
+	"github.com/johnkerl/pgpg/go/generators/pkg/run"
 )
 
 func usage() {
@@ -32,26 +33,8 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	encodeOpts := &parsegen.EncodeOptions{Sort: true}
-	if nosort {
-		encodeOpts.Sort = false
-	}
-
 	if flag.NArg() != 1 {
 		usage()
-	}
-	inputPath := flag.Arg(0)
-
-	inputBytes, err := os.ReadFile(inputPath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	absPath, err := filepath.Abs(inputPath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
 	}
 
 	stopProfile, err := startProfiling(cpuProfilePath, memProfilePath, tracePath)
@@ -61,25 +44,10 @@ func main() {
 	}
 	defer stopProfile()
 
-	tables, err := parsegen.GenerateTables(string(inputBytes), &parsegen.ParseTableOptions{SourceName: absPath})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	opts := &run.ParsegenTablesOptions{
+		Encode: &parsegen.EncodeOptions{Sort: !nosort},
 	}
-
-	jsonBytes, err := parsegen.EncodeTables(tables, encodeOpts)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	if outputPath == "" || outputPath == "-" {
-		_, _ = os.Stdout.Write(jsonBytes)
-		_, _ = os.Stdout.Write([]byte("\n"))
-		return
-	}
-
-	if err := os.WriteFile(outputPath, jsonBytes, 0o644); err != nil {
+	if err := run.ParsegenTables(context.Background(), flag.Arg(0), outputPath, opts); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

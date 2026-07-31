@@ -8,8 +8,9 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"unicode"
 
+	"github.com/johnkerl/pgpg/go/generators/internal/jsonutil"
+	"github.com/johnkerl/pgpg/go/generators/internal/ruledefs"
 	"github.com/johnkerl/pgpg/go/lib/pkg/asts"
 	"github.com/johnkerl/pgpg/go/lib/pkg/parsers"
 )
@@ -76,38 +77,38 @@ func marshalTablesDeterministic(tables *Tables) ([]byte, error) {
 	if tables == nil {
 		return []byte("null"), nil
 	}
-	var fields []jsonField
+	var fields []jsonutil.Field
 
 	startSymbolBytes, err := json.Marshal(tables.StartSymbol)
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "start_symbol", value: startSymbolBytes})
+	fields = append(fields, jsonutil.Field{Name: "start_symbol", Value: startSymbolBytes})
 
-	actionsBytes, err := marshalMapIntActionMap(tables.Actions)
+	actionsBytes, err := jsonutil.MarshalSortedMap(tables.Actions, jsonutil.MarshalSortedMapJSON[string, Action])
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "actions", value: actionsBytes})
+	fields = append(fields, jsonutil.Field{Name: "actions", Value: actionsBytes})
 
-	gotosBytes, err := marshalMapIntIntMap(tables.Gotos)
+	gotosBytes, err := jsonutil.MarshalSortedMap(tables.Gotos, jsonutil.MarshalSortedMapJSON[string, int])
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "gotos", value: gotosBytes})
+	fields = append(fields, jsonutil.Field{Name: "gotos", Value: gotosBytes})
 
 	productionsBytes, err := json.Marshal(tables.Productions)
 	if err != nil {
 		return nil, err
 	}
-	fields = append(fields, jsonField{name: "productions", value: productionsBytes})
+	fields = append(fields, jsonutil.Field{Name: "productions", Value: productionsBytes})
 
 	if len(tables.Metadata) > 0 {
-		metadataBytes, err := marshalMapStringString(tables.Metadata)
+		metadataBytes, err := jsonutil.MarshalSortedMapJSON(tables.Metadata)
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, jsonField{name: "metadata", value: metadataBytes})
+		fields = append(fields, jsonutil.Field{Name: "metadata", Value: metadataBytes})
 	}
 
 	if tables.HintMode != "" {
@@ -115,10 +116,10 @@ func marshalTablesDeterministic(tables *Tables) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		fields = append(fields, jsonField{name: "hint_mode", value: hintModeBytes})
+		fields = append(fields, jsonutil.Field{Name: "hint_mode", Value: hintModeBytes})
 	}
 
-	return marshalOrderedFields(fields), nil
+	return jsonutil.MarshalOrderedFields(fields), nil
 }
 
 // GenerateTablesFromReader reads a BNF grammar from r and produces LR(1) parser tables.
@@ -145,12 +146,12 @@ func GenerateTables(grammarText string, opts *ParseTableOptions) (*Tables, error
 		return nil, err
 	}
 
-	ruleDefs, err := extractRuleDefs(ast)
+	ruleDefs, err := ruledefs.Extract(ast)
 	if err != nil {
 		return nil, err
 	}
 
-	lexerRuleNames := selectLexerRuleNames(ruleDefs)
+	lexerRuleNames := ruledefs.SelectLexerRuleNames(ruleDefs)
 	lexerRuleSet := map[string]bool{}
 	for _, name := range lexerRuleNames {
 		lexerRuleSet[name] = true
@@ -164,10 +165,10 @@ func GenerateTables(grammarText string, opts *ParseTableOptions) (*Tables, error
 	startSymbol := selectStartSymbol(parserRuleNames)
 	builder := newGrammarBuilder(parserRuleNames, lexerRuleSet)
 	for _, rule := range ruleDefs {
-		if !builder.parserRuleSet[rule.name] {
+		if !builder.parserRuleSet[rule.Name] {
 			continue
 		}
-		if err := builder.addRule(rule.name, rule.expr); err != nil {
+		if err := builder.addRule(rule.Name, rule.Expr); err != nil {
 			return nil, err
 		}
 	}
@@ -221,212 +222,11 @@ func EncodeTables(tables *Tables, opts *EncodeOptions) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-type jsonField struct {
-	name  string
-	value []byte
-}
-
-func marshalOrderedFields(fields []jsonField) []byte {
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, field := range fields {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(field.name))
-		buf.WriteByte(':')
-		buf.Write(field.value)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes()
-}
-
-func marshalMapIntActionMap(m map[int]map[string]Action) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]int, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Ints(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
-		buf.WriteByte(':')
-		valueBytes, err := marshalMapStringAction(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-func marshalMapStringAction(m map[string]Action) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(key))
-		buf.WriteByte(':')
-		valueBytes, err := json.Marshal(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-func marshalMapIntIntMap(m map[int]map[string]int) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]int, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Ints(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(strconv.Itoa(key)))
-		buf.WriteByte(':')
-		valueBytes, err := marshalMapStringInt(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-func marshalMapStringInt(m map[string]int) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(key))
-		buf.WriteByte(':')
-		valueBytes, err := json.Marshal(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-func marshalMapStringString(m map[string]string) ([]byte, error) {
-	if m == nil {
-		return []byte("null"), nil
-	}
-	keys := make([]string, 0, len(m))
-	for key := range m {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	for i, key := range keys {
-		if i > 0 {
-			buf.WriteByte(',')
-		}
-		buf.WriteString(strconv.Quote(key))
-		buf.WriteByte(':')
-		valueBytes, err := json.Marshal(m[key])
-		if err != nil {
-			return nil, err
-		}
-		buf.Write(valueBytes)
-	}
-	buf.WriteByte('}')
-	return buf.Bytes(), nil
-}
-
-type ruleDef struct {
-	name string
-	expr *asts.ASTNode
-}
-
-func extractRuleDefs(ast *asts.AST) ([]ruleDef, error) {
-	if ast == nil || ast.RootNode == nil {
-		return nil, fmt.Errorf("nil AST")
-	}
-	if ast.RootNode.Type != parsers.EBNFParserNodeTypeGrammar {
-		return nil, fmt.Errorf("expected grammar root, got %q", ast.RootNode.Type)
-	}
-	var rules []ruleDef
-	for _, ruleNode := range ast.RootNode.Children {
-		if ruleNode.Type != parsers.EBNFParserNodeTypeRule {
-			return nil, fmt.Errorf("expected rule node, got %q", ruleNode.Type)
-		}
-		if err := ruleNode.CheckArity(2); err != nil {
-			return nil, err
-		}
-		nameNode := ruleNode.Children[0]
-		exprNode := ruleNode.Children[1]
-		if nameNode.Type != parsers.EBNFParserNodeTypeIdentifier || nameNode.Token == nil {
-			return nil, fmt.Errorf("rule name must be identifier")
-		}
-		ruleName := string(nameNode.Token.Lexeme)
-		rules = append(rules, ruleDef{name: ruleName, expr: exprNode})
-	}
-	return rules, nil
-}
-
-func selectLexerRuleNames(ruleDefs []ruleDef) []string {
+func selectParserRuleNames(ruleDefs []ruledefs.RuleDef) []string {
 	var names []string
 	for _, rule := range ruleDefs {
-		if isLexerRuleName(rule.name) {
-			names = append(names, rule.name)
-		}
-	}
-	return names
-}
-
-func selectParserRuleNames(ruleDefs []ruleDef) []string {
-	var names []string
-	for _, rule := range ruleDefs {
-		if !isLexerRuleName(rule.name) {
-			names = append(names, rule.name)
+		if !ruledefs.IsLexerRuleName(rule.Name) {
+			names = append(names, rule.Name)
 		}
 	}
 	return names
@@ -439,17 +239,6 @@ func selectStartSymbol(parserRuleNames []string) string {
 		}
 	}
 	return parserRuleNames[0]
-}
-
-func isLexerRuleName(name string) bool {
-	if name == "" {
-		return false
-	}
-	first := []rune(name)[0]
-	if first == '!' {
-		return true
-	}
-	return first == '_' || unicode.IsLower(first)
 }
 
 type grammarBuilder struct {
