@@ -24,6 +24,11 @@ identifier ::= _idchar { _idchar };
 # ----------------------------------------------------------------
 # PARSING
 
+# The dedicated root rule must be the first parser rule: multi-object support
+# (accept_and_yield) keys on the first production, and the start symbol must
+# not appear nested elsewhere in the grammar.
+Root ::= S_expression;
+
 S_expression ::=
     Atom
 # | lparen S_expression "."S_expression rparen
