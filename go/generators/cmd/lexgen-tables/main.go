@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/johnkerl/pgpg/go/generators/pkg/lexgen"
+	"github.com/johnkerl/pgpg/go/generators/pkg/run"
 )
 
 func usage() {
@@ -17,46 +18,20 @@ func usage() {
 
 func main() {
 	var outputPath string
+	var nosort bool
 	flag.StringVar(&outputPath, "o", "", "Output JSON file (default stdout)")
+	flag.BoolVar(&nosort, "nosort", false, "Skip sorting for faster output with nondeterministic ordering")
 	flag.Usage = usage
 	flag.Parse()
 
 	if flag.NArg() != 1 {
 		usage()
 	}
-	inputPath := flag.Arg(0)
 
-	inputBytes, err := os.ReadFile(inputPath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	opts := &run.LexgenTablesOptions{
+		Encode: &lexgen.EncodeOptions{Sort: !nosort},
 	}
-
-	absPath, err := filepath.Abs(inputPath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	tables, err := lexgen.GenerateTables(string(inputBytes), &lexgen.LexTableOptions{SourceName: absPath})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	jsonBytes, err := lexgen.EncodeTables(tables, nil)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	if outputPath == "" || outputPath == "-" {
-		_, _ = os.Stdout.Write(jsonBytes)
-		_, _ = os.Stdout.Write([]byte("\n"))
-		return
-	}
-
-	if err := os.WriteFile(outputPath, jsonBytes, 0o644); err != nil {
+	if err := run.LexgenTables(context.Background(), flag.Arg(0), outputPath, opts); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

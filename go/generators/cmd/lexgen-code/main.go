@@ -1,16 +1,23 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
 
 	"github.com/johnkerl/pgpg/go/generators/pkg/lexgen"
+	"github.com/johnkerl/pgpg/go/generators/pkg/run"
 )
 
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s [-o output.go] [-package name] [-type name] tables.json\n", os.Args[0])
 	flag.PrintDefaults()
+	os.Exit(1)
+}
+
+func die(err error) {
+	fmt.Fprintln(os.Stderr, err)
 	os.Exit(1)
 }
 
@@ -29,19 +36,7 @@ func main() {
 	if flag.NArg() != 1 {
 		usage()
 	}
-	inputPath := flag.Arg(0)
-
-	inputBytes, err := os.ReadFile(inputPath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	tables, err := lexgen.DecodeTables(inputBytes)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	tablesPath := flag.Arg(0)
 
 	opts := lexgen.LexCodegenOptions{
 		Package: packageName,
@@ -49,30 +44,31 @@ func main() {
 		Format:  true,
 	}
 	if debug {
-		rawOpts := opts
-		rawOpts.Format = false
-		raw, err := lexgen.GenerateCode(tables, rawOpts)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+		if err := dumpRaw(tablesPath, opts); err != nil {
+			die(err)
 		}
-		_, _ = os.Stderr.Write(raw)
-		_, _ = os.Stderr.Write([]byte("\n"))
 	}
+	if err := run.LexgenCode(context.Background(), tablesPath, outputPath, opts); err != nil {
+		die(err)
+	}
+}
 
-	code, err := lexgen.GenerateCode(tables, opts)
+// dumpRaw writes the unformatted generated code to stderr for debugging.
+func dumpRaw(tablesPath string, opts lexgen.LexCodegenOptions) error {
+	data, err := os.ReadFile(tablesPath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		return err
 	}
-
-	if outputPath == "" || outputPath == "-" {
-		_, _ = os.Stdout.Write(code)
-		return
+	tables, err := lexgen.DecodeTables(data)
+	if err != nil {
+		return err
 	}
-
-	if err := os.WriteFile(outputPath, code, 0o644); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	opts.Format = false
+	raw, err := lexgen.GenerateCode(tables, opts)
+	if err != nil {
+		return err
 	}
+	_, _ = os.Stderr.Write(raw)
+	_, _ = os.Stderr.Write([]byte("\n"))
+	return nil
 }

@@ -1,13 +1,11 @@
 package run
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/johnkerl/pgpg/go/generators/pkg/lexgen"
-	"github.com/johnkerl/pgpg/go/generators/pkg/parsegen"
 )
 
 // TestGoldenTables regenerates lexer and parser tables for every grammar with
@@ -16,6 +14,10 @@ import (
 // a single byte, and generator behavior changes must come with regenerated
 // goldens. The Makefile alone cannot catch generator-induced staleness, since
 // it only rebuilds a JSON file when its .bnf is newer.
+//
+// Generation goes through LexgenTables/ParsegenTables — the same path the
+// lexgen-tables/parsegen-tables binaries use — so the file bytes, including
+// the trailing newline, are covered.
 func TestGoldenTables(t *testing.T) {
 	repoRoot := filepath.Join("..", "..", "..", "..")
 	jsonsDir := filepath.Join(repoRoot, "apps", "jsons")
@@ -46,40 +48,31 @@ func TestGoldenTables(t *testing.T) {
 		checked++
 
 		t.Run(name, func(t *testing.T) {
-			grammarBytes, err := os.ReadFile(filepath.Join(bnfsDir, base+".bnf"))
+			bnfPath := filepath.Join(bnfsDir, base+".bnf")
+			outPath := filepath.Join(t.TempDir(), name)
+			ctx := context.Background()
+			if kind == "lex" {
+				err = LexgenTables(ctx, bnfPath, outPath, nil)
+			} else {
+				err = ParsegenTables(ctx, bnfPath, outPath, nil)
+			}
 			if err != nil {
-				t.Fatalf("read grammar: %v", err)
+				t.Fatalf("generate %s tables: %v", kind, err)
+			}
+
+			generated, err := os.ReadFile(outPath)
+			if err != nil {
+				t.Fatalf("read generated: %v", err)
 			}
 			golden, err := os.ReadFile(filepath.Join(jsonsDir, name))
 			if err != nil {
 				t.Fatalf("read golden: %v", err)
 			}
 
-			var generated []byte
-			if kind == "lex" {
-				tables, err := lexgen.GenerateTables(string(grammarBytes), nil)
-				if err != nil {
-					t.Fatalf("generate lexer tables: %v", err)
-				}
-				generated, err = lexgen.EncodeTables(tables, nil)
-				if err != nil {
-					t.Fatalf("encode lexer tables: %v", err)
-				}
-			} else {
-				tables, err := parsegen.GenerateTables(string(grammarBytes), nil)
-				if err != nil {
-					t.Fatalf("generate parser tables: %v", err)
-				}
-				generated, err = parsegen.EncodeTables(tables, nil)
-				if err != nil {
-					t.Fatalf("encode parser tables: %v", err)
-				}
-			}
-
 			if string(generated) != string(golden) {
 				t.Errorf("generated tables differ from checked-in %s; "+
 					"if the generator change is intentional, regenerate with "+
-					"make -C apps/go/generated after touching the .bnf files",
+					"make -C apps/go/generated -B",
 					name)
 			}
 		})
