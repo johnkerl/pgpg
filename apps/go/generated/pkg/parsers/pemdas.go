@@ -27,198 +27,29 @@ func NewPEMDASParser() *PEMDASParser { return &PEMDASParser{} }
 var PEMDASParserNoASTSentinel = &asts.ASTNode{}
 
 func (parser *PEMDASParser) Parse(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, error) {
-	if lexer == nil {
-		return nil, fmt.Errorf("parser: nil lexer")
-	}
-	stateStack := []int{0}
-	nodeStack := []*asts.ASTNode{}
-	lookahead := lexer.Scan()
-	if parser.Trace != nil && parser.Trace.OnToken != nil {
-		parser.Trace.OnToken(lookahead)
-	}
-	for {
-		if lookahead == nil {
-			return nil, fmt.Errorf("parser: lexer returned nil token")
-		}
-		if lookahead.Type == tokens.TokenTypeError {
-			return nil, fmt.Errorf("lexer error: %s", string(lookahead.Lexeme))
-		}
-		state := stateStack[len(stateStack)-1]
-		action, ok := PEMDASParserActions[state][lookahead.Type]
-		if !ok {
-			return nil, fmt.Errorf("parse error: unexpected %s (%q)", lookahead.Type, string(lookahead.Lexeme))
-		}
-		if parser.Trace != nil && parser.Trace.OnAction != nil {
-			parser.Trace.OnAction(state, action, lookahead)
-		}
-		switch action.Kind {
-		case PEMDASParserActionShift:
-			if astMode == "noast" {
-				nodeStack = append(nodeStack, PEMDASParserNoASTSentinel)
-			} else {
-				nodeStack = append(nodeStack, asts.NewASTNodeTerminal(lookahead, asts.NodeType(lookahead.Type)))
-			}
-			stateStack = append(stateStack, action.Target)
-			lookahead = lexer.Scan()
-			if parser.Trace != nil && parser.Trace.OnToken != nil {
-				parser.Trace.OnToken(lookahead)
-			}
-			if parser.Trace != nil && parser.Trace.OnStack != nil {
-				parser.Trace.OnStack(stateStack, nodeStack)
-			}
-		case PEMDASParserActionReduce:
-			prod := PEMDASParserProductions[action.Target]
-			rhsNodes := make([]*asts.ASTNode, prod.rhsCount)
-			for i := prod.rhsCount - 1; i >= 0; i-- {
-				stateStack = stateStack[:len(stateStack)-1]
-				rhsNodes[i] = nodeStack[len(nodeStack)-1]
-				nodeStack = nodeStack[:len(nodeStack)-1]
-			}
-			if astMode == "noast" {
-				nodeStack = append(nodeStack, PEMDASParserNoASTSentinel)
-			} else {
-				var node *asts.ASTNode
-				useFullTree := (astMode == "fullast")
-				if !useFullTree && prod.hasPassthrough {
-					node = rhsNodes[prod.passthroughIndex]
-				} else if !useFullTree && prod.hasWithAppendedChildren {
-					var parent *asts.ASTNode
-					var parentToken *tokens.Token
-					var parentType asts.NodeType
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-						parentType = asts.NodeType(prod.parentLiteral)
-						parent = nil
-					} else {
-						parent = rhsNodes[prod.parentIndex]
-						parentToken = parent.Token
-						parentType = parent.Type
-					}
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = parentType
-					}
-					newChildren := make([]*asts.ASTNode, 0)
-					if parent != nil && parent.Children != nil {
-						newChildren = append(newChildren, parent.Children...)
-					}
-					for _, ci := range prod.withAppendedChildren {
-						newChildren = append(newChildren, rhsNodes[ci])
-					}
-					node = asts.NewASTNode(parentToken, nodeType, newChildren)
-				} else if !useFullTree && prod.hasWithPrependedChildren {
-					var parent *asts.ASTNode
-					var parentToken *tokens.Token
-					var parentType asts.NodeType
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-						parentType = asts.NodeType(prod.parentLiteral)
-						parent = nil
-					} else {
-						parent = rhsNodes[prod.parentIndex]
-						parentToken = parent.Token
-						parentType = parent.Type
-					}
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = parentType
-					}
-					newChildren := make([]*asts.ASTNode, 0)
-					for _, ci := range prod.withPrependedChildren {
-						newChildren = append(newChildren, rhsNodes[ci])
-					}
-					if parent != nil && parent.Children != nil {
-						newChildren = append(newChildren, parent.Children...)
-					}
-					node = asts.NewASTNode(parentToken, nodeType, newChildren)
-				} else if !useFullTree && prod.hasWithAdoptedGrandchildren {
-					var parent *asts.ASTNode
-					var parentToken *tokens.Token
-					var parentType asts.NodeType
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-						parentType = asts.NodeType(prod.parentLiteral)
-						parent = nil
-					} else {
-						parent = rhsNodes[prod.parentIndex]
-						parentToken = parent.Token
-						parentType = parent.Type
-					}
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = parentType
-					}
-					newChildren := make([]*asts.ASTNode, 0)
-					for _, ci := range prod.withAdoptedGrandchildren {
-						childNode := rhsNodes[ci]
-						if childNode != nil && childNode.Children != nil {
-							newChildren = append(newChildren, childNode.Children...)
-						}
-					}
-					node = asts.NewASTNode(parentToken, nodeType, newChildren)
-				} else if !useFullTree && prod.hasHint {
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = prod.lhs
-					}
-					var parentToken *tokens.Token
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-					} else if prod.parentIndex >= 0 && prod.parentIndex < len(rhsNodes) {
-						parentToken = rhsNodes[prod.parentIndex].Token
-					}
-					hintChildren := make([]*asts.ASTNode, len(prod.childIndices))
-					for i, ci := range prod.childIndices {
-						hintChildren[i] = rhsNodes[ci]
-					}
-					node = asts.NewASTNode(parentToken, nodeType, hintChildren)
-				} else if prod.rhsCount == 1 {
-					node = rhsNodes[0]
-				} else if prod.rhsCount == 0 {
-					node = asts.NewASTNode(nil, prod.lhs, []*asts.ASTNode{})
-				} else {
-					node = asts.NewASTNode(nil, prod.lhs, rhsNodes)
-				}
-				nodeStack = append(nodeStack, node)
-			}
-			state = stateStack[len(stateStack)-1]
-			nextState, ok := PEMDASParserGotos[state][prod.lhs]
-			if !ok {
-				return nil, fmt.Errorf("parse error: missing goto for %s", prod.lhs)
-			}
-			stateStack = append(stateStack, nextState)
-			if parser.Trace != nil && parser.Trace.OnStack != nil {
-				parser.Trace.OnStack(stateStack, nodeStack)
-			}
-		case PEMDASParserActionAccept:
-			if len(nodeStack) != 1 {
-				return nil, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
-			}
-			if parser.Trace != nil && parser.Trace.OnStack != nil {
-				parser.Trace.OnStack(stateStack, nodeStack)
-			}
-			if astMode == "noast" {
-				return nil, nil
-			}
-			return asts.NewAST(nodeStack[0]), nil
-		case PEMDASParserActionAcceptAndYield:
-			return nil, fmt.Errorf("parse error: multiple objects; use ParseOne for multi-object input")
-		default:
-			return nil, fmt.Errorf("parse error: no action")
-		}
-	}
+	ast, _, err := parser.parseCore(lexer, astMode, false)
+	return ast, err
 }
 
 // ParseOne parses one record from the lexer. It is for multi-object input: call in a loop until done.
 // Returns (ast, true, nil) on EOF after a record, (ast, false, nil) when more input follows, or (nil, false, err) on error.
 func (parser *PEMDASParser) ParseOne(lexer liblexers.AbstractLexer, astMode string) (*asts.AST, bool, error) {
+	return parser.parseCore(lexer, astMode, true)
+}
+
+// parseCore runs the LR(1) machine shared by Parse and ParseOne. In yield mode
+// (ParseOne) it resumes from any stashed lookahead and honors accept-and-yield
+// actions, stashing the lookahead for the next record and returning done=false;
+// outside yield mode multi-object input is an error. done is true on accept at
+// end of input. The returned AST is nil when astMode == "noast".
+func (parser *PEMDASParser) parseCore(lexer liblexers.AbstractLexer, astMode string, yieldMode bool) (*asts.AST, bool, error) {
 	if lexer == nil {
 		return nil, false, fmt.Errorf("parser: nil lexer")
 	}
 	stateStack := []int{0}
 	nodeStack := []*asts.ASTNode{}
 	var lookahead *tokens.Token
-	if parser.stashedLookahead != nil {
+	if yieldMode && parser.stashedLookahead != nil {
 		lookahead = parser.stashedLookahead
 		parser.stashedLookahead = nil
 	} else {
@@ -273,22 +104,7 @@ func (parser *PEMDASParser) ParseOne(lexer liblexers.AbstractLexer, astMode stri
 				if !useFullTree && prod.hasPassthrough {
 					node = rhsNodes[prod.passthroughIndex]
 				} else if !useFullTree && prod.hasWithAppendedChildren {
-					var parent *asts.ASTNode
-					var parentToken *tokens.Token
-					var parentType asts.NodeType
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-						parentType = asts.NodeType(prod.parentLiteral)
-						parent = nil
-					} else {
-						parent = rhsNodes[prod.parentIndex]
-						parentToken = parent.Token
-						parentType = parent.Type
-					}
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = parentType
-					}
+					parent, parentToken, nodeType := resolvePEMDASParserHintParent(prod, rhsNodes)
 					newChildren := make([]*asts.ASTNode, 0)
 					if parent != nil && parent.Children != nil {
 						newChildren = append(newChildren, parent.Children...)
@@ -298,22 +114,7 @@ func (parser *PEMDASParser) ParseOne(lexer liblexers.AbstractLexer, astMode stri
 					}
 					node = asts.NewASTNode(parentToken, nodeType, newChildren)
 				} else if !useFullTree && prod.hasWithPrependedChildren {
-					var parent *asts.ASTNode
-					var parentToken *tokens.Token
-					var parentType asts.NodeType
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-						parentType = asts.NodeType(prod.parentLiteral)
-						parent = nil
-					} else {
-						parent = rhsNodes[prod.parentIndex]
-						parentToken = parent.Token
-						parentType = parent.Type
-					}
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = parentType
-					}
+					parent, parentToken, nodeType := resolvePEMDASParserHintParent(prod, rhsNodes)
 					newChildren := make([]*asts.ASTNode, 0)
 					for _, ci := range prod.withPrependedChildren {
 						newChildren = append(newChildren, rhsNodes[ci])
@@ -323,22 +124,7 @@ func (parser *PEMDASParser) ParseOne(lexer liblexers.AbstractLexer, astMode stri
 					}
 					node = asts.NewASTNode(parentToken, nodeType, newChildren)
 				} else if !useFullTree && prod.hasWithAdoptedGrandchildren {
-					var parent *asts.ASTNode
-					var parentToken *tokens.Token
-					var parentType asts.NodeType
-					if prod.hasParentLiteral {
-						parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
-						parentType = asts.NodeType(prod.parentLiteral)
-						parent = nil
-					} else {
-						parent = rhsNodes[prod.parentIndex]
-						parentToken = parent.Token
-						parentType = parent.Type
-					}
-					nodeType := prod.nodeType
-					if nodeType == "" {
-						nodeType = parentType
-					}
+					_, parentToken, nodeType := resolvePEMDASParserHintParent(prod, rhsNodes)
 					newChildren := make([]*asts.ASTNode, 0)
 					for _, ci := range prod.withAdoptedGrandchildren {
 						childNode := rhsNodes[ci]
@@ -393,6 +179,9 @@ func (parser *PEMDASParser) ParseOne(lexer liblexers.AbstractLexer, astMode stri
 			}
 			return asts.NewAST(nodeStack[0]), true, nil
 		case PEMDASParserActionAcceptAndYield:
+			if !yieldMode {
+				return nil, false, fmt.Errorf("parse error: multiple objects; use ParseOne for multi-object input")
+			}
 			if len(nodeStack) != 1 {
 				return nil, false, fmt.Errorf("parse error: unexpected parse stack size %d", len(nodeStack))
 			}
@@ -408,6 +197,29 @@ func (parser *PEMDASParser) ParseOne(lexer liblexers.AbstractLexer, astMode stri
 			return nil, false, fmt.Errorf("parse error: no action")
 		}
 	}
+}
+
+// resolvePEMDASParserHintParent resolves the parent node, parent token, and
+// node type for a hint-directed reduction: either a literal parent named by
+// the hint, or the RHS node at the hint's parent index.
+func resolvePEMDASParserHintParent(prod PEMDASParserProduction, rhsNodes []*asts.ASTNode) (*asts.ASTNode, *tokens.Token, asts.NodeType) {
+	var parent *asts.ASTNode
+	var parentToken *tokens.Token
+	var parentType asts.NodeType
+	if prod.hasParentLiteral {
+		parentToken = tokens.NewToken([]rune(prod.parentLiteral), tokens.TokenType(prod.parentLiteral), tokens.NewTokenLocation())
+		parentType = asts.NodeType(prod.parentLiteral)
+		parent = nil
+	} else {
+		parent = rhsNodes[prod.parentIndex]
+		parentToken = parent.Token
+		parentType = parent.Type
+	}
+	nodeType := prod.nodeType
+	if nodeType == "" {
+		nodeType = parentType
+	}
+	return parent, parentToken, nodeType
 }
 
 // AttachCLITrace installs tracing hooks for CLI debugging.
